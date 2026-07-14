@@ -7,6 +7,10 @@ export type PublicNote = {
   category: string;
   publishedAt: string;
   featured?: number | boolean;
+  readMinutes?: number;
+  sourcePath?: string;
+  outgoing?: string[];
+  backlinks?: string[];
 };
 
 export const sampleNotes: PublicNote[] = [

@@ -49,6 +49,13 @@ export async function listPublishedNotes() {
     ORDER BY COALESCE(published_at, created_at) DESC, id DESC`).all();
 }
 
+export async function getPublishedNoteBySlug(slug: string) {
+  await ensureNotesSchema();
+  return d1().prepare(`SELECT id, slug, title, summary, content, category, featured,
+    published_at AS publishedAt, created_at AS createdAt, updated_at AS updatedAt
+    FROM notes WHERE status = 'published' AND slug = ? LIMIT 1`).bind(slug).first();
+}
+
 export async function listAdminNotes(email: string) {
   await ensureNotesSchema();
   return d1().prepare(`SELECT id, slug, title, summary, content, category, status, featured,

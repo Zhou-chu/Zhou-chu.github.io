@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MarkdownBody } from "./components/MarkdownBody";
+import { useSiteCopy } from "./hooks/useSiteCopy";
 
 type Note = {
   id: number | string;
@@ -89,6 +90,7 @@ const seedNotes: Note[] = [
 const tags = ["全部", "技术", "写作", "方法", "阅读", "随想", "生活"];
 
 export default function Home() {
+  const copy = useSiteCopy();
   const [allNotes, setAllNotes] = useState<Note[]>(seedNotes);
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState("全部");
@@ -145,8 +147,8 @@ export default function Home() {
   return (
     <main>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="浮光笔记首页"><span>浮光</span><small>FUGUANG NOTES</small></a>
-        <nav aria-label="主导航"><a href="#notes">笔记</a><a href="#topics">专题</a><a href="/b">B 版</a><a href="/admin">写作后台</a></nav>
+        <a className="brand" href="#top" aria-label={`${copy.siteName}首页`}><span>{copy.siteName}</span><small>{copy.siteCode}</small></a>
+        <nav aria-label="主导航"><a href="#notes">{copy.navNotes}</a><a href="#topics">{copy.navTopics}</a><a href="/b">{copy.navCompareB}</a><a href="/c">{copy.navCompareC}</a><a href="/admin">{copy.navAdmin}</a></nav>
         <div className="header-actions">
           <label className="search"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索笔记…" aria-label="搜索笔记" /><kbd>⌘ K</kbd></label>
           <button className="theme-toggle" onClick={() => setDark((value) => !value)} aria-label={dark ? "切换到浅色主题" : "切换到深色主题"}>{dark ? "☀" : "☾"}</button>
@@ -155,21 +157,21 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">思考 · 技术 · 生活</p>
-          <h1>在喧嚣里，<br />打捞思想的微光。</h1>
-          <p className="hero-intro">你好，我是周川。这里收录我关于技术、阅读与生活的长期笔记。愿这些尚未完成的思考，也能为你照亮一小段路。</p>
-          <a className="text-link" href="#notes">开始阅读 <span>↘</span></a>
+          <p className="eyebrow">{copy.aEyebrow}</p>
+          <h1>{copy.aTitleLine1}<br />{copy.aTitleLine2}</h1>
+          <p className="hero-intro">{copy.aIntro}</p>
+          <a className="text-link" href="#notes">{copy.aCta} <span>↘</span></a>
         </div>
         <aside className="today-note" aria-label="今日札记">
           <div className="pin" aria-hidden="true" />
-          <p className="note-label">今日札记 · 07/14</p>
-          <blockquote>“不要急着成为答案，<br />先成为一个好问题。”</blockquote>
-          <span className="signature">— 写在盛夏</span>
+          <p className="note-label">{copy.aTodayLabel} · 07/14</p>
+          <blockquote>“{copy.aTodayQuote}”</blockquote>
+          <span className="signature">{copy.aTodaySignature}</span>
         </aside>
       </section>
 
       <section className="featured-section" aria-labelledby="featured-title">
-        <div className="section-heading"><div><span>01</span><h2 id="featured-title">精选文章</h2></div><button onClick={() => { setActiveTag("全部"); document.querySelector("#notes")?.scrollIntoView({behavior:"smooth"}); }}>查看全部 →</button></div>
+        <div className="section-heading"><div><span>01</span><h2 id="featured-title">{copy.aFeaturedTitle}</h2></div><button onClick={() => { setActiveTag("全部"); document.querySelector("#notes")?.scrollIntoView({behavior:"smooth"}); }}>查看全部 →</button></div>
         <div className="featured-grid">
           {featured.map((note, index) => (
             <button className={`featured-card card-${index + 1}`} key={note.id} onClick={() => setSelected(note)}>
@@ -184,7 +186,7 @@ export default function Home() {
 
       <section className="notes-layout" id="notes">
         <div className="recent-notes">
-          <div className="section-heading compact"><div><span>02</span><h2>最近笔记</h2></div><span>{filtered.length} 篇</span></div>
+          <div className="section-heading compact"><div><span>02</span><h2>{copy.aRecentTitle}</h2></div><span>{filtered.length} 篇</span></div>
           <div className="filter-mobile">{tags.map((tag) => <button key={tag} className={activeTag === tag ? "active" : ""} onClick={() => setActiveTag(tag)}>{tag}</button>)}</div>
           <div className="note-list">
             {filtered.map((note) => (
@@ -199,13 +201,13 @@ export default function Home() {
         </div>
 
         <aside className="sidebar" id="topics">
-          <div className="side-block"><h3>按主题浏览</h3><div className="tag-cloud">{tags.map((tag) => <button key={tag} className={activeTag === tag ? "active" : ""} onClick={() => setActiveTag(tag)}>{tag}<sup>{tag === "全部" ? allNotes.length : allNotes.filter((note) => note.category === tag).length}</sup></button>)}</div></div>
-          <div className="side-block ink-note" id="about"><p>关于这里</p><span>笔记并非结论，而是思考留下的脚印。保持好奇，持续记录。</span><i>川</i></div>
+          <div className="side-block"><h3>{copy.aTopicsTitle}</h3><div className="tag-cloud">{tags.map((tag) => <button key={tag} className={activeTag === tag ? "active" : ""} onClick={() => setActiveTag(tag)}>{tag}<sup>{tag === "全部" ? allNotes.length : allNotes.filter((note) => note.category === tag).length}</sup></button>)}</div></div>
+          <div className="side-block ink-note" id="about"><p>{copy.aAboutTitle}</p><span>{copy.aAboutText}</span><i>{copy.authorName.slice(0, 1)}</i></div>
           <div className="side-links"><a href="mailto:hello@example.com">来信</a><a href="#top">回到顶部 ↑</a></div>
         </aside>
       </section>
 
-      <footer><div className="footer-brand">浮光笔记</div><p>写作是与时间相处的一种方式。</p><span>© 2026 周川 · Built with curiosity.</span></footer>
+      <footer><div className="footer-brand">{copy.siteName}</div><p>{copy.footerMotto}</p><span>{copy.footerLegal}</span></footer>
 
       {selected && (
         <div className="reader-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}>

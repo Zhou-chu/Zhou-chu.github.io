@@ -19,3 +19,10 @@ export const notes = sqliteTable("notes", {
   index("notes_status_published_idx").on(table.status, table.publishedAt),
   index("notes_author_idx").on(table.authorEmail),
 ]);
+
+export const siteSettings = sqliteTable("site_settings", {
+  id: integer("id").primaryKey(),
+  copyJson: text("copy_json").notNull().default("{}"),
+  updatedBy: text("updated_by").notNull(),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});

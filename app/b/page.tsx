@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { MarkdownBody } from "../components/MarkdownBody";
+import { useSiteCopy } from "../hooks/useSiteCopy";
 import "./b.css";
 
 type DarkNote = { id: string | number; title: string; summary: string; content: string; category: string; publishedAt: string; featured?: number | boolean };
@@ -14,6 +15,7 @@ const samples: DarkNote[] = [
 ];
 
 export default function DarkHome() {
+  const copy = useSiteCopy();
   const [notes, setNotes] = useState<DarkNote[]>(samples);
   const [active, setActive] = useState("全部");
   const [query, setQuery] = useState("");
@@ -31,23 +33,23 @@ export default function DarkHome() {
 
   return <main className="dark-site">
     <div className="star-noise" aria-hidden="true" />
-    <header className="dark-header"><a className="dark-brand" href="/b"><span>FG_</span>浮光笔记</a><nav><a href="#archive">ARCHIVE</a><a href="#tags">TAGS</a><a href="/admin">ADMIN</a></nav><div><a className="switch-a" href="/">切换 A 版</a><span className="online"><i /> ONLINE</span></div></header>
+    <header className="dark-header"><a className="dark-brand" href="/b"><span>FG_</span>{copy.siteName}</a><nav><a href="#archive">{copy.navNotes}</a><a href="#tags">{copy.navTopics}</a><a href="/admin">{copy.navAdmin}</a></nav><div><a className="switch-a" href="/">{copy.navCompareA}</a><a className="switch-a" href="/c">{copy.navCompareC}</a><span className="online"><i /> {copy.bStatus}</span></div></header>
 
     <section className="dark-hero">
-      <div className="hero-left"><p className="terminal-label">~/fuguang/notes <span>main*</span></p><h1>思考的轨迹，<br />在深夜持续发光<span>_</span></h1><p className="dark-intro">关于技术、创造与日常观察的长期记录。<br />这里没有最终答案，只有持续更新的思考版本。</p><div className="hero-command"><span>$</span><a href="#archive">cd ./latest-notes</a><i>↵</i></div><div className="system-meta"><span><b>06</b> NOTES</span><span><b>07</b> TOPICS</span><span><b>2026</b> SINCE</span></div></div>
+      <div className="hero-left"><p className="terminal-label">{copy.bPath}</p><h1>{copy.bTitleLine1}<br />{copy.bTitleLine2}<span>_</span></h1><p className="dark-intro">{copy.bIntro}</p><div className="hero-command"><span>$</span><a href="#archive">{copy.bCommand}</a><i>↵</i></div><div className="system-meta"><span><b>{notes.length}</b> NOTES</span><span><b>{categories.length - 1}</b> TOPICS</span><span><b>2026</b> SINCE</span></div></div>
       <div className="terminal-card"><div className="terminal-top"><span><i /><i /><i /></span><b>note.md — preview</b><em>⌘ K</em></div><div className="terminal-body"><p><span>01</span><b>---</b></p><p><span>02</span><i>title:</i> “浮光笔记”</p><p><span>03</span><i>status:</i> <strong>growing</strong></p><p><span>04</span><i>updated:</i> 2026-07-14</p><p><span>05</span><b>---</b></p><p><span>06</span></p><p><span>07</span><mark># 让想法保持开放</mark></p><p><span>08</span></p><p><span>09</span>记录不是为了囤积，</p><p><span>10</span>而是为了与未来的自己相遇。</p><p><span>11</span></p><p><span>12</span><code>const curiosity = true;</code></p></div><div className="terminal-status"><span>● Markdown</span><span>Ln 12, Col 24&nbsp;&nbsp; UTF-8</span></div></div>
     </section>
 
     <section className="dark-content" id="archive">
-      <div className="archive-main"><div className="dark-section-head"><div><span>01 /</span><h2>精选记录</h2></div><p>FEATURED_NOTE</p></div>
+      <div className="archive-main"><div className="dark-section-head"><div><span>01 /</span><h2>{copy.bFeaturedTitle}</h2></div><p>FEATURED_NOTE</p></div>
         {featured && <button className="spotlight" onClick={() => setSelected(featured)}><span className="spot-date">{featured.publishedAt}</span><div><small>{featured.category} · FEATURED</small><h3>{featured.title}</h3><p>{featured.summary}</p></div><b>READ_NOTE ↗</b></button>}
-        <div className="dark-section-head recent"><div><span>02 /</span><h2>最近更新</h2></div><label><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="search notes" /></label></div>
+        <div className="dark-section-head recent"><div><span>02 /</span><h2>{copy.bRecentTitle}</h2></div><label><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="search notes" /></label></div>
         <div className="dark-list">{filtered.map((note, index) => <button key={`${note.id}-${index}`} onClick={() => setSelected(note)}><span className="index">{String(index + 1).padStart(2, "0")}</span><div><small>{note.category} / {note.publishedAt}</small><strong>{note.title}</strong><p>{note.summary}</p></div><span className="go">↗</span></button>)}</div>
       </div>
-      <aside className="dark-sidebar" id="tags"><div className="side-title"><span>FILTER_BY_TAG</span><i /></div><div className="dark-tags">{categories.map((category) => <button key={category} className={active === category ? "active" : ""} onClick={() => setActive(category)}><span>#</span>{category}<sup>{category === "全部" ? notes.length : notes.filter((note) => note.category === category).length}</sup></button>)}</div><div className="now-card"><span>CURRENTLY</span><p>正在整理关于<br /><b>“创造力与工具”</b><br />的一组笔记。</p><div><i /><i /><i /><i /><i /></div></div><div className="dark-quote">“保持开放，<br />保持未完成。”<span>— FUGUANG</span></div></aside>
+      <aside className="dark-sidebar" id="tags"><div className="side-title"><span>{copy.bFilterTitle}</span><i /></div><div className="dark-tags">{categories.map((category) => <button key={category} className={active === category ? "active" : ""} onClick={() => setActive(category)}><span>#</span>{category}<sup>{category === "全部" ? notes.length : notes.filter((note) => note.category === category).length}</sup></button>)}</div><div className="now-card"><span>CURRENTLY</span><p>{copy.cAsideText}</p><div><i /><i /><i /><i /><i /></div></div><div className="dark-quote">“{copy.bQuote}”<span>— {copy.siteName}</span></div></aside>
     </section>
 
-    <footer className="dark-footer"><div><a href="/b">FG_NOTES</a><span>thoughts.log</span></div><p>© 2026 · BUILT IN THE QUIET HOURS</p><a href="/admin">WRITE_NEW_NOTE ↗</a></footer>
+    <footer className="dark-footer"><div><a href="/b">{copy.siteCode}</a><span>thoughts.log</span></div><p>{copy.footerLegal}</p><a href="/admin">{copy.navAdmin} ↗</a></footer>
 
     {selected && <div className="dark-reader-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}><article className="dark-reader" role="dialog" aria-modal="true"><button className="dark-close" onClick={() => setSelected(null)}>ESC ×</button><p className="dark-reader-meta">{selected.category} / {selected.publishedAt}</p><h1>{selected.title}</h1><div className="dark-markdown"><MarkdownBody source={selected.content} /></div></article></div>}
   </main>;

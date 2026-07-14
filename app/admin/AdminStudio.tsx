@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MarkdownBody } from "../components/MarkdownBody";
+import { CopyEditor } from "./CopyEditor";
 
 type StoredNote = {
   id: number;
@@ -115,12 +116,14 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
     <main className="admin-shell">
       <header className="admin-header">
         <div><a href="/">浮光笔记</a><span>/ 写作后台</span></div>
-        <nav><a href="/" target="_blank">查看 A 版</a><a href="/b" target="_blank">查看 B 版</a><a href="/signout-with-chatgpt?return_to=/">退出</a></nav>
+        <nav><a href="/" target="_blank">查看 A 版</a><a href="/b" target="_blank">查看 B 版</a><a href="/c" target="_blank">查看 C 版</a><a href="/signout-with-chatgpt?return_to=/">退出</a></nav>
       </header>
       <section className="admin-intro">
         <div><p>WRITING STUDIO</p><h1>下午好，{user.displayName.split("@")[0]}</h1><span>把未完成的想法，安静地写下来。</span></div>
         <div className="admin-stats"><span><b>{notes.length}</b>全部笔记</span><span><b>{publishedCount}</b>已发布</span><span><b>{notes.length - publishedCount}</b>草稿</span></div>
       </section>
+
+      <CopyEditor />
 
       <section className="editor-layout">
         <aside className="library">

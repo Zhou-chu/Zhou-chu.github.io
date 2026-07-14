@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MarkdownBody } from "./components/MarkdownBody";
 
 type Note = {
-  id: number;
+  id: number | string;
   title: string;
   excerpt: string;
   date: string;
@@ -13,7 +14,7 @@ type Note = {
   content: React.ReactNode;
 };
 
-const notes: Note[] = [
+const seedNotes: Note[] = [
   {
     id: 1,
     title: "把复杂系统讲清楚：我的技术写作方法",
@@ -88,10 +89,31 @@ const notes: Note[] = [
 const tags = ["全部", "技术", "写作", "方法", "阅读", "随想", "生活"];
 
 export default function Home() {
+  const [allNotes, setAllNotes] = useState<Note[]>(seedNotes);
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState("全部");
   const [selected, setSelected] = useState<Note | null>(null);
   const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/notes", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (!data?.notes?.length) return;
+        const uploaded: Note[] = data.notes.map((note: { id: number; title: string; summary: string; content: string; category: string; featured: number | boolean; publishedAt: string | null }) => ({
+          id: `db-${note.id}`,
+          title: note.title,
+          excerpt: note.summary || note.content.replace(/[#>*`\-]/g, "").slice(0, 72),
+          date: (note.publishedAt || new Date().toISOString().slice(0, 10)).replaceAll("-", "."),
+          read: `${Math.max(1, Math.ceil(note.content.length / 500))} 分钟`,
+          category: note.category,
+          featured: Boolean(note.featured),
+          content: <MarkdownBody source={note.content} />,
+        }));
+        setAllNotes([...uploaded, ...seedNotes]);
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("fuguang-theme");
@@ -111,20 +133,20 @@ export default function Home() {
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return notes.filter((note) => {
+    return allNotes.filter((note) => {
       const matchesTag = activeTag === "全部" || note.category === activeTag;
       const matchesQuery = !needle || `${note.title}${note.excerpt}${note.category}`.toLowerCase().includes(needle);
       return matchesTag && matchesQuery;
     });
-  }, [activeTag, query]);
+  }, [activeTag, query, allNotes]);
 
-  const featured = notes.filter((note) => note.featured);
+  const featured = allNotes.filter((note) => note.featured).slice(0, 3);
 
   return (
     <main>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="浮光笔记首页"><span>浮光</span><small>FUGUANG NOTES</small></a>
-        <nav aria-label="主导航"><a href="#notes">笔记</a><a href="#topics">专题</a><a href="#about">关于</a></nav>
+        <nav aria-label="主导航"><a href="#notes">笔记</a><a href="#topics">专题</a><a href="/b">B 版</a><a href="/admin">写作后台</a></nav>
         <div className="header-actions">
           <label className="search"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索笔记…" aria-label="搜索笔记" /><kbd>⌘ K</kbd></label>
           <button className="theme-toggle" onClick={() => setDark((value) => !value)} aria-label={dark ? "切换到浅色主题" : "切换到深色主题"}>{dark ? "☀" : "☾"}</button>
@@ -177,7 +199,7 @@ export default function Home() {
         </div>
 
         <aside className="sidebar" id="topics">
-          <div className="side-block"><h3>按主题浏览</h3><div className="tag-cloud">{tags.map((tag) => <button key={tag} className={activeTag === tag ? "active" : ""} onClick={() => setActiveTag(tag)}>{tag}<sup>{tag === "全部" ? notes.length : notes.filter((note) => note.category === tag).length}</sup></button>)}</div></div>
+          <div className="side-block"><h3>按主题浏览</h3><div className="tag-cloud">{tags.map((tag) => <button key={tag} className={activeTag === tag ? "active" : ""} onClick={() => setActiveTag(tag)}>{tag}<sup>{tag === "全部" ? allNotes.length : allNotes.filter((note) => note.category === tag).length}</sup></button>)}</div></div>
           <div className="side-block ink-note" id="about"><p>关于这里</p><span>笔记并非结论，而是思考留下的脚印。保持好奇，持续记录。</span><i>川</i></div>
           <div className="side-links"><a href="mailto:hello@example.com">来信</a><a href="#top">回到顶部 ↑</a></div>
         </aside>

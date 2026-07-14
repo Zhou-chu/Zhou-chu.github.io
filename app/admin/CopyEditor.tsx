@@ -8,7 +8,8 @@ export function CopyEditor() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const groups = useMemo(() => Array.from(new Set(siteCopyFields.map((field) => field.group))), []);
+  const finalFields = useMemo(() => siteCopyFields.filter((field) => field.group === "全站" || field.group === "C 版"), []);
+  const groups = useMemo(() => Array.from(new Set(finalFields.map((field) => field.group))), [finalFields]);
 
   useEffect(() => {
     fetch("/api/admin/site-copy", { cache: "no-store" }).then((response) => response.ok ? response.json() : null).then((data) => {
@@ -32,9 +33,9 @@ export function CopyEditor() {
   }
 
   return <section className={`copy-editor ${open ? "open" : ""}`}>
-    <button className="copy-editor-toggle" onClick={() => setOpen((value) => !value)}><span><b>站点文案定制</b><small>修改 A / B / C 三版的所有固定文字</small></span><i>{open ? "收起 −" : "展开 ＋"}</i></button>
+    <button className="copy-editor-toggle" onClick={() => setOpen((value) => !value)}><span><b>站点文案定制</b><small>修改最终版首页的所有固定文字</small></span><i>{open ? "收起 −" : "展开 ＋"}</i></button>
     {open && <div className="copy-editor-body">
-      {groups.map((group) => <fieldset key={group}><legend>{group}</legend><div className="copy-fields">{siteCopyFields.filter((field) => field.group === group).map((field) => <label key={field.key}><span>{field.label}</span>{field.multiline ? <textarea value={copy[field.key]} onChange={(event) => setCopy({ ...copy, [field.key]: event.target.value })} /> : <input value={copy[field.key]} onChange={(event) => setCopy({ ...copy, [field.key]: event.target.value })} />}</label>)}</div></fieldset>)}
+      {groups.map((group) => <fieldset key={group}><legend>{group}</legend><div className="copy-fields">{finalFields.filter((field) => field.group === group).map((field) => <label key={field.key}><span>{field.label}</span>{field.multiline ? <textarea value={copy[field.key]} onChange={(event) => setCopy({ ...copy, [field.key]: event.target.value })} /> : <input value={copy[field.key]} onChange={(event) => setCopy({ ...copy, [field.key]: event.target.value })} />}</label>)}</div></fieldset>)}
       <div className="copy-actions"><p>{message || "文章标题和正文请在下方笔记编辑器中修改。"}</p><div><button onClick={reset}>恢复默认</button><button className="copy-save" disabled={busy} onClick={save}>保存全部文案</button></div></div>
     </div>}
   </section>;

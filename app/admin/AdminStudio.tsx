@@ -116,7 +116,7 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
     <main className="admin-shell">
       <header className="admin-header">
         <div><a href="/">浮光笔记</a><span>/ 写作后台</span></div>
-        <nav><a href="/" target="_blank">查看 A 版</a><a href="/b" target="_blank">查看 B 版</a><a href="/c" target="_blank">查看 C 版</a><a href="/signout-with-chatgpt?return_to=/">退出</a></nav>
+        <nav><a href="/" target="_blank">查看网站</a><a href="/signout-with-chatgpt?return_to=/">退出</a></nav>
       </header>
       <section className="admin-intro">
         <div><p>WRITING STUDIO</p><h1>下午好，{user.displayName.split("@")[0]}</h1><span>把未完成的想法，安静地写下来。</span></div>

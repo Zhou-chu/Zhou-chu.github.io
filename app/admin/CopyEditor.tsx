@@ -23,7 +23,7 @@ export function CopyEditor() {
       const response = await fetch("/api/admin/site-copy", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ copy }) });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error || "保存失败");
-      setMessage("文案已保存，刷新 A、B、C 页面即可看到更新");
+      setMessage("文案已保存，刷新最终版页面即可看到更新");
     } catch (error) { setMessage(error instanceof Error ? error.message : "保存失败"); }
     finally { setBusy(false); }
   }

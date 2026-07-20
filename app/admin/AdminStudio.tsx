@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MarkdownBody } from "../components/MarkdownBody";
 import { CopyEditor } from "./CopyEditor";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 type StoredNote = {
   id: number;
@@ -84,10 +85,17 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
     if (!draft.title.trim() || !draft.content.trim()) { setMessage("请填写标题和正文"); return; }
     setBusy(true); setMessage(status === "published" ? "正在发布…" : "正在保存…");
     try {
+      const wikilinkRegex = /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g;
+      const outgoingSlugs: string[] = [];
+      let match;
+      while ((match = wikilinkRegex.exec(draft.content)) !== null) {
+        const title = match[1]?.trim();
+        if (title) outgoingSlugs.push(title);
+      }
       const response = await fetch("/api/admin/notes", {
         method: draft.id ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...draft, status }),
+        body: JSON.stringify({ ...draft, status, links_json: JSON.stringify([...new Set(outgoingSlugs)]) }),
       });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error || "保存失败");
@@ -113,6 +121,7 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
   }
 
   return (
+    <ErrorBoundary>
     <main className="admin-shell">
       <header className="admin-header">
         <div><a href="/">浮光笔记</a><span>/ 写作后台</span></div>
@@ -127,7 +136,43 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
 
       <section className="editor-layout">
         <aside className="library">
-          <div className="library-head"><h2>笔记库</h2><button onClick={() => setDraft(emptyDraft)}>＋ 新建</button></div>
+          <div className="library-head">
+            <h2>笔记库</h2>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => { setDraft(emptyDraft); setMode("edit"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>＋ 新建</button>
+              <button className="batch-unpublish" onClick={async () => {
+                if (!window.confirm("确定将所有已发布笔记改为草稿吗？首页将不再显示任何笔记。")) return;
+                try {
+                  const res = await fetch("/api/admin/notes/batch-unpublish", { method: "POST" });
+                  const data = await res.json();
+                  if (res.ok) {
+                    setMessage(`已下架 ${data.unpublished} 篇笔记`);
+                    await loadNotes();
+                  } else {
+                    setMessage(data.error || "操作失败");
+                  }
+                } catch (e) {
+                  setMessage("操作失败");
+                }
+              }}>全部下架</button>
+              <button className="batch-delete" onClick={async () => {
+                if (!window.confirm("确定删除所有笔记吗？此操作不可撤销！")) return;
+                try {
+                  const res = await fetch("/api/admin/notes/batch-delete", { method: "POST" });
+                  const data = await res.json();
+                  if (res.ok) {
+                    setMessage(`已删除 ${data.deleted} 篇笔记`);
+                    setDraft(emptyDraft);
+                    await loadNotes();
+                  } else {
+                    setMessage(data.error || "操作失败");
+                  }
+                } catch (e) {
+                  setMessage("操作失败");
+                }
+              }}>全部删除</button>
+            </div>
+          </div>
           <button className="upload-zone" onClick={() => fileInput.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); readFile(event.dataTransfer.files[0]); }}>
             <strong>拖入 Markdown 文件</strong><span>或点击选择 .md 文件</span>
           </button>
@@ -146,9 +191,10 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
             <textarea className="summary-input" value={draft.summary} onChange={(event) => setDraft({ ...draft, summary: event.target.value })} placeholder="用一两句话写摘要…" />
             <textarea className="markdown-input" value={draft.content} onChange={(event) => setDraft({ ...draft, content: event.target.value })} placeholder={"# 从这里开始\n\n支持 Markdown 标题、列表、引用和代码块。"} />
           </> : <article className="admin-preview"><p className="preview-label">{draft.category || "未分类"} · {draft.publishedAt}</p><h1>{draft.title || "未命名笔记"}</h1>{draft.summary && <p className="preview-summary">{draft.summary}</p>}<MarkdownBody source={draft.content || "还没有正文。"} /></article>}
-          <div className="editor-footer"><p className={message ? "show" : ""}>{message || "所有更改都需要手动保存"}</p><div><button disabled={busy} className="save-draft" onClick={() => save("draft")}>保存草稿</button><button disabled={busy} className="publish-note" onClick={() => save("published")}>发布文章 ↗</button></div></div>
+          <div className="editor-footer"><p className={message ? "show" : ""}>{message || "所有更改都需要手动保存"}</p><div><button disabled={busy} className="save-draft" onClick={() => save("draft")}>保存草稿</button>{draft.status === "published" && (<button disabled={busy} className="unpublish-note" onClick={() => save("draft")}>下架</button>)}<button disabled={busy} className="publish-note" onClick={() => save("published")}>{draft.status === "published" ? "更新文章 ↗" : "发布文章 ↗"}</button></div></div>
         </div>
       </section>
     </main>
+    </ErrorBoundary>
   );
 }

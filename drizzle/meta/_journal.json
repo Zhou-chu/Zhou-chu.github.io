@@ -15,6 +15,13 @@
       "when": 1784034495406,
       "tag": "0001_aberrant_dormammu",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784168150536,
+      "tag": "0002_slow_trish_tilby",
+      "breakpoints": true
     }
   ]
 }

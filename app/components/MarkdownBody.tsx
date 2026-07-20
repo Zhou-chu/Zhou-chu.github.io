@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -5,6 +6,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark-dimmed.css";
+import { slugifyHeading } from "../lib/heading-slugger";
 
 function normalizeObsidianMath(source: string) {
   const indentationWidth = (prefix: string) => {
@@ -37,7 +39,32 @@ function normalizeObsidianMath(source: string) {
     .replace(/\\\((.+?)\\\)/g, (_match, formula: string) => `$${formula}$`);
 }
 
-export function MarkdownBody({ source }: { source: string }) {
+/**
+ * Recursively extract plain text from React children (strings, numbers,
+ * arrays, and elements with `props.children`). Handles inline code, links,
+ * emphasis, and other inline formatting that react-markdown produces.
+ */
+export function extractTextContent(node: ReactNode): string {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractTextContent).join("");
+  if (node && typeof node === "object" && "props" in node) {
+    const children = (node as { props?: { children?: ReactNode } }).props?.children;
+    return children != null ? extractTextContent(children) : "";
+  }
+  return "";
+}
+
+interface MarkdownBodyProps {
+  source: string;
+  /** When true, render deterministic `id` attributes on `h2` and `h3`.
+   *  Default false — admin preview (and existing callers) are unchanged. */
+  headingIds?: boolean;
+}
+
+export function MarkdownBody({ source, headingIds = false }: MarkdownBodyProps) {
+  const usedSlugs = headingIds ? new Set<string>() : null;
+
   return <ReactMarkdown
     remarkPlugins={[remarkGfm, remarkMath]}
     rehypePlugins={[
@@ -57,6 +84,18 @@ export function MarkdownBody({ source }: { source: string }) {
         const language = className?.match(/language-([\w-]+)/)?.[1];
         return <code className={className} data-language={language} {...props}>{children}</code>;
       },
+      ...(headingIds && usedSlugs ? {
+        h2({ children, node: _node, ...props }: Record<string, unknown>) {
+          const text = extractTextContent(children as ReactNode);
+          const id = slugifyHeading(text, usedSlugs);
+          return <h2 id={id} {...props}>{children as ReactNode}</h2>;
+        },
+        h3({ children, node: _node, ...props }: Record<string, unknown>) {
+          const text = extractTextContent(children as ReactNode);
+          const id = slugifyHeading(text, usedSlugs);
+          return <h3 id={id} {...props}>{children as ReactNode}</h3>;
+        },
+      } : {}),
     }}
   >{normalizeObsidianMath(source)}</ReactMarkdown>;
 }

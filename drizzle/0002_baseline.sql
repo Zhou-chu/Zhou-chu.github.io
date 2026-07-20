@@ -1,0 +1,2 @@
+-- Baseline migration: marks existing tables (notes, site_settings) as already created.
+-- The __drizzle_migrations journal is seeded at Worker startup instead.

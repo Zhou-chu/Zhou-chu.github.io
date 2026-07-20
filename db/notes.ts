@@ -1,4 +1,6 @@
-import { env } from "cloudflare:workers";
+import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { getDb } from "./index";
+import { notes } from "./schema";
 
 export type NoteInput = {
   title: string;
@@ -9,58 +11,70 @@ export type NoteInput = {
   status?: "draft" | "published";
   featured?: boolean;
   publishedAt?: string | null;
+  linksJson?: string;
 };
 
-const schemaSql = `CREATE TABLE IF NOT EXISTS notes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  slug TEXT NOT NULL UNIQUE,
-  title TEXT NOT NULL,
-  summary TEXT NOT NULL DEFAULT '',
-  content TEXT NOT NULL DEFAULT '',
-  category TEXT NOT NULL DEFAULT '随想',
-  status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft', 'published')),
-  featured INTEGER NOT NULL DEFAULT 0,
-  author_email TEXT NOT NULL,
-  published_at TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-)`;
-
-function d1() {
-  if (!env.DB) throw new Error("D1 binding DB is unavailable");
-  return env.DB;
-}
-
-export async function ensureNotesSchema() {
-  const db = d1();
-  await db.batch([
-    db.prepare(schemaSql),
-    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS notes_slug_idx ON notes(slug)"),
-    db.prepare("CREATE INDEX IF NOT EXISTS notes_status_published_idx ON notes(status, published_at)"),
-    db.prepare("CREATE INDEX IF NOT EXISTS notes_author_idx ON notes(author_email)"),
-  ]);
-}
-
-export async function listPublishedNotes() {
-  await ensureNotesSchema();
-  return d1().prepare(`SELECT id, slug, title, summary, content, category, featured,
-    published_at AS publishedAt, created_at AS createdAt, updated_at AS updatedAt
-    FROM notes WHERE status = 'published'
-    ORDER BY COALESCE(published_at, created_at) DESC, id DESC`).all();
+export async function listPublishedNotes(after?: number, limit = 20) {
+  let query = getDb().select({
+    id: notes.id,
+    slug: notes.slug,
+    title: notes.title,
+    summary: notes.summary,
+    content: notes.content,
+    category: notes.category,
+    featured: notes.featured,
+    publishedAt: notes.publishedAt,
+    createdAt: notes.createdAt,
+    updatedAt: notes.updatedAt,
+  }).from(notes)
+    .where(eq(notes.status, "published"));
+  if (after) {
+    query = query.where(lt(notes.id, after));
+  }
+  const results = await query
+    .orderBy(desc(sql`COALESCE(${notes.publishedAt}, ${notes.createdAt})`), desc(notes.id))
+    .limit(limit)
+    .all();
+  return results;
 }
 
 export async function getPublishedNoteBySlug(slug: string) {
-  await ensureNotesSchema();
-  return d1().prepare(`SELECT id, slug, title, summary, content, category, featured,
-    published_at AS publishedAt, created_at AS createdAt, updated_at AS updatedAt
-    FROM notes WHERE status = 'published' AND slug = ? LIMIT 1`).bind(slug).first();
+  return getDb().select({
+    id: notes.id,
+    slug: notes.slug,
+    title: notes.title,
+    summary: notes.summary,
+    content: notes.content,
+    category: notes.category,
+    featured: notes.featured,
+    publishedAt: notes.publishedAt,
+    createdAt: notes.createdAt,
+    updatedAt: notes.updatedAt,
+  }).from(notes)
+    .where(and(eq(notes.status, "published"), eq(notes.slug, slug)))
+    .limit(1)
+    .get();
 }
 
-export async function listAdminNotes(email: string) {
-  await ensureNotesSchema();
-  return d1().prepare(`SELECT id, slug, title, summary, content, category, status, featured,
-    published_at AS publishedAt, created_at AS createdAt, updated_at AS updatedAt
-    FROM notes WHERE author_email = ? ORDER BY updated_at DESC, id DESC`).bind(email).all();
+export async function listAdminNotes(email?: string | null) {
+  let query = getDb().select({
+    id: notes.id,
+    slug: notes.slug,
+    title: notes.title,
+    summary: notes.summary,
+    content: notes.content,
+    category: notes.category,
+    status: notes.status,
+    featured: notes.featured,
+    publishedAt: notes.publishedAt,
+    createdAt: notes.createdAt,
+    updatedAt: notes.updatedAt,
+  }).from(notes);
+  if (email) {
+    query = query.where(eq(notes.authorEmail, email));
+  }
+  const results = await query.orderBy(desc(notes.updatedAt), desc(notes.id)).all();
+  return results;
 }
 
 function cleanSlug(value: string | undefined, title: string) {
@@ -70,25 +84,55 @@ function cleanSlug(value: string | undefined, title: string) {
 }
 
 export async function createNote(input: NoteInput, email: string) {
-  await ensureNotesSchema();
   const slug = `${cleanSlug(input.slug, input.title)}-${Date.now().toString(36)}`;
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
-  return d1().prepare(`INSERT INTO notes
-    (slug, title, summary, content, category, status, featured, author_email, published_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`)
-    .bind(slug, input.title, input.summary || "", input.content, input.category || "随想", input.status || "draft", input.featured ? 1 : 0, email, publishedAt).first();
+  return getDb().insert(notes).values({
+    slug,
+    title: input.title,
+    summary: input.summary || "",
+    content: input.content,
+    category: input.category || "随想",
+    status: input.status || "draft",
+    featured: input.featured ?? false,
+    authorEmail: email,
+    publishedAt,
+    linksJson: input.linksJson ?? "[]",
+  }).returning().get();
 }
 
 export async function updateNote(id: number, input: NoteInput, email: string) {
-  await ensureNotesSchema();
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
-  return d1().prepare(`UPDATE notes SET title = ?, summary = ?, content = ?, category = ?,
-    status = ?, featured = ?, published_at = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ? AND author_email = ? RETURNING *`)
-    .bind(input.title, input.summary || "", input.content, input.category || "随想", input.status || "draft", input.featured ? 1 : 0, publishedAt, id, email).first();
+  return getDb().update(notes).set({
+    title: input.title,
+    summary: input.summary || "",
+    content: input.content,
+    category: input.category || "随想",
+    status: input.status || "draft",
+    featured: input.featured ?? false,
+    publishedAt,
+    linksJson: input.linksJson ?? "[]",
+    updatedAt: sql`CURRENT_TIMESTAMP`,
+  }).where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
+    .returning()
+    .get();
 }
 
 export async function deleteNote(id: number, email: string) {
-  await ensureNotesSchema();
-  return d1().prepare("DELETE FROM notes WHERE id = ? AND author_email = ? RETURNING id").bind(id, email).first();
+  return getDb().delete(notes)
+    .where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
+    .returning({ id: notes.id })
+    .get();
+}
+
+export async function batchUnpublishNotes() {
+  const result = await getDb().update(notes)
+    .set({ status: "draft" as const })
+    .where(eq(notes.status, "published"))
+    .returning({ id: notes.id });
+  return result.length;
+}
+
+export async function batchDeleteNotes() {
+  const results = await getDb().delete(notes).returning({ id: notes.id }).all();
+  return results.length;
 }

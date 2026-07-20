@@ -12,6 +12,8 @@ export const notes = sqliteTable("notes", {
   featured: integer("featured", { mode: "boolean" }).notNull().default(false),
   authorEmail: text("author_email").notNull(),
   publishedAt: text("published_at"),
+  sourcePath: text("source_path"),
+  linksJson: text("links_json").notNull().default("[]"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 }, (table) => [

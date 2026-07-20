@@ -1,0 +1,583 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Timber Field Notes — Article Page
+   Canonical contract: DESIGN.md §5.11–5.13, Appendix B
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page container ────────────────────────────────────────────────────── */
+
+.note-page {
+  min-height: 100vh;
+  background: var(--paper, #fbfaf6);
+  color: var(--ink, #20211d);
+  padding-bottom: var(--space-12, 3rem);
+}
+
+/* ── Article + TOC wrapper ─────────────────────────────────────────────── */
+
+.note-article-wrapper {
+  display: flex;
+  justify-content: center;
+  max-width: calc(860px + 280px);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0 var(--space-4, 1rem);
+  overflow: visible;
+}
+
+/* ── Article column ────────────────────────────────────────────────────── */
+
+.note-article {
+  max-width: 860px;
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-12, 3rem) var(--space-4, 1rem) 0;
+  overflow: visible;
+}
+
+/* ── Ruler: metadata tick strip (DESIGN.md §5.11) ──────────────────────── */
+
+.note-ruler {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding-bottom: var(--space-4, 1rem);
+  border-bottom: 1px solid var(--line, #c8c5ba);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--muted, #66675e);
+}
+
+.note-ruler__tick {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--line, #c8c5ba);
+  flex-shrink: 0;
+}
+
+.note-ruler__category {
+  font-family: var(--font-control);
+  font-weight: 500;
+}
+
+.note-ruler__readtime {
+  margin-left: auto;
+  font-style: normal;
+}
+
+/* ── Title ─────────────────────────────────────────────────────────────── */
+
+.note-title {
+  margin: var(--space-8, 2rem) 0 var(--space-4, 1rem);
+  font-family: var(--font-display);
+  font-size: var(--text-xl, 1.5rem);
+  font-weight: 700;
+  line-height: var(--leading-heading, 1.3);
+  letter-spacing: var(--tracking-heading, -0.011em);
+  color: var(--ink, #20211d);
+}
+
+@media (min-width: 768px) {
+  .note-title {
+    font-size: var(--text-2xl, 1.875rem);
+  }
+}
+
+/* ── Summary ───────────────────────────────────────────────────────────── */
+
+.note-summary {
+  max-width: 640px;
+  margin: 0 0 var(--space-6, 1.5rem);
+  font-family: var(--font-display);
+  font-size: var(--text-md, 1.125rem);
+  line-height: var(--leading-body, 1.75);
+  color: var(--muted, #66675e);
+}
+
+/* ── Reading body (DESIGN.md §5.12) ────────────────────────────────────── */
+
+.note-body {
+  display: flow-root;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+  font-family: var(--font-display);
+  font-size: var(--text-base, 1rem);
+  line-height: var(--leading-body, 1.75);
+  color: var(--ink, #20211d);
+}
+
+.note-body h2 {
+  margin: var(--space-8, 2rem) 0 var(--space-3, 0.75rem);
+  font-family: var(--font-display);
+  font-size: var(--text-lg, 1.25rem);
+  font-weight: 600;
+  line-height: var(--leading-heading, 1.3);
+  letter-spacing: var(--tracking-heading, -0.011em);
+  color: var(--ink, #20211d);
+}
+
+.note-body h3 {
+  margin: var(--space-6, 1.5rem) 0 var(--space-2, 0.5rem);
+  font-family: var(--font-display);
+  font-size: var(--text-md, 1.125rem);
+  font-weight: 600;
+  line-height: var(--leading-heading, 1.3);
+  letter-spacing: var(--tracking-heading, -0.011em);
+  color: var(--ink, #20211d);
+}
+
+.note-body p {
+  margin: 0 0 var(--space-5, 1.25rem);
+  overflow-wrap: break-word;
+}
+
+.note-body ul,
+.note-body ol {
+  margin: var(--space-2, 0.5rem) 0 var(--space-6, 1.5rem);
+  padding-left: 1.6em;
+}
+
+.note-body li {
+  margin: var(--space-1, 0.25rem) 0;
+  padding-left: 0.25em;
+}
+
+.note-body li::marker {
+  color: var(--muted, #66675e);
+}
+
+.note-body ul ul {
+  list-style-type: circle;
+}
+
+.note-body ul ul ul {
+  list-style-type: square;
+}
+
+/* Task list */
+.note-body .contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.note-body .task-list-item {
+  margin-left: 0;
+}
+
+.note-body input[type="checkbox"] {
+  margin-right: var(--space-2, 0.5rem);
+  accent-color: var(--moss, #4f5d42);
+}
+
+/* ── Blockquotes ───────────────────────────────────────────────────────── */
+
+.note-body blockquote {
+  position: relative;
+  margin: var(--space-6, 1.5rem) 0;
+  padding: var(--space-4, 1rem) var(--space-4, 1rem) var(--space-4, 1rem) var(--space-8, 2rem);
+  border-left: 2px solid var(--line, #c8c5ba);
+  color: var(--muted, #66675e);
+  font-style: italic;
+}
+
+.note-body blockquote::before {
+  content: "\201C";
+  position: absolute;
+  left: var(--space-3, 0.75rem);
+  top: 0;
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--moss, #4f5d42);
+}
+
+.note-body blockquote > p:first-child {
+  margin-top: 0;
+}
+
+.note-body blockquote > p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Links ──────────────────────────────────────────────────────────────── */
+
+.note-body a {
+  color: var(--moss, #4f5d42);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 150ms var(--ease-standard, ease);
+}
+
+.note-body a:hover {
+  color: var(--ink, #20211d);
+}
+
+/* ── Code blocks (DESIGN.md §5.12) ──────────────────────────────────────── */
+
+.note-body pre {
+  position: relative;
+  margin: var(--space-6, 1.5rem) 0;
+  padding: var(--space-6, 1.5rem) var(--space-4, 1rem) var(--space-4, 1rem);
+  background: var(--code-surface, #1b1f1c);
+  border: 1px solid var(--line, #c8c5ba);
+  border-radius: 2px;
+  overflow-x: auto;
+  /* No grain, no warm tint behind code (DESIGN.md §§5.12, 9.1) */
+}
+
+.note-body pre::before {
+  content: "";
+  position: absolute;
+  left: var(--space-4, 1rem);
+  top: var(--space-3, 0.75rem);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: 16px 0 #febc2e, 32px 0 #28c840;
+}
+
+.note-body pre code {
+  display: block;
+  min-width: max-content;
+  padding: var(--space-3, 0.75rem) 0 0 !important;
+  background: transparent !important;
+  color: #adbac7 !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1.7;
+  tab-size: 2;
+  border: none;
+}
+
+.note-body pre code[data-language]::after {
+  content: attr(data-language);
+  position: absolute;
+  right: var(--space-4, 1rem);
+  top: var(--space-3, 0.75rem);
+  color: #768390;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Inline code ────────────────────────────────────────────────────────── */
+
+.note-body code:not(pre code) {
+  color: var(--ink, #20211d);
+  background: var(--line, #c8c5ba);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ── Horizontal rules ───────────────────────────────────────────────────── */
+
+.note-body hr {
+  border: 0;
+  border-top: 1px solid var(--line, #c8c5ba);
+  margin: var(--space-8, 2rem) 0;
+}
+
+/* ── Highlight ──────────────────────────────────────────────────────────── */
+
+.note-body mark {
+  background: #e2f2c5;
+  color: inherit;
+  padding: 0 2px;
+}
+
+/* ── Syntax highlighting (light-on-dark theme) ──────────────────────────── */
+
+.note-body .hljs-keyword,
+.note-body .hljs-selector-tag,
+.note-body .hljs-literal,
+.note-body .hljs-section,
+.note-body .hljs-link {
+  color: #f47067;
+}
+
+.note-body .hljs-string,
+.note-body .hljs-title,
+.note-body .hljs-name,
+.note-body .hljs-type,
+.note-body .hljs-attribute,
+.note-body .hljs-symbol,
+.note-body .hljs-bullet,
+.note-body .hljs-addition,
+.note-body .hljs-variable,
+.note-body .hljs-template-tag,
+.note-body .hljs-template-variable {
+  color: #96d0ff;
+}
+
+.note-body .hljs-comment,
+.note-body .hljs-quote,
+.note-body .hljs-deletion,
+.note-body .hljs-meta {
+  color: #768390;
+}
+
+.note-body .hljs-number,
+.note-body .hljs-regexp,
+.note-body .hljs-selector-id,
+.note-body .hljs-selector-class,
+.note-body .hljs-built_in {
+  color: #dcbdfb;
+}
+
+.note-body .hljs-function,
+.note-body .hljs-title.function_,
+.note-body .hljs-params {
+  color: #dcbdfb;
+}
+
+/* ── Article end marker ─────────────────────────────────────────────────── */
+
+.note-end-mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4, 1rem);
+  margin-top: var(--space-12, 3rem);
+  padding: var(--space-6, 1.5rem) 0;
+}
+
+.note-end-mark__line {
+  flex: 1;
+  height: 1px;
+  background: var(--line, #c8c5ba);
+}
+
+.note-end-mark__symbol {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg, 1.25rem);
+  color: var(--muted, #66675e);
+}
+
+/* ── Section titles (backlinks / related) ────────────────────────────────── */
+
+.note-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 var(--space-4, 1rem);
+  font-weight: 500;
+}
+
+.note-section-title span {
+  font-family: var(--font-display);
+  font-size: var(--text-lg, 1.25rem);
+  color: var(--ink, #20211d);
+}
+
+.note-section-title small {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--muted, #66675e);
+  letter-spacing: 0.08em;
+}
+
+/* ── Backlinks section (DESIGN.md §5.12 — hairline rows) ────────────────── */
+
+.note-backlinks {
+  max-width: var(--container-reader, 720px);
+  margin: var(--space-12, 3rem) auto 0;
+  padding: var(--space-8, 2rem) var(--space-4, 1rem) 0;
+  border-top: 1px solid var(--line, #c8c5ba);
+}
+
+/* ── Related section (DESIGN.md §5.12 — hairline rows) ──────────────────── */
+
+.note-related {
+  max-width: var(--container-reader, 720px);
+  margin: var(--space-10, 2.5rem) auto 0;
+  padding: var(--space-8, 2rem) var(--space-4, 1rem) 0;
+  border-top: 1px solid var(--line, #c8c5ba);
+}
+
+/* ── Ledger row list (shared: backlinks + related) ──────────────────────── */
+
+.note-ledger {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-ledger__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) 0;
+  border-bottom: 1px solid var(--line, #c8c5ba);
+  text-decoration: none;
+  color: inherit;
+  transition: color 150ms var(--ease-standard, ease);
+}
+
+.note-ledger__row:first-child {
+  border-top: 1px solid var(--line, #c8c5ba);
+}
+
+.note-ledger__row:hover {
+  color: var(--moss, #4f5d42);
+}
+
+.note-ledger__title {
+  flex: 1;
+  font-family: var(--font-control);
+  font-size: var(--text-base, 1rem);
+  font-weight: 500;
+}
+
+.note-ledger__meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--muted, #66675e);
+  white-space: nowrap;
+}
+
+.note-ledger__arrow {
+  flex-shrink: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--muted, #66675e);
+  transition: transform 150ms var(--ease-out, ease-out);
+}
+
+.note-ledger__row:hover .note-ledger__arrow {
+  transform: translateX(2px);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .note-article {
+    padding: var(--space-8, 2rem) var(--space-4, 1rem) 0;
+  }
+
+  .note-ruler {
+    flex-wrap: wrap;
+  }
+
+  .note-ruler__readtime {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .note-ledger__row--related {
+    flex-wrap: wrap;
+  }
+
+  .note-ledger__row--related .note-ledger__meta {
+    width: 100%;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .note-page *,
+  .note-page *::before,
+  .note-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Forest reading canvas ────────────────────────────────────────────────
+   Keep the reading surfaces unchanged while allowing the shared forest
+   background to show through everywhere else on the route. */
+
+.note-page {
+  padding: 32px 24px 72px;
+  background: transparent !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.note-article {
+  padding: var(--space-12, 3rem) clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 28px;
+  background: rgba(255, 253, 247, 0.56);
+  -webkit-backdrop-filter: blur(24px) saturate(0.72) brightness(1.12);
+  backdrop-filter: blur(24px) saturate(0.72) brightness(1.12);
+  box-shadow:
+    0 26px 66px rgba(18, 27, 20, 0.18),
+    inset 0 0 58px rgba(255, 255, 255, 0.1);
+}
+
+.note-page .toc-rail {
+  height: fit-content;
+  max-height: calc(100vh - 132px);
+  margin: 0 0 0 18px;
+  padding: 22px 20px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 20px;
+  background: rgba(255, 253, 247, 0.56);
+  -webkit-backdrop-filter: blur(24px) saturate(0.72) brightness(1.12);
+  backdrop-filter: blur(24px) saturate(0.72) brightness(1.12);
+  box-shadow: 0 18px 48px rgba(18, 27, 20, 0.16);
+}
+
+.note-backlinks,
+.note-related {
+  padding: var(--space-8, 2rem) clamp(24px, 4vw, 40px);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--paper, #fbfaf6) 88%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(0.8) brightness(1.06);
+  backdrop-filter: blur(22px) saturate(0.8) brightness(1.06);
+  box-shadow: 0 18px 48px rgba(18, 27, 20, 0.14);
+}
+
+:root[data-theme="dark"] .note-article,
+:root[data-theme="dark"] .note-page .toc-rail {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(22, 29, 23, 0.3);
+  -webkit-backdrop-filter: blur(22px) saturate(0.72) brightness(0.76);
+  backdrop-filter: blur(22px) saturate(0.72) brightness(0.76);
+}
+
+:root[data-theme="dark"] .note-backlinks,
+:root[data-theme="dark"] .note-related {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--paper, #1d211d) 88%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(0.72) brightness(0.78);
+  backdrop-filter: blur(22px) saturate(0.72) brightness(0.78);
+}
+
+@media (max-width: 960px) {
+  .note-page {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .note-page {
+    padding: 16px 12px 48px;
+  }
+
+  .note-article-wrapper {
+    padding: 0;
+  }
+
+  .note-article {
+    padding: 32px 20px;
+    border-radius: 19px;
+    -webkit-backdrop-filter: blur(17px) saturate(0.82) brightness(1.05);
+    backdrop-filter: blur(17px) saturate(0.82) brightness(1.05);
+  }
+
+  .note-backlinks,
+  .note-related {
+    padding: 24px 20px;
+    border-radius: 17px;
+  }
+}

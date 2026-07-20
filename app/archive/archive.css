@@ -1,0 +1,625 @@
+/* ==========================================================================
+   Archive — Timber Field Notes (DESIGN.md §5.9, §5.10, §6.2)
+   Scoped tokens. No hardcoded values. No global overrides.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Archive Shell
+   -------------------------------------------------------------------------- */
+
+.archive-shell {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-4);
+}
+
+.archive-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: var(--tracking-heading);
+  margin: 0 0 var(--space-2);
+}
+
+.archive-subtitle {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-8);
+}
+
+/* --------------------------------------------------------------------------
+   Search & Filter Bar (DESIGN.md §5.9)
+   -------------------------------------------------------------------------- */
+
+.archive-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+}
+
+.archive-search {
+  flex: 1;
+  min-width: 240px;
+  height: 44px;
+  padding: 0 var(--space-4);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-sm);
+  color: var(--ink);
+  transition: border-color 150ms var(--ease-standard);
+}
+
+.archive-search::placeholder {
+  color: var(--faint);
+}
+
+.archive-search:focus {
+  outline: none;
+  border-color: var(--moss);
+}
+
+.archive-material-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.archive-material-label-heading {
+  font-family: var(--font-control);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  margin-right: var(--space-2);
+  white-space: nowrap;
+}
+
+.archive-material-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease-standard),
+              color 150ms var(--ease-standard);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.archive-material-pill:hover {
+  border-color: var(--muted);
+  color: var(--ink);
+}
+
+.archive-material-pill[data-active="true"] {
+  border-color: var(--moss);
+  color: var(--moss);
+}
+
+.archive-material-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--faint);
+  margin-left: var(--space-1);
+}
+
+.archive-material-pill[data-active="true"] .archive-material-count {
+  color: var(--moss);
+}
+
+/* --------------------------------------------------------------------------
+   Archive Body: Year Rail + Log Rows (DESIGN.md §5.9, §6.2)
+   -------------------------------------------------------------------------- */
+
+.archive-body {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-8);
+}
+
+@media (max-width: 767px) {
+  .archive-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
+
+/* Year Rail — left column, sticky, large display type */
+.archive-year-rail {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .archive-year-rail {
+    position: sticky;
+    top: calc(64px + var(--space-8)); /* below header */
+    align-self: start;
+  }
+}
+
+.archive-year-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--muted);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  padding: var(--space-4) 0 var(--space-2);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Log Rows — right column */
+.archive-year-group {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+  margin-bottom: var(--space-8);
+}
+
+.archive-year-group:last-child {
+  margin-bottom: 0;
+}
+
+.archive-log-row {
+  display: grid;
+  grid-template-columns: 80px 80px 1fr auto;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 150ms var(--ease-standard);
+}
+
+.archive-log-row:last-child {
+  border-bottom: none;
+}
+
+.archive-log-row:hover {
+  background-color: var(--paper);
+}
+
+@media (max-width: 767px) {
+  .archive-log-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    padding: var(--space-3) 0;
+  }
+}
+
+/* LOG-<id> — mono, faint */
+.archive-log-id {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* Month-Day — mono, muted */
+.archive-log-date {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Title + Summary block */
+.archive-log-content {
+  min-width: 0;
+}
+
+.archive-log-title {
+  display: inline;
+  font-family: var(--font-control);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 150ms var(--ease-standard);
+  line-height: var(--leading-control);
+}
+
+.archive-log-title:hover {
+  color: var(--moss);
+}
+
+.archive-log-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  line-height: var(--leading-body);
+  margin: var(--space-1) 0 0;
+}
+
+/* Material label (DESIGN.md §5.10) */
+.archive-material-label {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  white-space: nowrap;
+  align-self: center;
+}
+
+@media (max-width: 767px) {
+  .archive-material-label {
+    align-self: flex-start;
+    margin-top: var(--space-1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   State Panels (DESIGN.md §5.14)
+   -------------------------------------------------------------------------- */
+
+.archive-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-20) var(--space-4);
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.archive-state__heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+  letter-spacing: var(--tracking-heading);
+}
+
+.archive-state__body {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  color: var(--muted);
+  line-height: var(--leading-body);
+  margin: 0 0 var(--space-6);
+}
+
+/* Empty state: bilingual copy */
+.archive-state__empty {
+  color: var(--muted);
+  line-height: 2;
+}
+
+/* Clear filters button */
+.archive-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease-standard),
+              color 150ms var(--ease-standard);
+}
+
+.archive-clear-btn:hover {
+  border-color: var(--moss);
+  color: var(--moss);
+}
+
+/* --------------------------------------------------------------------------
+   Loading Skeleton
+   -------------------------------------------------------------------------- */
+
+.archive-skeleton {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-4);
+}
+
+.archive-skeleton__title {
+  width: 180px;
+  height: 32px;
+  margin-bottom: var(--space-2);
+  background: var(--line);
+  opacity: 0.6;
+}
+
+.archive-skeleton__subtitle {
+  width: 120px;
+  height: 14px;
+  margin-bottom: var(--space-8);
+  background: var(--line);
+  opacity: 0.4;
+}
+
+.archive-skeleton__search {
+  width: 100%;
+  max-width: 400px;
+  height: 44px;
+  margin-bottom: var(--space-8);
+  background: var(--line);
+  opacity: 0.3;
+}
+
+.archive-skeleton__year {
+  width: 80px;
+  height: 28px;
+  margin-bottom: var(--space-4);
+  background: var(--line);
+  opacity: 0.5;
+}
+
+.archive-skeleton__row {
+  height: 48px;
+  margin-bottom: var(--space-3);
+  background: var(--line);
+  opacity: 0.25;
+}
+
+.archive-skeleton__row:nth-child(even) {
+  opacity: 0.18;
+}
+
+.archive-skeleton__row:last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-skeleton__title,
+  .archive-skeleton__subtitle,
+  .archive-skeleton__search,
+  .archive-skeleton__year,
+  .archive-skeleton__row {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Error State
+   -------------------------------------------------------------------------- */
+
+.archive-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-20) var(--space-4);
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.archive-error__heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+  letter-spacing: var(--tracking-heading);
+}
+
+.archive-error__body {
+  font-family: var(--font-control);
+  font-size: var(--text-base);
+  color: var(--muted);
+  line-height: var(--leading-body);
+  margin: 0 0 var(--space-6);
+}
+
+/* Forest cabinet archive: each year is a physical shelf. */
+.archive-body {
+  display: block;
+}
+
+.archive-year-section + .archive-year-section {
+  margin-top: var(--space-10);
+}
+
+.archive-year-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.archive-year-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.archive-year-heading span {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.archive-year-group {
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 0;
+  padding: 28px 24px 34px;
+  overflow-x: auto;
+  border: 9px solid rgba(82, 50, 29, 0.64);
+  border-radius: 14px;
+  background:
+    linear-gradient(rgba(41, 28, 19, 0.68), rgba(31, 23, 17, 0.8)),
+    url("/images/materials/wood-grain.jpg") center / cover;
+  box-shadow: inset 0 16px 28px rgba(10, 8, 6, 0.3), 0 16px 34px rgba(62, 43, 27, 0.15);
+}
+
+.archive-year-group::after {
+  content: "";
+  position: absolute;
+  right: -9px;
+  bottom: -14px;
+  left: -9px;
+  height: 20px;
+  background: url("/images/materials/wood-grain.jpg") center 70% / cover;
+  box-shadow: 0 9px 14px rgba(47, 31, 18, 0.22);
+}
+
+.archive-log-row {
+  display: flex;
+  width: 138px;
+  min-width: 138px;
+  height: 252px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px !important;
+  overflow: hidden;
+  border: 1px solid rgba(62, 45, 30, 0.34) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent 14%, transparent 85%, rgba(54,35,22,0.14)), #d4bd98;
+  color: #34291f;
+  box-shadow: inset 4px 0 rgba(255,255,255,0.17), 4px 6px 10px rgba(12,8,5,0.3);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.archive-log-row:nth-child(2n) { height: 272px; background-color: #aeb99f; }
+.archive-log-row:nth-child(3n) { height: 240px; background-color: #c58e6d; }
+.archive-log-row:nth-child(4n) { height: 262px; background-color: #8f9d82; }
+
+.archive-log-row:hover {
+  z-index: 2;
+  background-color: #ead9b7;
+  transform: translateY(-9px) rotate(-0.5deg);
+  box-shadow: inset 4px 0 rgba(255,255,255,0.2), 8px 14px 16px rgba(12,8,5,0.34);
+}
+
+.archive-log-id,
+.archive-log-date,
+.archive-material-label { color: inherit; opacity: 0.58; }
+
+.archive-log-content {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+}
+
+.archive-log-title {
+  flex: 1;
+  overflow: hidden;
+  color: inherit !important;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  line-height: 1.5;
+  writing-mode: vertical-rl;
+}
+
+.archive-log-summary { display: none; }
+.archive-material-label { order: -1; border: 0; padding: 0; font-size: 9px; }
+
+@media (max-width: 767px) {
+  .archive-year-group { min-height: 276px; padding-inline: 14px; }
+  .archive-log-row { width: 108px; min-width: 108px; height: 228px; }
+  .archive-log-row:nth-child(2n) { height: 246px; }
+  .archive-log-row:nth-child(3n) { height: 216px; }
+  .archive-log-row:nth-child(4n) { height: 238px; }
+}
+
+.archive-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  font-family: var(--font-control);
+  font-size: var(--text-sm);
+  color: var(--moss);
+  cursor: pointer;
+  transition: border-color 150ms var(--ease-standard),
+              background-color 150ms var(--ease-standard);
+}
+
+.archive-retry-btn:hover {
+  border-color: var(--moss);
+  background-color: var(--paper);
+}
+
+/* Final readable shelf cards: horizontal text never escapes the book cover. */
+.archive-year-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  align-items: stretch;
+  gap: 14px;
+  min-height: 0;
+  overflow: visible;
+}
+
+.archive-log-row,
+.archive-log-row:nth-child(n) {
+  width: auto;
+  min-width: 0;
+  height: 220px;
+  min-height: 220px;
+  align-items: stretch;
+  padding: 20px 18px !important;
+  transform: none;
+}
+
+.archive-log-content {
+  min-width: 0;
+  align-items: stretch;
+}
+
+.archive-log-title {
+  display: -webkit-box;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  line-height: 1.65;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  writing-mode: horizontal-tb;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.archive-material-label { align-self: flex-start; }
+
+@media (max-width: 767px) {
+  .archive-year-group { grid-template-columns: 1fr; padding-inline: 14px; }
+  .archive-log-row,
+  .archive-log-row:nth-child(n) { width: auto; min-width: 0; height: auto; min-height: 170px; }
+}

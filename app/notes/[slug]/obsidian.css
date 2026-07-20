@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Timber Field Notes — Obsidian / Markdown Extended Styles
+   Preserves: GFM tables, task lists, KaTeX, images, source paths
+   Applies: DESIGN.md §5.12 tokens (dark code, unboxed math, restrained images)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Source path ─────────────────────────────────────────────────────────── */
+
+.note-source-path {
+  margin: var(--space-4, 1rem) 0 0;
+  color: var(--muted, #66675e);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs, 0.75rem);
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+}
+
+/* ── Images (DESIGN.md §5.12: restrained, dimension placeholders) ────────── */
+
+.note-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: var(--space-8, 2rem) auto;
+  border-radius: 2px;
+  border: 1px solid var(--line, #c8c5ba);
+}
+
+/* ── KaTeX: unboxed (DESIGN.md §5.12) ────────────────────────────────────── */
+
+.note-body .katex {
+  font-size: 1.08em;
+}
+
+.note-body .katex-display {
+  max-width: 100%;
+  margin: var(--space-8, 2rem) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  /* No decorative box, no background tint, no border (DESIGN.md §5.12) */
+}
+
+.note-body .katex-display > .katex {
+  font-size: 1.18em;
+  text-align: center;
+}
+
+.note-body .katex-error {
+  color: var(--error, #9a433a);
+  background: rgba(154, 67, 58, 0.08);
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+
+/* ── GFM tables ──────────────────────────────────────────────────────────── */
+
+.note-body .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.note-body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  width: max-content;
+  min-width: 100%;
+  margin: var(--space-6, 1.5rem) 0;
+  border-collapse: collapse;
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1.65;
+}
+
+.note-body th,
+.note-body td {
+  border: 1px solid var(--line, #c8c5ba);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  text-align: left;
+  vertical-align: top;
+}
+
+.note-body th {
+  background: var(--canvas, #f3f1e9);
+  color: var(--moss, #4f5d42);
+  font-weight: 600;
+}
+
+/* ── Dark theme overrides ────────────────────────────────────────────────── */
+
+[data-theme="dark"] .note-page {
+  background: var(--paper, #1d211d);
+}
+
+[data-theme="dark"] .note-body th {
+  background: var(--canvas, #171a17);
+}

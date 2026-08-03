@@ -108,9 +108,11 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
   const [message, setMessage] = useState("正在读取笔记…");
   const [lastImportedIds, setLastImportedIds] = useState<number[]>([]);
   const [batchTagInput, setBatchTagInput] = useState("");
+  const [batchCategoryInput, setBatchCategoryInput] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
 
   const publishedCount = useMemo(() => notes.filter((note) => note.status === "published").length, [notes]);
+  const existingCategories = useMemo(() => [...new Set(notes.map((note) => note.category).filter(Boolean))].sort(), [notes]);
 
   async function loadNotes() {
     const response = await fetch("/api/admin/notes", { cache: "no-store" });
@@ -226,6 +228,29 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
     }
   }
 
+  /** 一键分类：把输入的分类应用到本次导入的所有文章。 */
+  async function applyBatchCategory() {
+    const category = batchCategoryInput.trim();
+    if (!category) { setMessage("请输入分类名称"); return; }
+    setBusy(true);
+    try {
+      const response = await fetch("/api/admin/notes/category", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ids: lastImportedIds, category }),
+      });
+      const data = await response.json() as { updated?: number; error?: string };
+      if (!response.ok) throw new Error(data.error || "设置分类失败");
+      setMessage(`已为本次导入的 ${data.updated ?? 0} 篇文章设置分类：${category}`);
+      setBatchCategoryInput("");
+      await loadNotes();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "设置分类失败");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function editNote(note: StoredNote) {
     setDraft({ id: note.id, title: note.title, summary: note.summary, content: note.content, category: note.category, status: note.status, featured: Boolean(note.featured), publishedAt: note.publishedAt, tags: parseTagsJson(note.tagsJson) });
     setMode("edit");
@@ -323,11 +348,16 @@ export function AdminStudio({ user }: { user: { displayName: string; email: stri
           <input ref={fileInput} type="file" accept=".md,.markdown,text/markdown" multiple hidden onChange={(event) => void importFiles(event.target.files)} />
           {lastImportedIds.length > 0 && (
             <div className="batch-tag-panel">
-              <div className="batch-tag-panel__head"><strong>为本次导入的 {lastImportedIds.length} 篇文章打标签</strong><span>标签用逗号或空格分隔，一键应用到全部</span></div>
+              <div className="batch-tag-panel__head"><strong>批量设置本次导入的 {lastImportedIds.length} 篇文章</strong><span>一键应用到全部文章</span></div>
               <div className="batch-tag-panel__row">
-                <input value={batchTagInput} onChange={(event) => setBatchTagInput(event.target.value)} placeholder="如：读书笔记, 技术, 随笔" onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void applyBatchTags(); } }} />
+                <input list="batch-category-list" value={batchCategoryInput} onChange={(event) => setBatchCategoryInput(event.target.value)} placeholder="分类（如：技术、随笔）" onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void applyBatchCategory(); } }} />
+                <datalist id="batch-category-list">{existingCategories.map((cat) => <option key={cat} value={cat} />)}</datalist>
+                <button type="button" disabled={busy || !batchCategoryInput.trim()} onClick={() => void applyBatchCategory()}>一键分类</button>
+              </div>
+              <div className="batch-tag-panel__row">
+                <input value={batchTagInput} onChange={(event) => setBatchTagInput(event.target.value)} placeholder="标签（如：读书笔记, 技术, 随笔）" onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void applyBatchTags(); } }} />
                 <button type="button" disabled={busy || !batchTagInput.trim()} onClick={() => void applyBatchTags()}>一键打标签</button>
-                <button type="button" className="batch-tag-skip" disabled={busy} onClick={() => setLastImportedIds([])}>跳过</button>
+                <button type="button" className="batch-tag-skip" disabled={busy} onClick={() => { setLastImportedIds([]); setBatchCategoryInput(""); }}>跳过</button>
               </div>
             </div>
           )}

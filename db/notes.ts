@@ -12,7 +12,16 @@ export type NoteInput = {
   featured?: boolean;
   publishedAt?: string | null;
   linksJson?: string;
+  tagsJson?: string;
 };
+
+/** Thrown when a PATCH would rename a note to another note's existing title. */
+export class TitleConflictError extends Error {
+  constructor(title: string) {
+    super(`文章标题《${title}》已存在，请更换标题`);
+    this.name = "TitleConflictError";
+  }
+}
 
 export async function listPublishedNotes(after?: number, limit = 20) {
   let query = getDb().select({
@@ -69,6 +78,7 @@ export async function listAdminNotes(email?: string | null) {
     publishedAt: notes.publishedAt,
     createdAt: notes.createdAt,
     updatedAt: notes.updatedAt,
+    tagsJson: notes.tagsJson,
   }).from(notes);
   if (email) {
     query = query.where(eq(notes.authorEmail, email));
@@ -83,24 +93,77 @@ function cleanSlug(value: string | undefined, title: string) {
   return slug || `note-${Date.now()}`;
 }
 
+/**
+ * Upsert semantics: when a note with the same title (case-insensitive)
+ * already exists for this author, the old note is OVERWRITTEN in place —
+ * its id and slug are preserved so existing URLs keep working.
+ * Returns `overwritten: true` when an existing note was replaced.
+ *
+ * Race-safe: if two requests upload the same title concurrently (e.g.
+ * within one batch import), the loser's insert hits the unique index and
+ * falls back to updating the winner's note instead of failing.
+ */
 export async function createNote(input: NoteInput, email: string) {
+  const existing = await findNoteByTitle(input.title, email);
+  if (existing) {
+    const note = await updateNote(existing.id, input, email);
+    return { note, overwritten: true };
+  }
+
   const slug = `${cleanSlug(input.slug, input.title)}-${Date.now().toString(36)}`;
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
-  return getDb().insert(notes).values({
-    slug,
-    title: input.title,
-    summary: input.summary || "",
-    content: input.content,
-    category: input.category || "随想",
-    status: input.status || "draft",
-    featured: input.featured ?? false,
-    authorEmail: email,
-    publishedAt,
-    linksJson: input.linksJson ?? "[]",
-  }).returning().get();
+  try {
+    const note = await getDb().insert(notes).values({
+      slug,
+      title: input.title,
+      summary: input.summary || "",
+      content: input.content,
+      category: input.category || "随想",
+      status: input.status || "draft",
+      featured: input.featured ?? false,
+      authorEmail: email,
+      publishedAt,
+      linksJson: input.linksJson ?? "[]",
+      tagsJson: input.tagsJson ?? "[]",
+    }).returning().get();
+    return { note, overwritten: false };
+  } catch (error) {
+    // Unique-index race: the same title was inserted between our lookup
+    // and this insert. Resolve by overwriting the concurrent note.
+    const raced = await findNoteByTitle(input.title, email);
+    if (raced) {
+      const note = await updateNote(raced.id, input, email);
+      return { note, overwritten: true };
+    }
+    throw error;
+  }
+}
+
+async function findNoteByTitle(title: string, email: string) {
+  return getDb()
+    .select({ id: notes.id })
+    .from(notes)
+    .where(and(eq(notes.authorEmail, email), sql`LOWER(${notes.title}) = LOWER(${title})`))
+    .limit(1)
+    .get();
 }
 
 export async function updateNote(id: number, input: NoteInput, email: string) {
+  // Reject renaming a note onto another note's existing title — the
+  // "one title per note" invariant must hold for every note, not just
+  // uploaded ones. (Re-uploading the SAME title is handled by createNote.)
+  const conflict = await getDb()
+    .select({ id: notes.id })
+    .from(notes)
+    .where(and(
+      eq(notes.authorEmail, email),
+      sql`LOWER(${notes.title}) = LOWER(${input.title})`,
+      sql`${notes.id} != ${id}`,
+    ))
+    .limit(1)
+    .get();
+  if (conflict) throw new TitleConflictError(input.title);
+
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
   return getDb().update(notes).set({
     title: input.title,
@@ -111,6 +174,7 @@ export async function updateNote(id: number, input: NoteInput, email: string) {
     featured: input.featured ?? false,
     publishedAt,
     linksJson: input.linksJson ?? "[]",
+    tagsJson: input.tagsJson ?? "[]",
     updatedAt: sql`CURRENT_TIMESTAMP`,
   }).where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
     .returning()

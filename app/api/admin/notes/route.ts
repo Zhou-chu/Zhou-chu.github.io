@@ -1,5 +1,5 @@
 import { getAdminUser } from "../../../chatgpt-auth";
-import { createNote, deleteNote, listAdminNotes, updateNote } from "../../../../db/notes";
+import { createNote, deleteNote, listAdminNotes, TitleConflictError, updateNote } from "../../../../db/notes";
 import { checkBodySize, validateNoteInput } from "../validation";
 
 export const dynamic = "force-dynamic";
@@ -29,8 +29,11 @@ export async function POST(request: Request) {
   const validation = validateNoteInput(raw);
   if (!validation.valid) return Response.json({ error: validation.error }, { status: validation.status });
   try {
-    return Response.json({ note: await createNote(validation.data, email) }, { status: 201 });
+    // POST is upsert: same title ⇒ overwrite the old note in place.
+    const { note, overwritten } = await createNote(validation.data, email);
+    return Response.json({ note, overwritten }, { status: 201 });
   } catch (error) {
+    if (error instanceof TitleConflictError) return Response.json({ error: error.message }, { status: 409 });
     return Response.json({ error: error instanceof Error ? error.message : "保存失败" }, { status: 500 });
   }
 }
@@ -48,6 +51,7 @@ export async function PATCH(request: Request) {
     const note = await updateNote(raw.id, validation.data, email);
     return note ? Response.json({ note }) : Response.json({ error: "未找到笔记" }, { status: 404 });
   } catch (error) {
+    if (error instanceof TitleConflictError) return Response.json({ error: error.message }, { status: 409 });
     return Response.json({ error: error instanceof Error ? error.message : "更新失败" }, { status: 500 });
   }
 }

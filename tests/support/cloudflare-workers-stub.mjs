@@ -31,10 +31,12 @@ const SCHEMA_SQL = [
     published_at TEXT,
     source_path TEXT,
     links_json TEXT NOT NULL DEFAULT '[]',
+    tags_json TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS notes_slug_idx ON notes(slug)`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS notes_title_author_idx ON notes(title, author_email)`,
   `CREATE INDEX IF NOT EXISTS notes_status_published_idx ON notes(status, published_at)`,
   `CREATE INDEX IF NOT EXISTS notes_author_idx ON notes(author_email)`,
   `CREATE TABLE IF NOT EXISTS site_settings (

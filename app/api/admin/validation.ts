@@ -1,5 +1,29 @@
 import type { NoteInput } from "../../../db/notes";
 
+/**
+ * Normalize a tags value (string[] or comma/、-separated string) into a
+ * deduplicated JSON array string. Returns null when the input is invalid.
+ */
+export function normalizeTags(value: unknown): { ok: true; json: string } | { ok: false; error: string } {
+  const raw = Array.isArray(value) ? value : typeof value === "string" ? [value] : null;
+  if (!raw) return { ok: false, error: "标签格式无效" };
+
+  const tags = [...new Set(
+    raw
+      .map((item) => String(item).replace(/[\[\]'"]/g, ""))
+      .join(",")
+      .split(/[,，、\s]+/)
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+  )];
+
+  if (tags.length > 50) return { ok: false, error: "标签最多 50 个" };
+  for (const tag of tags) {
+    if (tag.length > 50) return { ok: false, error: `标签「${tag}」限 50 字符` };
+  }
+  return { ok: true, json: JSON.stringify(tags) };
+}
+
 /** Check request body size from content-length header. */
 export function checkBodySize(
   request: Request,
@@ -70,6 +94,14 @@ export function validateNoteInput(
     }
   }
 
+  // tags: optional; array or comma-separated string → JSON array string
+  let tagsJson: string | undefined;
+  if (input.tags !== undefined && input.tags !== null) {
+    const normalized = normalizeTags(input.tags);
+    if (!normalized.ok) return { valid: false, error: normalized.error, status: 400 };
+    tagsJson = normalized.json;
+  }
+
   return {
     valid: true,
     data: {
@@ -82,6 +114,7 @@ export function validateNoteInput(
       featured: typeof input.featured === "boolean" ? input.featured : undefined,
       publishedAt: typeof input.publishedAt === "string" ? input.publishedAt : null,
       linksJson: typeof input.links_json === "string" ? input.links_json : undefined,
+      tagsJson,
     },
   };
 }

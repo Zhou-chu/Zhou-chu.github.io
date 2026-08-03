@@ -14,10 +14,12 @@ export const notes = sqliteTable("notes", {
   publishedAt: text("published_at"),
   sourcePath: text("source_path"),
   linksJson: text("links_json").notNull().default("[]"),
+  tagsJson: text("tags_json").notNull().default("[]"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 }, (table) => [
   uniqueIndex("notes_slug_idx").on(table.slug),
+  uniqueIndex("notes_title_author_idx").on(table.title, table.authorEmail),
   index("notes_status_published_idx").on(table.status, table.publishedAt),
   index("notes_author_idx").on(table.authorEmail),
 ]);

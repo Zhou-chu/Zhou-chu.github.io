@@ -168,6 +168,213 @@ test("PATCH /api/admin/notes with valid body returns 200", async () => {
   assert.equal(patched.note.title, "Patched Title");
 });
 
+// ─── Title uniqueness & re-upload overwrite ─────────────────────────
+
+test("POST same title twice overwrites the old note in place", async () => {
+  const worker = await createWorker();
+
+  const first = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "同一篇文章", content: "第一版内容" },
+  });
+  assert.equal(first.status, 201);
+  const firstBody = await first.json();
+  assert.equal(firstBody.overwritten, false, "first upload must not overwrite");
+
+  const second = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "同一篇文章", content: "第二版内容" },
+  });
+  assert.equal(second.status, 201);
+  const secondBody = await second.json();
+  assert.equal(secondBody.overwritten, true, "re-upload must report overwritten");
+  assert.equal(secondBody.note.id, firstBody.note.id, "overwrite must keep the same note id");
+  assert.equal(secondBody.note.slug, firstBody.note.slug, "overwrite must keep the same slug");
+  assert.equal(secondBody.note.content, "第二版内容", "content must be replaced");
+
+  // Only one note with that title must exist
+  const list = await apiFetch(worker, "/api/admin/notes", { auth: true });
+  const listBody = await list.json();
+  const sameTitle = listBody.notes.filter((n) => n.title === "同一篇文章");
+  assert.equal(sameTitle.length, 1, "blog must never hold two notes with the same title");
+});
+
+test("POST same title with different casing overwrites too", async () => {
+  const worker = await createWorker();
+
+  const first = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "Hello World", content: "v1" },
+  });
+  assert.equal(first.status, 201);
+  const firstBody = await first.json();
+
+  const second = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "hello world", content: "v2" },
+  });
+  const secondBody = await second.json();
+  assert.equal(secondBody.overwritten, true);
+  assert.equal(secondBody.note.id, firstBody.note.id);
+});
+
+test("concurrent POSTs with the same title resolve to one note (no 500)", async () => {
+  const worker = await createWorker();
+
+  const responses = await Promise.all(
+    Array.from({ length: 5 }, (_, i) => apiFetch(worker, "/api/admin/notes", {
+      method: "POST",
+      auth: true,
+      contentType: "application/json",
+      body: { title: "并发同标题", content: `version ${i}` },
+    })),
+  );
+  for (const res of responses) {
+    assert.equal(res.status, 201, "no request may fail on the unique-index race");
+  }
+
+  const list = await apiFetch(worker, "/api/admin/notes", { auth: true });
+  const listBody = await list.json();
+  const sameTitle = listBody.notes.filter((n) => n.title === "并发同标题");
+  assert.equal(sameTitle.length, 1, "concurrent same-title uploads must collapse into one note");
+});
+
+test("PATCH renaming onto another note's title returns 409", async () => {
+  const worker = await createWorker();
+
+  for (const title of ["已存在标题", "待改名标题"]) {
+    const res = await apiFetch(worker, "/api/admin/notes", {
+      method: "POST",
+      auth: true,
+      contentType: "application/json",
+      body: { title, content: "content" },
+    });
+    assert.equal(res.status, 201);
+  }
+  const list = await apiFetch(worker, "/api/admin/notes", { auth: true });
+  const listBody = await list.json();
+  const renameTarget = listBody.notes.find((n) => n.title === "待改名标题");
+
+  const conflict = await apiFetch(worker, "/api/admin/notes", {
+    method: "PATCH",
+    auth: true,
+    contentType: "application/json",
+    body: { id: renameTarget.id, title: "已存在标题", content: "content" },
+  });
+  assert.equal(conflict.status, 409, "renaming onto an existing title must be rejected");
+
+  // Renaming to its OWN title (unrelated change) must still succeed
+  const ok = await apiFetch(worker, "/api/admin/notes", {
+    method: "PATCH",
+    auth: true,
+    contentType: "application/json",
+    body: { id: renameTarget.id, title: "待改名标题", content: "updated" },
+  });
+  assert.equal(ok.status, 200);
+});
+
+// ─── Tags ───────────────────────────────────────────────────────────
+
+test("POST with tags array stores normalized tagsJson", async () => {
+  const worker = await createWorker();
+  const res = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "带标签的文章", content: "正文", tags: ["读书", " 技术 ", "读书"] },
+  });
+  assert.equal(res.status, 201);
+  const body = await res.json();
+  assert.deepEqual(JSON.parse(body.note.tagsJson), ["读书", "技术"], "tags must be deduplicated and trimmed");
+});
+
+test("POST with comma-separated tags string is normalized", async () => {
+  const worker = await createWorker();
+  const res = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "逗号标签", content: "正文", tags: "随笔, 生活、旅行" },
+  });
+  assert.equal(res.status, 201);
+  const body = await res.json();
+  assert.deepEqual(JSON.parse(body.note.tagsJson), ["随笔", "生活", "旅行"]);
+});
+
+test("PATCH /api/admin/notes/tags applies tags to many notes at once", async () => {
+  const worker = await createWorker();
+
+  const ids = [];
+  for (let i = 0; i < 3; i++) {
+    const res = await apiFetch(worker, "/api/admin/notes", {
+      method: "POST",
+      auth: true,
+      contentType: "application/json",
+      body: { title: `批量文章 ${i}`, content: "正文" },
+    });
+    assert.equal(res.status, 201);
+    ids.push((await res.json()).note.id);
+  }
+
+  const tagRes = await apiFetch(worker, "/api/admin/notes/tags", {
+    method: "PATCH",
+    auth: true,
+    contentType: "application/json",
+    body: { ids, tags: ["批量标签"] },
+  });
+  assert.equal(tagRes.status, 200);
+  const tagBody = await tagRes.json();
+  assert.equal(tagBody.updated, 3);
+
+  const list = await apiFetch(worker, "/api/admin/notes", { auth: true });
+  const listBody = await list.json();
+  const tagged = listBody.notes.filter((n) => ids.includes(n.id));
+  assert.equal(tagged.length, 3);
+  for (const note of tagged) {
+    assert.deepEqual(JSON.parse(note.tagsJson), ["批量标签"]);
+  }
+});
+
+test("PATCH /api/admin/notes/tags rejects invalid input", async () => {
+  const worker = await createWorker();
+
+  const noIds = await apiFetch(worker, "/api/admin/notes/tags", {
+    method: "PATCH",
+    auth: true,
+    contentType: "application/json",
+    body: { tags: ["a"] },
+  });
+  assert.equal(noIds.status, 400);
+
+  const badTags = await apiFetch(worker, "/api/admin/notes/tags", {
+    method: "PATCH",
+    auth: true,
+    contentType: "application/json",
+    body: { ids: [1], tags: { not: "an array" } },
+  });
+  assert.equal(badTags.status, 400);
+});
+
+test("POST /api/admin/notes/tags without auth returns 403", async () => {
+  const worker = await createWorker();
+  const res = await apiFetch(worker, "/api/admin/notes/tags", {
+    method: "PATCH",
+    contentType: "application/json",
+    body: { ids: [1], tags: ["a"] },
+  });
+  // Matches the current auth behavior (403, same as the pre-existing
+  // "without auth" test for /api/admin/notes).
+  assert.equal(res.status, 403);
+});
+
 // ─── Admin DELETE /api/admin/notes ─────────────────────────────────
 
 test("DELETE /api/admin/notes?id=X returns 200", async () => {

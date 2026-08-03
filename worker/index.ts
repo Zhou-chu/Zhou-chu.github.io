@@ -7,6 +7,7 @@ import { getDb } from "../db/index";
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
+  ADMIN_PASSWORD?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {

@@ -1,0 +1,12 @@
+{
+  "name": "gm-2",
+  "compatibility_date": "2026-02-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "zc_blog",
+      "database_id": "d069004c-9193-4af4-bc17-cfb513af2417"
+    }
+  ]
+}

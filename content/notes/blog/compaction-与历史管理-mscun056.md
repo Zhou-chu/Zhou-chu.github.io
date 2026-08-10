@@ -6,6 +6,8 @@ summary: "树节点：05 Compaction与历史管理 父节点：05 Session创建�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "05-session创建与状态机-mscun046"
 ---
 
 > 树节点：05-Compaction与历史管理

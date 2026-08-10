@@ -6,6 +6,8 @@ summary: "树节点：03 核心实体Schema 父节点：03 Schema包组织与导
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "08-工具选择与权限-mscun0id"
 ---
 
 > 树节点：03-核心实体Schema

@@ -20,6 +20,7 @@
     "obsidian:check": "node scripts/obsidian-sync.mjs check",
     "obsidian:sync": "node scripts/obsidian-sync.mjs sync",
     "obsidian:upload": "node scripts/obsidian-sync.mjs upload",
+    "obsidian:pull": "node scripts/obsidian-sync.mjs pull",
     "obsidian:publish": "node scripts/obsidian-sync.mjs publish"
   },
   "dependencies": {

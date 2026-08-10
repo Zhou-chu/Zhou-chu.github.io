@@ -6,6 +6,8 @@ import process from "node:process";
 import {
   bootstrapVault,
   createSnapshot,
+  pullSnapshotToVault,
+  writeSyncState,
   writeManifest,
 } from "./lib/obsidian-sync.mjs";
 
@@ -82,6 +84,12 @@ function gitChangedFiles() {
 function assertPublishWorktree(changedFiles, allowedRoots) {
   const unrelated = changedFiles.filter((file) => !allowedRoots.some((root) => file === root || file.startsWith(`${root}/`) || file.startsWith(`${root}\\`)));
   if (unrelated.length) throw new Error(`检测到同步范围之外的未提交修改，已停止自动发布：\n- ${unrelated.join("\n- ")}`);
+}
+
+function assertRemoteCurrent() {
+  run("git", ["fetch", "origin", "main"]);
+  const behind = Number(run("git", ["rev-list", "--count", "HEAD..origin/main"], { capture: true }).trim() || "0");
+  if (behind > 0) throw new Error(`GitHub 上有 ${behind} 个后台更新尚未拉取；请先运行 npm run obsidian:pull`);
 }
 
 async function buildSnapshot(config, args, write) {
@@ -174,7 +182,26 @@ async function upload(config, args) {
   console.log(`内容上传完成：${uploaded} 篇笔记；未执行 Git 提交或推送。`);
 }
 
+async function pull(config, args) {
+  const changed = gitChangedFiles();
+  if (changed.length) throw new Error("博客项目中存在未提交修改，已停止拉取；请先提交或处理这些修改");
+  run("git", ["pull", "--ff-only", "origin", "main"]);
+  const result = await pullSnapshotToVault({
+    vaultPath: config.vaultPath,
+    snapshotDirectory: config.snapshotDirectory,
+    assetDirectory: config.assetDirectory,
+    defaultCategory: config.defaultCategory,
+    prune: args.prune,
+  });
+  console.log(`本地拉取完成：更新 ${result.applied} 篇、未变化 ${result.unchanged} 篇、保留本地修改 ${result.keptLocal} 篇。`);
+  if (result.pendingRemovals.length) console.log(`有 ${result.pendingRemovals.length} 篇已从 GitHub 移除；如需移入本地回收站，请附加 --prune。`);
+  if (result.conflicts.length) {
+    throw new Error(`发现 ${result.conflicts.length} 个双向修改冲突，未覆盖本地文件：\n- ${result.conflicts.join("\n- ")}`);
+  }
+}
+
 async function publish(config, args) {
+  assertRemoteCurrent();
   const result = await buildSnapshot(config, args, true);
   const allowedRoots = ["content", "public/obsidian-assets"];
   const changedBeforeCommit = gitChangedFiles();
@@ -187,6 +214,7 @@ async function publish(config, args) {
   run("git", ["push", "origin", "HEAD:main"]);
 
   const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
+  await writeSyncState(config.vaultPath, result.notes);
   if (assetChanged) {
     const wrangler = process.platform === "win32" ? "npx.cmd" : "npx";
     run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
@@ -202,6 +230,7 @@ async function main() {
   if (args.command === "check") return buildSnapshot(config, args, false);
   if (args.command === "sync") return sync(config, args);
   if (args.command === "upload") return upload(config, args);
+  if (args.command === "pull") return pull(config, args);
   if (args.command === "publish") return publish(config, args);
   throw new Error(`未知命令：${args.command}`);
 }

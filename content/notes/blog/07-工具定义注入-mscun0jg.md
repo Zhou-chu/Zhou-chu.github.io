@@ -6,6 +6,9 @@ summary: "树节点：07 工具定义注入 父节点：07 消息结构与角色
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "07-消息结构与角色-mscun0k4"
+  - "08-工具声明与注册-mscun0k2"
 ---
 
 > 树节点：07-工具定义注入

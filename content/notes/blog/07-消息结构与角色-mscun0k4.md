@@ -6,6 +6,10 @@ summary: "树节点：07 消息结构与角色 父节点：Opencode的工作原�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "07-系统提示组装-mscun0ij"
+  - "07-工具定义注入-mscun0jg"
+  - "07-缓存策略-mscun0im"
 ---
 
 > 树节点：07-消息结构与角色

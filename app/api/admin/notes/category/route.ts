@@ -2,6 +2,8 @@ import { and, eq, sql } from "drizzle-orm";
 import { getAdminUser } from "../../../../chatgpt-auth";
 import { getDb } from "../../../../../db";
 import { notes } from "../../../../../db/schema";
+import { getNotesForGitHub } from "../../../../../db/notes";
+import { syncManyNotesToGitHub } from "../../../../lib/github-content-sync";
 
 export const dynamic = "force-dynamic";
 
@@ -41,5 +43,6 @@ export async function PATCH(request: Request) {
     if (result.length > 0) updated++;
   }
 
-  return Response.json({ updated });
+  const githubSync = await syncManyNotesToGitHub((await getNotesForGitHub(ids)).filter((note) => note.status === "published"));
+  return Response.json({ updated, githubSync });
 }

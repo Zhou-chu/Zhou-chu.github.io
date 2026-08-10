@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
@@ -229,6 +229,7 @@ async function assetFilename(sourcePath) {
 }
 
 async function copyAsset(sourcePath, assetDirectory) {
+  const bytes = await readFile(sourcePath);
   const filename = await assetFilename(sourcePath);
   const destination = path.join(assetDirectory, filename);
   await mkdir(assetDirectory, { recursive: true });
@@ -238,6 +239,28 @@ async function copyAsset(sourcePath, assetDirectory) {
     await writeFile(destination, bytes);
   }
   return filename;
+}
+
+export function noteFingerprint(note) {
+  return createHash("sha256").update(JSON.stringify({
+    slug: note.slug,
+    title: note.title,
+    summary: note.summary,
+    content: note.content,
+    category: note.category,
+    publishedAt: note.publishedAt,
+    featured: Boolean(note.featured),
+    tags: [...(note.tags || [])].sort(),
+    outgoing: [...(note.outgoing || [])].sort(),
+  })).digest("hex");
+}
+
+export function decidePullAction(localFingerprint, remoteFingerprint, baselineFingerprint) {
+  if (!localFingerprint) return "apply_remote";
+  if (localFingerprint === remoteFingerprint) return "unchanged";
+  if (baselineFingerprint && localFingerprint === baselineFingerprint) return "apply_remote";
+  if (baselineFingerprint && remoteFingerprint === baselineFingerprint) return "keep_local";
+  return "conflict";
 }
 
 export async function transformAssets(note, assetDirectory, writeAssets) {
@@ -292,6 +315,10 @@ export function serializeSnapshotNote(note) {
   if (note.tags.length) {
     lines.push("tags:");
     for (const tag of note.tags) lines.push(`  - ${yamlString(tag)}`);
+  }
+  if ((note.outgoing || []).length) {
+    lines.push("outgoing:");
+    for (const slug of note.outgoing) lines.push(`  - ${yamlString(slug)}`);
   }
   lines.push("---", "", note.content.trim(), "");
   return lines.join("\n");
@@ -360,6 +387,112 @@ function safeBootstrapPath(relativePath, slug) {
 
 function rewriteWebAssetsForVault(content) {
   return content.replace(/!\[([^\]]*)\]\(\/obsidian-assets\/([^)]+)\)/g, (_match, _alt, filename) => `![[attachments/${filename}]]`);
+}
+
+async function readSyncState(vaultPath) {
+  try {
+    return JSON.parse(await readFile(path.join(vaultPath, ".obsidian", "blog-sync-state.json"), "utf8"));
+  } catch {
+    return { version: 1, notes: {} };
+  }
+}
+
+export async function writeSyncState(vaultPath, notes) {
+  const statePath = path.join(vaultPath, ".obsidian", "blog-sync-state.json");
+  await mkdir(path.dirname(statePath), { recursive: true });
+  const state = {
+    version: 1,
+    notes: Object.fromEntries(notes.map((note) => [note.relativePath, noteFingerprint(note)])),
+  };
+  await writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+}
+
+async function writeRemoteNoteToVault(note, vaultPath, assetSourceDirectory) {
+  const resolvedVault = path.resolve(vaultPath);
+  const destination = path.resolve(resolvedVault, note.relativePath);
+  if (!destination.startsWith(`${resolvedVault}${path.sep}`)) throw new Error(`Vault 路径越界：${note.relativePath}`);
+  const attachments = path.join(resolvedVault, "attachments");
+  await mkdir(attachments, { recursive: true });
+  for (const match of note.content.matchAll(/\/obsidian-assets\/([a-z0-9._-]+)/gi)) {
+    const filename = match[1];
+    await cp(path.join(assetSourceDirectory, filename), path.join(attachments, filename), { force: true });
+  }
+  const localNote = { ...note, content: rewriteWebAssetsForVault(note.content) };
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(destination, serializeSnapshotNote(localNote), "utf8");
+}
+
+export async function pullSnapshotToVault({ vaultPath, snapshotDirectory, assetDirectory, defaultCategory, prune = false }) {
+  const local = await createSnapshot({
+    vaultPath,
+    snapshotDirectory,
+    assetDirectory,
+    defaultCategory,
+    write: false,
+  });
+  const remote = await createSnapshot({
+    vaultPath: snapshotDirectory,
+    snapshotDirectory,
+    assetDirectory,
+    defaultCategory,
+    write: false,
+  });
+  const state = await readSyncState(vaultPath);
+  const nextState = { ...state.notes };
+  const localByPath = new Map(local.notes.map((note) => [note.relativePath, note]));
+  const remoteByPath = new Map(remote.notes.map((note) => [note.relativePath, note]));
+  const result = { applied: 0, unchanged: 0, keptLocal: 0, conflicts: [], removed: 0, pendingRemovals: [] };
+
+  for (const remoteNote of remote.notes) {
+    const localNote = localByPath.get(remoteNote.relativePath);
+    const localHash = localNote ? noteFingerprint(localNote) : null;
+    const remoteHash = noteFingerprint(remoteNote);
+    const action = decidePullAction(localHash, remoteHash, state.notes[remoteNote.relativePath]);
+    if (action === "apply_remote") {
+      await writeRemoteNoteToVault(remoteNote, vaultPath, assetDirectory);
+      nextState[remoteNote.relativePath] = remoteHash;
+      result.applied += 1;
+      continue;
+    }
+    if (action === "unchanged") {
+      nextState[remoteNote.relativePath] = remoteHash;
+      result.unchanged += 1;
+      continue;
+    }
+    if (action === "keep_local") {
+      result.keptLocal += 1;
+      continue;
+    }
+    result.conflicts.push(remoteNote.relativePath);
+  }
+
+  for (const localNote of local.notes) {
+    if (remoteByPath.has(localNote.relativePath) || !state.notes[localNote.relativePath]) continue;
+    const localHash = noteFingerprint(localNote);
+    if (localHash !== state.notes[localNote.relativePath]) {
+      result.conflicts.push(localNote.relativePath);
+      continue;
+    }
+    if (!prune) {
+      result.pendingRemovals.push(localNote.relativePath);
+      continue;
+    }
+    const source = path.resolve(vaultPath, localNote.relativePath);
+    const trashRoot = path.join(vaultPath, ".trash", "blog-sync");
+    const destination = path.resolve(trashRoot, localNote.relativePath);
+    if (!source.startsWith(`${path.resolve(vaultPath)}${path.sep}`) || !destination.startsWith(`${path.resolve(trashRoot)}${path.sep}`)) {
+      throw new Error(`拒绝移动越界路径：${localNote.relativePath}`);
+    }
+    await mkdir(path.dirname(destination), { recursive: true });
+    await rename(source, destination);
+    delete nextState[localNote.relativePath];
+    result.removed += 1;
+  }
+
+  const statePath = path.join(vaultPath, ".obsidian", "blog-sync-state.json");
+  await mkdir(path.dirname(statePath), { recursive: true });
+  await writeFile(statePath, `${JSON.stringify({ version: 1, notes: nextState }, null, 2)}\n`, "utf8");
+  return result;
 }
 
 export async function bootstrapVault({ vaultPath, liveNotes, snapshotIndex, assetSourceDirectory, force = false }) {

@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, lt, sql } from "drizzle-orm";
 import { getDb } from "./index";
 import { notes } from "./schema";
 
@@ -80,6 +80,8 @@ export async function listAdminNotes(email?: string | null) {
     createdAt: notes.createdAt,
     updatedAt: notes.updatedAt,
     tagsJson: notes.tagsJson,
+    linksJson: notes.linksJson,
+    sourcePath: notes.sourcePath,
   }).from(notes);
   if (email) {
     query = query.where(eq(notes.authorEmail, email));
@@ -154,6 +156,41 @@ async function findNoteByTitle(title: string, email: string) {
     .get();
 }
 
+const githubNoteSelection = {
+  slug: notes.slug,
+  title: notes.title,
+  summary: notes.summary,
+  content: notes.content,
+  category: notes.category,
+  status: notes.status,
+  featured: notes.featured,
+  publishedAt: notes.publishedAt,
+  sourcePath: notes.sourcePath,
+  linksJson: notes.linksJson,
+  tagsJson: notes.tagsJson,
+};
+
+export async function getNoteForGitHub(id: number) {
+  return getDb().select(githubNoteSelection).from(notes).where(eq(notes.id, id)).limit(1).get();
+}
+
+export async function getNotesForGitHub(ids: number[]) {
+  if (!ids.length) return [];
+  return getDb().select(githubNoteSelection).from(notes).where(inArray(notes.id, ids)).all();
+}
+
+export async function getAllNotesForGitHub() {
+  return getDb().select(githubNoteSelection).from(notes).all();
+}
+
+export async function ensureNoteSourcePath(id: number, sourcePath: string, email: string) {
+  return getDb().update(notes)
+    .set({ sourcePath })
+    .where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
+    .returning()
+    .get();
+}
+
 async function findNoteByTitleAnyAuthor(title: string) {
   return getDb()
     .select({ id: notes.id, authorEmail: notes.authorEmail })
@@ -211,7 +248,7 @@ export async function updateNote(id: number, input: NoteInput, email: string, cl
 export async function deleteNote(id: number, email: string) {
   return getDb().delete(notes)
     .where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
-    .returning({ id: notes.id })
+    .returning(githubNoteSelection)
     .get();
 }
 

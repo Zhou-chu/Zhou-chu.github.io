@@ -1,5 +1,6 @@
 import { getAdminUser } from "../../../../chatgpt-auth";
-import { batchUnpublishNotes } from "../../../../../db/notes";
+import { batchUnpublishNotes, getAllNotesForGitHub } from "../../../../../db/notes";
+import { syncManyNotesToGitHub } from "../../../../lib/github-content-sync";
 
 export const dynamic = "force-dynamic";
 
@@ -8,8 +9,10 @@ export async function POST() {
   if (!user) return Response.json({ error: "无权访问写作后台" }, { status: 403 });
 
   try {
+    const publishedNotes = (await getAllNotesForGitHub()).filter((note) => note.status === "published");
     const count = await batchUnpublishNotes();
-    return Response.json({ unpublished: count });
+    const githubSync = await syncManyNotesToGitHub(publishedNotes.map((note) => ({ ...note, status: "draft" as const })));
+    return Response.json({ unpublished: count, githubSync });
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "操作失败" },

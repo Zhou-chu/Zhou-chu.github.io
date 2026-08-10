@@ -6,6 +6,8 @@ summary: "Code Mode 详解 Code Mode 是 OpenCode 1.18.4 引入的 受限 JavaSc
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "session-runner-完整执行流程-mscuwjps"
 ---
 
 # Code Mode 详解

@@ -6,6 +6,8 @@ summary: "08 工具声明与注册 树节点：08 工具声明与注册 父节�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "08-工具选择与权限-mscun0id"
 ---
 
 # 08-工具声明与注册

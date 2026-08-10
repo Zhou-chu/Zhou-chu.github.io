@@ -6,6 +6,9 @@ summary: "observe 代码详解 这个函数是 packages/core/src/system context/
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "system-context部分的工作原理-mscuwjpc"
+  - "轮询式比较的调用链和相关代码-mscuwjpq"
 ---
 
 # observe 代码详解

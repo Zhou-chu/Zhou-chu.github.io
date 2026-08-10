@@ -6,6 +6,8 @@ summary: "树节点：02 Effect TS核心范式 父节点：02 TypeScript核心�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "02-fiber与scope-mscumzqz"
 ---
 
 > 树节点：02-Effect-TS核心范式

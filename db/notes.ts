@@ -13,6 +13,7 @@ export type NoteInput = {
   publishedAt?: string | null;
   linksJson?: string;
   tagsJson?: string;
+  sourcePath?: string;
 };
 
 /** Thrown when a PATCH would rename a note to another note's existing title. */
@@ -104,9 +105,13 @@ function cleanSlug(value: string | undefined, title: string) {
  * falls back to updating the winner's note instead of failing.
  */
 export async function createNote(input: NoteInput, email: string) {
-  const existing = await findNoteByTitle(input.title, email);
+  const existingBySource = input.sourcePath ? await findNoteBySourcePath(input.sourcePath) : null;
+  const existingByOwner = await findNoteByTitle(input.title, email);
+  const existingByTitle = input.sourcePath && !existingByOwner ? await findNoteByTitleAnyAuthor(input.title) : null;
+  const existing = existingBySource || existingByOwner || existingByTitle;
   if (existing) {
-    const note = await updateNote(existing.id, input, email);
+    const claimForObsidian = Boolean(input.sourcePath && existing.authorEmail !== email);
+    const note = await updateNote(existing.id, input, email, claimForObsidian);
     return { note, overwritten: true };
   }
 
@@ -125,6 +130,7 @@ export async function createNote(input: NoteInput, email: string) {
       publishedAt,
       linksJson: input.linksJson ?? "[]",
       tagsJson: input.tagsJson ?? "[]",
+      sourcePath: input.sourcePath,
     }).returning().get();
     return { note, overwritten: false };
   } catch (error) {
@@ -141,14 +147,33 @@ export async function createNote(input: NoteInput, email: string) {
 
 async function findNoteByTitle(title: string, email: string) {
   return getDb()
-    .select({ id: notes.id })
+    .select({ id: notes.id, authorEmail: notes.authorEmail })
     .from(notes)
     .where(and(eq(notes.authorEmail, email), sql`LOWER(${notes.title}) = LOWER(${title})`))
     .limit(1)
     .get();
 }
 
-export async function updateNote(id: number, input: NoteInput, email: string) {
+async function findNoteByTitleAnyAuthor(title: string) {
+  return getDb()
+    .select({ id: notes.id, authorEmail: notes.authorEmail })
+    .from(notes)
+    .where(sql`LOWER(${notes.title}) = LOWER(${title})`)
+    .orderBy(desc(notes.updatedAt), desc(notes.id))
+    .limit(1)
+    .get();
+}
+
+async function findNoteBySourcePath(sourcePath: string) {
+  return getDb()
+    .select({ id: notes.id, authorEmail: notes.authorEmail })
+    .from(notes)
+    .where(eq(notes.sourcePath, sourcePath))
+    .limit(1)
+    .get();
+}
+
+export async function updateNote(id: number, input: NoteInput, email: string, claimForObsidian = false) {
   // Reject renaming a note onto another note's existing title — the
   // "one title per note" invariant must hold for every note, not just
   // uploaded ones. (Re-uploading the SAME title is handled by createNote.)
@@ -175,8 +200,10 @@ export async function updateNote(id: number, input: NoteInput, email: string) {
     publishedAt,
     linksJson: input.linksJson ?? "[]",
     tagsJson: input.tagsJson ?? "[]",
+    sourcePath: input.sourcePath,
+    authorEmail: claimForObsidian ? email : undefined,
     updatedAt: sql`CURRENT_TIMESTAMP`,
-  }).where(and(eq(notes.id, id), eq(notes.authorEmail, email)))
+  }).where(claimForObsidian ? eq(notes.id, id) : and(eq(notes.id, id), eq(notes.authorEmail, email)))
     .returning()
     .get();
 }

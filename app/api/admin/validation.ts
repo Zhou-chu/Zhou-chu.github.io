@@ -102,6 +102,13 @@ export function validateNoteInput(
     tagsJson = normalized.json;
   }
 
+  const sourcePathValue = input.sourcePath ?? input.source_path;
+  if (sourcePathValue !== undefined && sourcePathValue !== null) {
+    if (typeof sourcePathValue !== "string" || sourcePathValue.length > 1000 || sourcePathValue.includes("..") || /^[\\/]|^[a-z]:/i.test(sourcePathValue)) {
+      return { valid: false, error: "Obsidian 来源路径无效", status: 400 };
+    }
+  }
+
   return {
     valid: true,
     data: {
@@ -115,6 +122,7 @@ export function validateNoteInput(
       publishedAt: typeof input.publishedAt === "string" ? input.publishedAt : null,
       linksJson: typeof input.links_json === "string" ? input.links_json : undefined,
       tagsJson,
+      sourcePath: typeof sourcePathValue === "string" ? sourcePathValue.replaceAll("\\", "/") : undefined,
     },
   };
 }

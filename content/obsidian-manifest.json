@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "source": "Obsidian",
+  "noteCount": 29,
+  "assetCount": 0,
+  "notes": [
+    {
+      "sourcePath": "blog/01-项目架构与包结构-mscuwigy.md",
+      "slug": "01-项目架构与包结构-mscuwigy",
+      "title": "01-项目架构与包结构",
+      "publishedAt": "2026-08-03",
+      "hash": "7197d3221b7df33d5a910c04618b0de62613790b61ff0a6b81762ca4dd28ce13"
+    },
+    {
+      "sourcePath": "blog/02-fiber与scope-mscumzqz.md",
+      "slug": "02-fiber与scope-mscumzqz",
+      "title": "02-Fiber与Scope",
+      "publishedAt": "2026-08-03",
+      "hash": "ee333ff5993eb05c59fbc5b1002618a161fcf0dce7c715a1143bf203452a736d"
+    },
+    {
+      "sourcePath": "blog/03-核心实体schema-mscun018.md",
+      "slug": "03-核心实体schema-mscun018",
+      "title": "03-核心实体Schema",
+      "publishedAt": "2026-08-03",
+      "hash": "b81610bf698537c158d5f457c965e75e83635ed955c728673dd9ef4ab0d0cc15"
+    },
+    {
+      "sourcePath": "blog/05-session创建与状态机-mscun046.md",
+      "slug": "05-session创建与状态机-mscun046",
+      "title": "05-Session创建与状态机",
+      "publishedAt": "2026-08-03",
+      "hash": "3f36b707409aba8ccadf7e60e2dbe833c9078f89886301d98440ca8d108d3dcf"
+    },
+    {
+      "sourcePath": "blog/07-工具定义注入-mscun0jg.md",
+      "slug": "07-工具定义注入-mscun0jg",
+      "title": "07-工具定义注入",
+      "publishedAt": "2026-08-03",
+      "hash": "29b03c5f0f1f8ebf0d50c64cdc3033024bd787a1b882bf330ae6b696c949a4ab"
+    },
+    {
+      "sourcePath": "blog/07-缓存策略-mscun0im.md",
+      "slug": "07-缓存策略-mscun0im",
+      "title": "07-缓存策略",
+      "publishedAt": "2026-08-03",
+      "hash": "5596ea899d3a3295ac4e6bf5cda00444eab3d1ba1cd8bc58e70edfd6a597f1d5"
+    },
+    {
+      "sourcePath": "blog/07-系统提示组装-mscun0ij.md",
+      "slug": "07-系统提示组装-mscun0ij",
+      "title": "07-系统提示组装",
+      "publishedAt": "2026-08-03",
+      "hash": "415a733c1d5fad7772ae567c0d32fbbaef29b8b1cb9c998a52c5b5dfd28c1ae2"
+    },
+    {
+      "sourcePath": "blog/07-消息结构与角色-mscun0k4.md",
+      "slug": "07-消息结构与角色-mscun0k4",
+      "title": "07-消息结构与角色",
+      "publishedAt": "2026-08-03",
+      "hash": "9c746ff8204f0f82482782c8265f82ffbaeb7bceed4e1925a186e10c20dd8f23"
+    },
+    {
+      "sourcePath": "blog/08-工具声明与注册-mscun0k2.md",
+      "slug": "08-工具声明与注册-mscun0k2",
+      "title": "08-工具声明与注册",
+      "publishedAt": "2026-08-03",
+      "hash": "12e101b5ed2c46e9b3fa92c78cecd28d7a75eb119d29d48f4ce7e71cb21feb53"
+    },
+    {
+      "sourcePath": "blog/08-工具选择与权限-mscun0id.md",
+      "slug": "08-工具选择与权限-mscun0id",
+      "title": "08-工具选择与权限",
+      "publishedAt": "2026-08-03",
+      "hash": "2d9986fb6fcff9c69eae8636c555a01e9fb26781e174b19a034b9affc0ed49a3"
+    },
+    {
+      "sourcePath": "blog/10-快照恢复与回滚-mscun0jq.md",
+      "slug": "10-快照恢复与回滚-mscun0jq",
+      "title": "10-快照恢复与回滚",
+      "publishedAt": "2026-08-03",
+      "hash": "6acb23246cda4cf2ebbc3956f660784050e67b92d0c7c596938db8bcb3d2e12c"
+    },
+    {
+      "sourcePath": "blog/插件与-skill-系统-mscuwjpf.md",
+      "slug": "插件与-skill-系统-mscuwjpf",
+      "title": "插件与 Skill 系统",
+      "publishedAt": "2026-08-03",
+      "hash": "a018b88d0c544d8d717c068eb9f7bcfc7f1d88d5b56cc8f047e78b056e02b996"
+    },
+    {
+      "sourcePath": "blog/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
+      "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
+      "title": "均匀传输线：A-1：均匀传输线及其方程",
+      "publishedAt": "2026-07-24",
+      "hash": "336a4ebf85e5e302f4a4e95ae677edc0c3896dd9dc59a527e02b4189777930dc"
+    },
+    {
+      "sourcePath": "blog/均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv.md",
+      "slug": "均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv",
+      "title": "均匀传输线：A-2：均匀传输线的正弦稳态解",
+      "publishedAt": "2026-07-24",
+      "hash": "b37990790a6bca7b32dac86081fa1cbdc484628de51c46dccdac61ebefad07c6"
+    },
+    {
+      "sourcePath": "blog/均匀传输线-a-3-均匀传输线的行波-mryrh50a.md",
+      "slug": "均匀传输线-a-3-均匀传输线的行波-mryrh50a",
+      "title": "均匀传输线：A-3：均匀传输线的行波",
+      "publishedAt": "2026-07-24",
+      "hash": "8c7cc9a5e36022695614752d51181b2e1ab689ae636641819d69eac98d506e20"
+    },
+    {
+      "sourcePath": "blog/事件系统与持久化-mscuwjpd.md",
+      "slug": "事件系统与持久化-mscuwjpd",
+      "title": "事件系统与持久化",
+      "publishedAt": "2026-08-03",
+      "hash": "3d9d82ca849c7616ef42dfe1bd471a12f2c6cb91d868fb89f00b24aa0185e45c"
+    },
+    {
+      "sourcePath": "blog/admit-函数详解-mscuwj4r.md",
+      "slug": "admit-函数详解-mscuwj4r",
+      "title": "admit()函数详解",
+      "publishedAt": "2026-08-03",
+      "hash": "c0507bd20df6ecc049a8ae53800f49cfa80b9fcf7b3118383688031527eb2cf4"
+    },
+    {
+      "sourcePath": "blog/code-mode-详解-mscuwjps.md",
+      "slug": "code-mode-详解-mscuwjps",
+      "title": "Code Mode 详解",
+      "publishedAt": "2026-08-03",
+      "hash": "4317eae893202726514a85b691cbc7f0ca45d766d72d09f4043e47f3d0e1d7fc"
+    },
+    {
+      "sourcePath": "blog/compaction-与历史管理-mscun056.md",
+      "slug": "compaction-与历史管理-mscun056",
+      "title": "Compaction 与历史管理",
+      "publishedAt": "2026-08-03",
+      "hash": "00e14e79a58f530f2db285547f47ed6fe6e3801446db3700bc5ba500b3f24bc4"
+    },
+    {
+      "sourcePath": "blog/effect-ts-核心范式-以-opencode-源码为例-mscumzrn.md",
+      "slug": "effect-ts-核心范式-以-opencode-源码为例-mscumzrn",
+      "title": "Effect-TS 核心范式 —— 以 Opencode 源码为例",
+      "publishedAt": "2026-08-03",
+      "hash": "27e2acf1742db25d078af54a775cf4d19ecbf4c95dcead0f51349490d814a48f"
+    },
+    {
+      "sourcePath": "blog/mid-conversation-system-message-对话中期系统更新-mscun05b.md",
+      "slug": "mid-conversation-system-message-对话中期系统更新-mscun05b",
+      "title": "Mid-Conversation System Message — 对话中期系统更新",
+      "publishedAt": "2026-08-03",
+      "hash": "df8457446e16aad1efd324629b363e25369546f2d54718a91827ae32ac8ee303"
+    },
+    {
+      "sourcePath": "blog/observe-代码详解-mscuwj4p.md",
+      "slug": "observe-代码详解-mscuwj4p",
+      "title": "observe 代码详解",
+      "publishedAt": "2026-08-03",
+      "hash": "a7a632fbfcc49a07e1fbe899186a310170debf8a3dec7516f6b2d03bdcbea094"
+    },
+    {
+      "sourcePath": "blog/provider-turn-完整流程-mscuwjpu.md",
+      "slug": "provider-turn-完整流程-mscuwjpu",
+      "title": "Provider Turn 完整流程",
+      "publishedAt": "2026-08-03",
+      "hash": "b165c274df3b8e4fb748fcf4d53650375972be4f920ea011d3de0702bfb398e7"
+    },
+    {
+      "sourcePath": "blog/run-coordinator-ts详解-mscuwjpg.md",
+      "slug": "run-coordinator-ts详解-mscuwjpg",
+      "title": "run-coordinator.ts详解",
+      "publishedAt": "2026-08-03",
+      "hash": "86b3f41a611fedfcf9e6b52d4a75c73adab1a16f5c7bb36e74f0d430cf1d9c5d"
+    },
+    {
+      "sourcePath": "blog/session-runner-完整执行流程-mscuwjps.md",
+      "slug": "session-runner-完整执行流程-mscuwjps",
+      "title": "Session Runner 完整执行流程",
+      "publishedAt": "2026-08-03",
+      "hash": "c8d0e8c8eddab79d5f76a3ca3e45636f3bd16cc58e8036dd9c5df5c0e4c36387"
+    },
+    {
+      "sourcePath": "blog/system-context-algebra-系统上下文的代数模型-mscun0ij.md",
+      "slug": "system-context-algebra-系统上下文的代数模型-mscun0ij",
+      "title": "System Context Algebra — 系统上下文的代数模型",
+      "publishedAt": "2026-08-03",
+      "hash": "47a169c3e1f9545957432f81a20190b9fb12c02e53699265a0af13e1612f8631"
+    },
+    {
+      "sourcePath": "projects/Opencode/notes/05-effect-infra.md",
+      "slug": "05-effect-ts-基础设施-effect-ts-infrastructure-mscuwj50",
+      "title": "05 — Effect-TS 基础设施 (Effect-TS Infrastructure)",
+      "publishedAt": "2026-08-03",
+      "hash": "68b4daefe004d52e56e328367fbdfca342b849fc9592f0dd2c8bd65e97213a0f"
+    },
+    {
+      "sourcePath": "projects/Opencode/notes/轮询式比较的调用链和相关代码.md",
+      "slug": "轮询式比较的调用链和相关代码-mscuwjpq",
+      "title": "轮询式比较的调用链和相关代码",
+      "publishedAt": "2026-08-03",
+      "hash": "b366bc693ab892ce4679a6e89aaa284e3dcf7e3b0941d9fe2144ef9f6e299a1c"
+    },
+    {
+      "sourcePath": "projects/Opencode/notes/System Context部分的工作原理.md",
+      "slug": "system-context部分的工作原理-mscuwjpc",
+      "title": "System Context部分的工作原理",
+      "publishedAt": "2026-08-03",
+      "hash": "f41fb87b1cd1d96c8701380598ce4646e7ba0a246b14f9cdf696b2ef6008d3ac"
+    }
+  ]
+}

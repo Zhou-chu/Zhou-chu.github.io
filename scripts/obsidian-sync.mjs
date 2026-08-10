@@ -1,0 +1,212 @@
+import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import {
+  bootstrapVault,
+  createSnapshot,
+  writeManifest,
+} from "./lib/obsidian-sync.mjs";
+
+const projectRoot = path.resolve(import.meta.dirname, "..");
+
+function parseArgs(argv) {
+  const args = { command: argv[0] || "check", force: false, prune: false, yes: false };
+  for (let index = 1; index < argv.length; index += 1) {
+    const value = argv[index];
+    if (value === "--force") args.force = true;
+    if (value === "--prune") args.prune = true;
+    if (value === "--yes" || value === "-y") args.yes = true;
+    if (value === "--vault") args.vaultPath = argv[++index];
+    if (value === "--site") args.siteUrl = argv[++index];
+  }
+  return args;
+}
+
+function run(command, args, options = {}) {
+  return execFileSync(command, args, {
+    cwd: projectRoot,
+    encoding: "utf8",
+    stdio: options.capture ? "pipe" : "inherit",
+    ...options,
+  });
+}
+
+async function loadConfig(args) {
+  const raw = await readFile(path.join(projectRoot, "obsidian-sync.config.json"), "utf8");
+  const config = JSON.parse(raw);
+  config.vaultPath = path.resolve(args.vaultPath || process.env.OBSIDIAN_VAULT_PATH || config.vaultPath);
+  config.siteUrl = args.siteUrl || config.siteUrl;
+  config.snapshotDirectory = path.resolve(projectRoot, config.snapshotDirectory);
+  config.assetDirectory = path.resolve(projectRoot, config.assetDirectory);
+  return config;
+}
+
+async function fetchAllLiveNotes(siteUrl) {
+  const notes = [];
+  let cursor = null;
+  do {
+    const url = new URL("/api/notes", siteUrl);
+    url.searchParams.set("limit", "100");
+    if (cursor) url.searchParams.set("after", String(cursor));
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`读取线上博客失败：HTTP ${response.status}`);
+    const data = await response.json();
+    notes.push(...(data.notes || []));
+    cursor = data.nextCursor || null;
+  } while (cursor);
+  return notes;
+}
+
+async function bootstrap(config, args) {
+  const liveNotes = await fetchAllLiveNotes(config.siteUrl);
+  const snapshotIndex = JSON.parse(await readFile(path.join(projectRoot, "app/lib/obsidian-index.json"), "utf8"));
+  const result = await bootstrapVault({
+    vaultPath: config.vaultPath,
+    liveNotes,
+    snapshotIndex,
+    assetSourceDirectory: config.assetDirectory,
+    force: args.force,
+  });
+  console.log(`首次同步完成：${result.noteCount} 篇线上笔记、${result.assetCount} 个引用附件已写入 ${config.vaultPath}`);
+}
+
+function gitChangedFiles() {
+  return run("git", ["status", "--porcelain=v1"], { capture: true })
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => line.slice(3).replace(/^"|"$/g, ""));
+}
+
+function assertPublishWorktree(changedFiles, allowedRoots) {
+  const unrelated = changedFiles.filter((file) => !allowedRoots.some((root) => file === root || file.startsWith(`${root}/`) || file.startsWith(`${root}\\`)));
+  if (unrelated.length) throw new Error(`检测到同步范围之外的未提交修改，已停止自动发布：\n- ${unrelated.join("\n- ")}`);
+}
+
+async function buildSnapshot(config, args, write) {
+  if (!existsSync(config.vaultPath)) throw new Error(`找不到 Obsidian Vault：${config.vaultPath}`);
+  const result = await createSnapshot({
+    vaultPath: config.vaultPath,
+    snapshotDirectory: config.snapshotDirectory,
+    assetDirectory: config.assetDirectory,
+    defaultCategory: config.defaultCategory,
+    write,
+  });
+  if (write) {
+    await writeManifest(path.join(projectRoot, "content/obsidian-manifest.json"), result.manifest);
+  }
+  console.log(`同步预览：${result.notes.length} 篇公开笔记，${result.assets.length} 个本地附件${args.prune ? "；缺失文章将下架" : "；不会删除或下架线上文章"}`);
+  return result;
+}
+
+async function adminCookie(siteUrl) {
+  const password = process.env.BLOG_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  if (!password) return "";
+  const response = await fetch(new URL("/api/admin/login", siteUrl), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  if (!response.ok) throw new Error(`博客管理员登录失败：HTTP ${response.status}`);
+  const setCookie = response.headers.get("set-cookie") || "";
+  const cookie = setCookie.split(";", 1)[0];
+  if (!cookie) throw new Error("博客登录成功但没有返回会话 Cookie");
+  return cookie;
+}
+
+async function uploadNotes(siteUrl, notes, prune) {
+  const cookie = await adminCookie(siteUrl);
+  let uploaded = 0;
+  for (const note of notes) {
+    const response = await fetch(new URL("/api/admin/notes", siteUrl), {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body: JSON.stringify({
+        title: note.title,
+        slug: note.slug,
+        summary: note.summary,
+        content: note.content,
+        category: note.category,
+        status: "published",
+        featured: note.featured,
+        publishedAt: note.publishedAt,
+        tags: note.tags,
+        links_json: JSON.stringify(note.outgoing),
+        sourcePath: note.relativePath,
+      }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      const hint = response.status === 403 && !cookie ? "；请设置 BLOG_ADMIN_PASSWORD 环境变量" : "";
+      throw new Error(`上传《${note.title}》失败：${data.error || `HTTP ${response.status}`}${hint}`);
+    }
+    uploaded += 1;
+  }
+  if (prune) {
+    const response = await fetch(new URL("/api/admin/notes/prune", siteUrl), {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body: JSON.stringify({ activeSourcePaths: notes.map((note) => note.relativePath) }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(`下架已移除文章失败：${data.error || `HTTP ${response.status}`}`);
+    }
+  }
+  return uploaded;
+}
+
+async function sync(config, args) {
+  await buildSnapshot(config, args, true);
+  console.log("Git 内容快照已更新；尚未推送 GitHub，也未修改线上博客。");
+}
+
+async function upload(config, args) {
+  const result = await buildSnapshot(config, args, false);
+  const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
+  console.log(`内容上传完成：${uploaded} 篇笔记；未执行 Git 提交或推送。`);
+}
+
+async function publish(config, args) {
+  const result = await buildSnapshot(config, args, true);
+  const allowedRoots = ["content", "public/obsidian-assets"];
+  const changedBeforeCommit = gitChangedFiles();
+  assertPublishWorktree(changedBeforeCommit, allowedRoots);
+  const assetChanged = changedBeforeCommit.some((file) => file.replaceAll("\\", "/").startsWith("public/obsidian-assets/"));
+
+  run("git", ["add", "--", "content", "public/obsidian-assets"]);
+  const staged = run("git", ["diff", "--cached", "--name-only"], { capture: true }).trim();
+  if (staged) run("git", ["commit", "-m", `content: sync ${result.notes.length} Obsidian notes`]);
+  run("git", ["push", "origin", "HEAD:main"]);
+
+  const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
+  if (assetChanged) {
+    const wrangler = process.platform === "win32" ? "npx.cmd" : "npx";
+    run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
+    run(wrangler, ["wrangler", "deploy"]);
+  }
+  console.log(`发布完成：GitHub 与线上博客已同步 ${uploaded} 篇笔记。`);
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const config = await loadConfig(args);
+  if (args.command === "bootstrap") return bootstrap(config, args);
+  if (args.command === "check") return buildSnapshot(config, args, false);
+  if (args.command === "sync") return sync(config, args);
+  if (args.command === "upload") return upload(config, args);
+  if (args.command === "publish") return publish(config, args);
+  throw new Error(`未知命令：${args.command}`);
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

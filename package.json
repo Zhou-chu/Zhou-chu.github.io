@@ -15,7 +15,12 @@
     "doctor": "npx react-doctor@latest",
     "test:unit": "node scripts/run-unit-tests.mjs",
     "test:e2e": "playwright test --project=chrome",
-    "test:all": "npm run build && npm run test:unit && npm run test:e2e && npx react-doctor@latest --json"
+    "test:all": "npm run build && npm run test:unit && npm run test:e2e && npx react-doctor@latest --json",
+    "obsidian:bootstrap": "node scripts/obsidian-sync.mjs bootstrap",
+    "obsidian:check": "node scripts/obsidian-sync.mjs check",
+    "obsidian:sync": "node scripts/obsidian-sync.mjs sync",
+    "obsidian:upload": "node scripts/obsidian-sync.mjs upload",
+    "obsidian:publish": "node scripts/obsidian-sync.mjs publish"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

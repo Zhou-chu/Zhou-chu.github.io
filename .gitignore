@@ -56,4 +56,5 @@ next-env.d.ts
 /.codex/
 /.omo/
 /.playwright-mcp/
+/.playwright-cli/
 /skills/

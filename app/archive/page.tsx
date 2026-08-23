@@ -26,10 +26,10 @@ export const dynamic = "force-dynamic";
 // ─── Metadata ──────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "归档 — 浮光笔记",
+  title: "归档 — 木漏",
   description: "按年份归档的公开笔记，支持搜索与主题筛选。",
   alternates: {
-    canonical: "https://fuguang-notes.zhouc6301.chatgpt.site/archive",
+    canonical: "https://gm-2.zhou-chu.workers.dev/archive",
   },
 };
 

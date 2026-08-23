@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 // Redesigned from hardcoded green-era values to declared Timber Field tokens.
 
 export const metadata: Metadata = {
-  title: "页面未找到 — 浮光笔记",
+  title: "页面未找到 — 木漏",
 };
 
 export default function NotFound() {

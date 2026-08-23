@@ -11,10 +11,10 @@ import {
 // ─── Metadata ──────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "浮光笔记",
-  description: "在喧嚣里，打捞思想的微光。收录关于技术、阅读、写作与生活的长期笔记。",
+  title: "木漏",
+  description: "刨花落尽，木纹方显。收录关于技术、阅读、写作与生活的长期笔记。",
   alternates: {
-    canonical: "https://fuguang-notes.zhouc6301.chatgpt.site",
+    canonical: "https://gm-2.zhou-chu.workers.dev",
   },
 };
 
@@ -87,7 +87,7 @@ export default async function HomePage() {
             <strong>林间书柜</strong>
             <span>技术 · 阅读 · 写作 · 生活</span>
             <small>OPEN THE CABINET<br />AND FOLLOW A THOUGHT</small>
-            <div className="home-hero__seal" aria-hidden="true">浮<br />光</div>
+            <div className="home-hero__seal" aria-hidden="true">木<br />漏</div>
           </div>
           <p className="home-hero__credit">一隅木色，留给缓慢生长的念头。</p>
         </aside>

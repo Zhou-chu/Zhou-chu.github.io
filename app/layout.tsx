@@ -29,15 +29,15 @@ async function resolveShellCopy() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "fuguang-notes.zhouc6301.chatgpt.site";
+  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host") || "gm-2.zhou-chu.workers.dev";
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   const imageUrl = `${protocol}://${host}/og.png`;
   return {
-    title: "浮光笔记｜周川的技术、阅读与生活",
-    description: "在喧嚣里，打捞思想的微光。收录关于技术、阅读、写作与生活的长期笔记。",
+    title: "木漏｜周川的技术、阅读与生活",
+    description: "刨花落尽，木纹方显。收录关于技术、阅读、写作与生活的长期笔记。",
     icons: { icon: { url: '/favicon.svg', type: 'image/svg+xml' } },
-    openGraph: { title: "浮光笔记", description: "在喧嚣里，打捞思想的微光。", type: "website", locale: "zh_CN", images: [{ url: imageUrl, width: 1536, height: 1024, alt: "浮光笔记" }] },
-    twitter: { card: "summary_large_image", title: "浮光笔记", description: "在喧嚣里，打捞思想的微光。", images: [imageUrl] },
+    openGraph: { title: "木漏", description: "刨花落尽，木纹方显。", type: "website", locale: "zh_CN", images: [{ url: imageUrl, width: 1536, height: 1024, alt: "木漏" }] },
+    twitter: { card: "summary_large_image", title: "木漏", description: "刨花落尽，木纹方显。", images: [imageUrl] },
   };
 }
 

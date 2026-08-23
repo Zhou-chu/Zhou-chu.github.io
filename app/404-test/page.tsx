@@ -9,8 +9,8 @@ import Link from "next/link";
  */
 
 export const metadata: Metadata = {
-  title: "页面未找到 — 浮光笔记",
-  description: "您访问的页面不存在或已被移除。返回浮光笔记首页，浏览技术、阅读与生活相关的内容。",
+  title: "页面未找到 — 木漏",
+  description: "您访问的页面不存在或已被移除。返回木漏首页，浏览技术、阅读与生活相关的内容。",
 };
 
 export default function NotFoundTestPage() {

@@ -80,7 +80,7 @@ export async function generateMetadata({
       title: note.title,
       description: note.summary,
       alternates: {
-        canonical: `https://fuguang-notes.zhouc6301.chatgpt.site/notes/${encodeURIComponent(slug)}`,
+        canonical: `https://gm-2.zhou-chu.workers.dev/notes/${encodeURIComponent(slug)}`,
       },
     };
   } catch {

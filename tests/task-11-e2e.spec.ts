@@ -21,7 +21,7 @@ test.describe("Route metadata", () => {
     const title = await page.title();
     expect(title).toBeTruthy();
     // Should not be the generic layout fallback alone
-    expect(title).toContain("浮光笔记");
+    expect(title).toContain("木漏");
   });
 
   test("/ has canonical link", async ({ page }) => {
@@ -56,7 +56,7 @@ test.describe("Sitemap", () => {
     const response = await page.goto("/sitemap.xml");
     expect(response?.status()).toBe(200);
     const text = await response!.text();
-    expect(text).toContain("<loc>https://fuguang-notes.zhouc6301.chatgpt.site/archive</loc>");
+    expect(text).toContain("<loc>https://gm-2.zhou-chu.workers.dev/archive</loc>");
   });
 
   test("sitemap.xml excludes /c", async ({ page }) => {
@@ -76,7 +76,7 @@ test.describe("Sitemap", () => {
   test("sitemap.xml includes home /", async ({ page }) => {
     const response = await page.goto("/sitemap.xml");
     const text = await response!.text();
-    expect(text).toContain("<loc>https://fuguang-notes.zhouc6301.chatgpt.site/</loc>");
+    expect(text).toContain("<loc>https://gm-2.zhou-chu.workers.dev/</loc>");
   });
 });
 

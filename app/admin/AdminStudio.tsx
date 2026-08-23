@@ -348,7 +348,7 @@ export function AdminStudio({ user, initialNotes }: { user: { displayName: strin
     <ErrorBoundary>
     <main className="admin-shell">
       <header className="admin-header">
-        <div><Link href="/">浮光笔记</Link><span>/ 写作后台</span></div>
+        <div><Link href="/">木漏</Link><span>/ 写作后台</span></div>
         <nav><Link href="/" target="_blank">查看网站</Link><form action="/api/admin/logout" method="POST"><button type="submit" className="admin-logout-btn">退出</button></form></nav>
       </header>
       <section className="admin-intro">

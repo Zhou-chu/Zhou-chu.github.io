@@ -1,6 +1,6 @@
 export const defaultSiteCopy = {
-  siteName: "浮光笔记",
-  siteCode: "FUGUANG NOTES",
+  siteName: "木漏",
+  siteCode: "KOMOREBI NOTES",
   authorName: "周川",
   navNotes: "笔记",
   navTopics: "专题",
@@ -8,7 +8,7 @@ export const defaultSiteCopy = {
   footerMotto: "写作是与时间相处的一种方式。",
   footerLegal: "© 2026 周川 · Built with curiosity.",
   cKicker: "A QUIET INDEX OF IDEAS",
-  cTitle: "把零散的思考，整理成一座可以漫游的花园。",
+  cTitle: "刨花落尽，木纹方显。",
   cIntro: "这里收录技术实践、阅读札记与日常观察。每一篇笔记都可以被检索、连接，也可以继续生长。",
   cSearchPlaceholder: "搜索标题、摘要或主题…",
   cFeaturedTitle: "值得从这里开始",

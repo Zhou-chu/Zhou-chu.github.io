@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api
 
-Sitemap: https://fuguang-notes.zhouc6301.chatgpt.site/sitemap.xml
+Sitemap: https://gm-2.zhou-chu.workers.dev/sitemap.xml

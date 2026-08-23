@@ -2,7 +2,7 @@ import { listPublishedNotes } from "../../db/notes";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = "https://fuguang-notes.zhouc6301.chatgpt.site";
+const SITE_URL = "https://gm-2.zhou-chu.workers.dev";
 
 function escapeXml(text: string): string {
   return text

@@ -4,7 +4,7 @@ import { defaultSiteCopy } from "../lib/site-copy";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = "https://fuguang-notes.zhouc6301.chatgpt.site";
+const SITE_URL = "https://gm-2.zhou-chu.workers.dev";
 
 function toRFC822Date(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00Z");
@@ -66,7 +66,7 @@ export async function GET() {
       "  <channel>",
       `    <title>${escapeXml(siteName)}</title>`,
       `    <link>${SITE_URL}</link>`,
-      `    <description>${escapeXml(siteName)} - 在喧嚣里，打捞思想的微光。</description>`,
+      `    <description>${escapeXml(siteName)} - 刨花落尽，木纹方显。</description>`,
       `    <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml"/>`,
       `    <lastBuildDate>${buildDate}</lastBuildDate>`,
       items,

@@ -107,7 +107,7 @@ async function setTheme(page: Page, theme: "light" | "dark"): Promise<void> {
 test.describe("Smoke", () => {
   test("/ returns 200 with page title", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/浮光笔记/);
+    await expect(page).toHaveTitle(/木漏/);
     await expect(page.locator(".pub-shell")).toBeVisible();
     await expect(page.locator("#main-content")).toBeVisible();
   });

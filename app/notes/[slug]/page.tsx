@@ -44,24 +44,42 @@ async function resolveWikilinksInContent(content: string): Promise<string> {
   try {
     const db = getDb();
     const allNotes = await db
-      .select({ slug: notes.slug, title: notes.title })
+      .select({ slug: notes.slug, title: notes.title, sourcePath: notes.sourcePath })
       .from(notes)
       .where(eq(notes.status, "published"))
       .all();
 
+    // Obsidian 维基链接可能写作：笔记标题 | 文件名 | 库内相对路径 | slug。
+    // 全部注册进映射，任何一种写法都能解析成站内跳转。
     const titleToSlug = new Map<string, string>();
+    const register = (key: string | null | undefined, slugValue: string) => {
+      if (!key) return;
+      const normalized = key.toLowerCase().trim();
+      if (normalized && !titleToSlug.has(normalized)) titleToSlug.set(normalized, slugValue);
+    };
     for (const n of allNotes) {
-      titleToSlug.set(n.title.toLowerCase().trim(), n.slug);
+      register(n.title, n.slug);
+      register(n.slug, n.slug);
+      if (n.sourcePath) {
+        const withoutExtension = n.sourcePath.replace(/\.(?:md|markdown)$/i, "");
+        register(withoutExtension, n.slug);
+        register(withoutExtension.split("/").pop(), n.slug);
+      }
     }
 
     return content.replace(
-      /\[\[([^\]|]+?)(?:\|([^\]]+?))?\]\]/g,
-      (_match, title: string, alias?: string) => {
-        const resolvedSlug = titleToSlug.get(title.trim().toLowerCase());
-        if (resolvedSlug) {
-          return `[${alias?.trim() || title.trim()}](/notes/${resolvedSlug})`;
+      /\[\[([^\]|]+?)(?:#([^\]|]+?))?(?:\|([^\]]+?))?\]\]/g,
+      (_match, target: string, _heading?: string, alias?: string) => {
+        let resolvedSlug = titleToSlug.get(target.trim().toLowerCase());
+        if (!resolvedSlug) {
+          // 兜底：带文件夹前缀或锚点的写法，取最后一段再试一次
+          resolvedSlug = titleToSlug.get(target.trim().split("/").pop()!.toLowerCase());
         }
-        return alias?.trim() || title.trim();
+        if (resolvedSlug) {
+          const label = (alias?.trim() || target.trim()).replace(/^[^/]+\//, "");
+          return `[${label}](/notes/${resolvedSlug})`;
+        }
+        return alias?.trim() || target.trim();
       },
     );
   } catch {

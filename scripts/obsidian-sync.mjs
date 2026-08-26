@@ -193,7 +193,26 @@ async function upload(config, args) {
   const result = await buildSnapshot(config, args, false);
   const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune);
   const scope = args.only ? `（仅 ${args.only}）` : "";
-  console.log(`内容上传完成：${uploaded} 篇笔记${scope}；未执行 Git 提交或推送。`);
+
+  // 新增了本地图片时：备份到 Git 并重新部署，让 /obsidian-assets/* 真正可访问。
+  const assetChanged = gitChangedFiles().some((file) => file.replaceAll("\\", "/").startsWith("public/obsidian-assets/"));
+  if (assetChanged) {
+    try {
+      run("git", ["add", "--", "content", "public/obsidian-assets"]);
+      const staged = run("git", ["diff", "--cached", "--name-only"], { capture: true }).trim();
+      if (staged) run("git", ["commit", "-m", `content: sync obsidian assets${args.only ? ` (${args.only})` : ""}`]);
+      run("git", ["push", "origin", "HEAD:main"]);
+    } catch (error) {
+      console.log(`⚠ Git 备份失败（不影响本次上线）：${error.message}`);
+    }
+    console.log("检测到新增图片，正在构建并部署静态资源（约 1 分钟）……");
+    run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
+    run(process.platform === "win32" ? "npx.cmd" : "npx", ["wrangler", "deploy"]);
+    console.log("✅ 图片资源已部署上线。");
+  }
+
+  await writeSyncState(config.vaultPath, result.notes);
+  console.log(`内容上传完成：${uploaded} 篇笔记${scope}${assetChanged ? "（含图片部署）" : ""}。`);
 }
 
 async function pull(config, args) {
@@ -257,7 +276,13 @@ async function main() {
   throw new Error(`未知命令：${args.command}`);
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => {
+    // 显式退出：避免 HTTP keep-alive 等悬挂句柄让进程迟迟不退出，
+    // 导致 Obsidian 插件端一直显示「运行中」。
+    process.exit(process.exitCode || 0);
+  })
+  .catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  });

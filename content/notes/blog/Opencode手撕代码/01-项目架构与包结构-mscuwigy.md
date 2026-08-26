@@ -6,6 +6,9 @@ summary: "树节点：01 项目架构与包结构 父节点：Opencode的工作�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "01-核心入口与启动流程-mscuwiz4"
+  - "01-核心概念名词表-mscuwj0z"
 ---
 
 > 树节点：01-项目架构与包结构

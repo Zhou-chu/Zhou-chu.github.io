@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 29,
+  "noteCount": 64,
   "assetCount": 0,
   "notes": [
     {
@@ -9,7 +9,7 @@
       "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
       "title": "均匀传输线：A-1：均匀传输线及其方程",
       "publishedAt": "2026-07-24",
-      "hash": "336a4ebf85e5e302f4a4e95ae677edc0c3896dd9dc59a527e02b4189777930dc"
+      "hash": "2f107cda8ce94e749500aa178834352bf3342d0a51cc99bb3a73b24b6fd1dfae"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv.md",
@@ -26,11 +26,53 @@
       "hash": "8c7cc9a5e36022695614752d51181b2e1ab689ae636641819d69eac98d506e20"
     },
     {
+      "sourcePath": "blog/人工智能的优化方法/chapter-1-vector-spaces-msn1gxzx.md",
+      "slug": "chapter-1-vector-spaces-msn1gxzx",
+      "title": "Chapter 1-Vector Spaces",
+      "publishedAt": "2026-08-10",
+      "hash": "4642a45b8a5569e7ca1c15623b02f6bbd1da81121d94dea3602d23a4d67a1c12"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",
+      "slug": "00-项目总览-project-overview-mscuwj2z",
+      "title": "00 — 项目总览 (Project Overview)",
+      "publishedAt": "2026-08-03",
+      "hash": "9bc5cc7f68ae87c89ad397beda97cd28ee3b35df67dd78c6b94d87586d6f70c3"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/01-核心概念名词表-mscuwj0z.md",
+      "slug": "01-核心概念名词表-mscuwj0z",
+      "title": "01-核心概念名词表",
+      "publishedAt": "2026-08-03",
+      "hash": "fd2de075c266d7e1dbdaf85764997233ba9c0446dbb2f5c887409c29c09cc82c"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/01-核心入口与启动流程-mscuwiz4.md",
+      "slug": "01-核心入口与启动流程-mscuwiz4",
+      "title": "01-核心入口与启动流程",
+      "publishedAt": "2026-08-03",
+      "hash": "a4a19b7dd4b427c08cf25fd6ee3ba26f41a4cb81e8385cfd9262a5ac7b611539"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/01-系统上下文代数-system-context-algebra-mscuwj7y.md",
+      "slug": "01-系统上下文代数-system-context-algebra-mscuwj7y",
+      "title": "01 — 系统上下文代数 (System Context Algebra)",
+      "publishedAt": "2026-08-03",
+      "hash": "93545f6aeac83afeed3cdcd9c927097826f54e8dede1bf51829c8bbd0c8ba5ca"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/01-项目架构与包结构-mscuwigy.md",
       "slug": "01-项目架构与包结构-mscuwigy",
       "title": "01-项目架构与包结构",
       "publishedAt": "2026-08-03",
       "hash": "7197d3221b7df33d5a910c04618b0de62613790b61ff0a6b81762ca4dd28ce13"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/02-会话生命周期-session-lifecycle-mscuwj31.md",
+      "slug": "02-会话生命周期-session-lifecycle-mscuwj31",
+      "title": "02 — 会话生命周期 (Session Lifecycle)",
+      "publishedAt": "2026-08-03",
+      "hash": "5d9f3d045cdc7f5ee78c0794992c4eed834d5a6a082bec311c653f6f92fb4c2b"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/02-fiber与scope-mscumzqz.md",
@@ -40,11 +82,81 @@
       "hash": "ee333ff5993eb05c59fbc5b1002618a161fcf0dce7c715a1143bf203452a736d"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/02-layer与依赖注入-mscuwj12.md",
+      "slug": "02-layer与依赖注入-mscuwj12",
+      "title": "02-Layer与依赖注入",
+      "publishedAt": "2026-08-03",
+      "hash": "4f02df11103f0f6cad89223cae08e48b02014503cc1f987e8f70f996dc674e95"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/03-标识符与品牌类型-mscuwihm.md",
+      "slug": "03-标识符与品牌类型-mscuwihm",
+      "title": "03-标识符与品牌类型",
+      "publishedAt": "2026-08-03",
+      "hash": "6fe30b454d4d10fa00669bf84981533c19d4497de6ae1813bbd669fec2b3021f"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/03-工具系统-tool-system-mscuwj48.md",
+      "slug": "03-工具系统-tool-system-mscuwj48",
+      "title": "03 — 工具系统 (Tool System)",
+      "publishedAt": "2026-08-03",
+      "hash": "1e2a3562e4a4b545c8e3db27acb9e6475657554f1327179b921d6d0b9637f09e"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/03-核心实体schema-mscun018.md",
       "slug": "03-核心实体schema-mscun018",
       "title": "03-核心实体Schema",
       "publishedAt": "2026-08-03",
       "hash": "b81610bf698537c158d5f457c965e75e83635ed955c728673dd9ef4ab0d0cc15"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/03-事件与manifest-mscuwj4q.md",
+      "slug": "03-事件与manifest-mscuwj4q",
+      "title": "03-事件与Manifest",
+      "publishedAt": "2026-08-03",
+      "hash": "179a13ffc96db635bcf7f79bf9e95675877eec41e51cb67604b42a2fd12d4bd0"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/03-schema包组织与导出-mscuwj3u.md",
+      "slug": "03-schema包组织与导出-mscuwj3u",
+      "title": "03-Schema包组织与导出",
+      "publishedAt": "2026-08-03",
+      "hash": "a18ebf60fa433244d372d0e8afe2d49ad6c58601c5bfd080509f8b7759b1dfe1"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/04-全链路概览-一次-provider-turn-的完整追踪-mscuwj4e.md",
+      "slug": "04-全链路概览-一次-provider-turn-的完整追踪-mscuwj4e",
+      "title": "04-全链路概览：一次 Provider Turn 的完整追踪",
+      "publishedAt": "2026-08-03",
+      "hash": "1c7c5f41013f064092115d1a7289ea4d02e3197e3df71f19f335d6405b55a3ad"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/04-llm-provider-交互层-mscuwj5k.md",
+      "slug": "04-llm-provider-交互层-mscuwj5k",
+      "title": "04 — LLM/Provider 交互层",
+      "publishedAt": "2026-08-03",
+      "hash": "3acfdb2772761b1a73f28f0494d780263b9b9a0e867a2f2463be828a11c81dc7"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/04-llm协议适配层-provider-neutral-provider-specific-mscuwj4i.md",
+      "slug": "04-llm协议适配层-provider-neutral-provider-specific-mscuwj4i",
+      "title": "04-LLM协议适配层：Provider-Neutral → Provider-Specific",
+      "publishedAt": "2026-08-03",
+      "hash": "31fde8a617037f6345713c564bc65f9c1ff4fbbd17ced156cd54278a8b077b6b"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/04-server请求处理-http-core-的桥接层-mscuwizn.md",
+      "slug": "04-server请求处理-http-core-的桥接层-mscuwizn",
+      "title": "04-Server请求处理：HTTP → Core 的桥接层",
+      "publishedAt": "2026-08-03",
+      "hash": "3ccfa27e66965007c01bad7135c92ebdb05f249308a226cdf67192a8756efe7e"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/05-context-epoch机制-mscuwj32.md",
+      "slug": "05-context-epoch机制-mscuwj32",
+      "title": "05-Context-Epoch机制",
+      "publishedAt": "2026-08-03",
+      "hash": "99720280d921803c4fe6bab8fe1062a38c27376b8812b2ec7195aa7f53cbba09"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/05-effect-infra.md",
@@ -59,6 +171,13 @@
       "title": "05-Session创建与状态机",
       "publishedAt": "2026-08-03",
       "hash": "3f36b707409aba8ccadf7e60e2dbe833c9078f89886301d98440ca8d108d3dcf"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/06-客户端架构与包依赖-client-architecture-package-dependencies-mscuwjph.md",
+      "slug": "06-客户端架构与包依赖-client-architecture-package-dependencies-mscuwjph",
+      "title": "06 — 客户端架构与包依赖 (Client Architecture & Package Dependencies)",
+      "publishedAt": "2026-08-03",
+      "hash": "65c5a3a44d5935265ba95055ac80bb0ead22e600312fa7973b95700f200e19a1"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/07-工具定义注入-mscun0jg.md",
@@ -89,6 +208,13 @@
       "hash": "9c746ff8204f0f82482782c8265f82ffbaeb7bceed4e1925a186e10c20dd8f23"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/07-学习路线图-learning-path-mscuwjph.md",
+      "slug": "07-学习路线图-learning-path-mscuwjph",
+      "title": "07 — 学习路线图 (Learning Path)",
+      "publishedAt": "2026-08-03",
+      "hash": "177a53cd3aa1348d288dd7cd95be4e2fe283ba523f3c730fa9b8fb7fa72b050a"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/08-工具声明与注册-mscun0k2.md",
       "slug": "08-工具声明与注册-mscun0k2",
       "title": "08-工具声明与注册",
@@ -103,6 +229,48 @@
       "hash": "2d9986fb6fcff9c69eae8636c555a01e9fb26781e174b19a034b9affc0ed49a3"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/08-工具执行与结算-mscun0jf.md",
+      "slug": "08-工具执行与结算-mscun0jf",
+      "title": "08-工具执行与结算",
+      "publishedAt": "2026-08-03",
+      "hash": "1720f91b6b5c965c402020a87519a02872edb4719de0b9c81483949b817addc0"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/08-输出截断与managed-output-mscun0jr.md",
+      "slug": "08-输出截断与managed-output-mscun0jr",
+      "title": "08-输出截断与Managed-Output",
+      "publishedAt": "2026-08-03",
+      "hash": "8d61ba81a1346d16e07512981a34238a6be88c4539057d11beec73321acad5c0"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/09-错误处理与supervisor-mscun0jr.md",
+      "slug": "09-错误处理与supervisor-mscun0jr",
+      "title": "09-错误处理与Supervisor",
+      "publishedAt": "2026-08-03",
+      "hash": "26db8ed4edd1742e81d104235e419a348a51c6fc4235606fbab2f8151d82dc1f"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/09-取消与中断传播-mscun0jy.md",
+      "slug": "09-取消与中断传播-mscun0jy",
+      "title": "09-取消与中断传播",
+      "publishedAt": "2026-08-03",
+      "hash": "03cf92ce61933b708bffcd4098e95a00cbb61bcf4fbe5e2fa850447a602ec021"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/09-fork与fiber生命周期-mscun0jo.md",
+      "slug": "09-fork与fiber生命周期-mscun0jo",
+      "title": "09-Fork与Fiber生命周期",
+      "publishedAt": "2026-08-03",
+      "hash": "2d62a6142c6b3c1d5997c254f1f9f08ce9baccadba6d6cd35583ad8eddc455f2"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/10-快照创建与存储-mscun0jo.md",
+      "slug": "10-快照创建与存储-mscun0jo",
+      "title": "10-快照创建与存储",
+      "publishedAt": "2026-08-03",
+      "hash": "e511e70eb7d92f1d9cfce9c4cbd2fb5f71c1b50e86dcef31b57450081304fc47"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/10-快照恢复与回滚-mscun0jq.md",
       "slug": "10-快照恢复与回滚-mscun0jq",
       "title": "10-快照恢复与回滚",
@@ -115,6 +283,20 @@
       "title": "插件与 Skill 系统",
       "publishedAt": "2026-08-03",
       "hash": "a018b88d0c544d8d717c068eb9f7bcfc7f1d88d5b56cc8f047e78b056e02b996"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/关于effect-ts-中的effect的理解-mscuwj3t.md",
+      "slug": "关于effect-ts-中的effect的理解-mscuwj3t",
+      "title": "关于Effect-ts 中的Effect的理解",
+      "publishedAt": "2026-08-03",
+      "hash": "f74af5b386e0da3ee2f9319d02db1bdc239e5a0a66a29df2e2487251028bdcd4"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/会话输入与-prompt-管理-mscuwiym.md",
+      "slug": "会话输入与-prompt-管理-mscuwiym",
+      "title": "会话输入与 Prompt 管理",
+      "publishedAt": "2026-08-03",
+      "hash": "dbeee423ac1969a13364eb7b4c7e03f47660dd1d26c74b44e34fb0ce811ce56b"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/轮询式比较的调用链和相关代码.md",
@@ -138,6 +320,13 @@
       "hash": "c0507bd20df6ecc049a8ae53800f49cfa80b9fcf7b3118383688031527eb2cf4"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/baseline-与-snapshot-上下文世代的持久状态-mscuwizj.md",
+      "slug": "baseline-与-snapshot-上下文世代的持久状态-mscuwizj",
+      "title": "Baseline 与 Snapshot — 上下文世代的持久状态",
+      "publishedAt": "2026-08-03",
+      "hash": "120403717959f696e5d14d713996628506f0a9e3170abfb9c128536d589564c9"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/code-mode-详解-mscuwjps.md",
       "slug": "code-mode-详解-mscuwjps",
       "title": "Code Mode 详解",
@@ -152,11 +341,25 @@
       "hash": "00e14e79a58f530f2db285547f47ed6fe6e3801446db3700bc5ba500b3f24bc4"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/drain和fiber-mscuwj4q.md",
+      "slug": "drain和fiber-mscuwj4q",
+      "title": "Drain和Fiber",
+      "publishedAt": "2026-08-03",
+      "hash": "57846bbd13e7e673d67b113ba9124d509a5535e603089a78ba4407ebb6a34b12"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/effect-ts-核心范式-以-opencode-源码为例-mscumzrn.md",
       "slug": "effect-ts-核心范式-以-opencode-源码为例-mscumzrn",
       "title": "Effect-TS 核心范式 —— 以 Opencode 源码为例",
       "publishedAt": "2026-08-03",
       "hash": "27e2acf1742db25d078af54a775cf4d19ecbf4c95dcead0f51349490d814a48f"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/make函数代码详解-mscuwj2f.md",
+      "slug": "make函数代码详解-mscuwj2f",
+      "title": "make函数代码详解",
+      "publishedAt": "2026-08-03",
+      "hash": "662adc6c04cea39d1281c1e2f3938d29662c9d2860423a0226560f88e3239ca0"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/mid-conversation-system-message-对话中期系统更新-mscun05b.md",
@@ -173,6 +376,27 @@
       "hash": "a7a632fbfcc49a07e1fbe899186a310170debf8a3dec7516f6b2d03bdcbea094"
     },
     {
+      "sourcePath": "blog/Opencode手撕代码/opencode-的工作原理-mscuwj2k.md",
+      "slug": "opencode-的工作原理-mscuwj2k",
+      "title": "OpenCode 的工作原理",
+      "publishedAt": "2026-08-03",
+      "hash": "29ade626c559bedf43693e6e9757ced52fdae927af7419f552421f5a1056adb6"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/prepareonce-的四个出口-mscuwj40.md",
+      "slug": "prepareonce-的四个出口-mscuwj40",
+      "title": "prepareOnce 的四个出口",
+      "publishedAt": "2026-08-03",
+      "hash": "5bcaa3e96f50d8bc5c03222e1999fb6ecdd127ad1217b27ff15714357b378ba7"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/projectadmitted详解-mscuwj2t.md",
+      "slug": "projectadmitted详解-mscuwj2t",
+      "title": "projectAdmitted详解",
+      "publishedAt": "2026-08-03",
+      "hash": "6888e06c3aac78fd93a1c5a2242e1daaadf11ccdf42c73b5828d554304efc5c4"
+    },
+    {
       "sourcePath": "blog/Opencode手撕代码/provider-turn-完整流程-mscuwjpu.md",
       "slug": "provider-turn-完整流程-mscuwjpu",
       "title": "Provider Turn 完整流程",
@@ -185,6 +409,20 @@
       "title": "run-coordinator.ts详解",
       "publishedAt": "2026-08-03",
       "hash": "86b3f41a611fedfcf9e6b52d4a75c73adab1a16f5c7bb36e74f0d430cf1d9c5d"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/runner-执行循环-mscuwj4m.md",
+      "slug": "runner-执行循环-mscuwj4m",
+      "title": "Runner 执行循环",
+      "publishedAt": "2026-08-03",
+      "hash": "2b2677bf624592211d01602ed9ce8c4ceb0f3ac8ca9f3aa599a3fce538800275"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/session-context-epoch和provider-turn的概念解释-mscuwj3d.md",
+      "slug": "session-context-epoch和provider-turn的概念解释-mscuwj3d",
+      "title": "Session、Context Epoch和Provider Turn的概念解释",
+      "publishedAt": "2026-08-03",
+      "hash": "0ba9fe32a8ac22db05a4730c8801d27446f3037ce8d4d6911f20e7fd2b6dacd5"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/session-runner-完整执行流程-mscuwjps.md",
@@ -206,6 +444,13 @@
       "title": "System Context Algebra — 系统上下文的代数模型",
       "publishedAt": "2026-08-03",
       "hash": "47a169c3e1f9545957432f81a20190b9fb12c02e53699265a0af13e1612f8631"
+    },
+    {
+      "sourcePath": "blog/Opencode手撕代码/typescript-核心语法-以-opencode-源码为例-mscuwj2y.md",
+      "slug": "typescript-核心语法-以-opencode-源码为例-mscuwj2y",
+      "title": "TypeScript 核心语法 —— 以 Opencode 源码为例",
+      "publishedAt": "2026-08-03",
+      "hash": "40ffa98baae9e8412073c6fdf32414590654ffa762999681c69d0288f02d6b63"
     }
   ]
 }

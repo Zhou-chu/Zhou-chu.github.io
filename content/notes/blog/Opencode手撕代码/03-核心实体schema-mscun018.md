@@ -7,7 +7,12 @@ date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
 outgoing:
+  - "03-schema包组织与导出-mscuwj3u"
+  - "09-fork与fiber生命周期-mscun0jo"
+  - "10-快照创建与存储-mscun0jo"
   - "08-工具选择与权限-mscun0id"
+  - "08-工具执行与结算-mscun0jf"
+  - "03-事件与manifest-mscuwj4q"
 ---
 
 > 树节点：03-核心实体Schema

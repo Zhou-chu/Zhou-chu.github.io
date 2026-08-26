@@ -7,7 +7,9 @@ date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
 outgoing:
+  - "make函数代码详解-mscuwj2f"
   - "轮询式比较的调用链和相关代码-mscuwjpq"
+  - "prepareonce-的四个出口-mscuwj40"
 ---
 
 这一部分主要内容就是负责整理环境信息，处理得到System Prompt，进而将其作为Baseline，在整个Epoch内部这个System Prompt都不变。

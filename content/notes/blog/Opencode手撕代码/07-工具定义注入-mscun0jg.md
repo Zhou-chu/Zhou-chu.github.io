@@ -9,6 +9,8 @@ featured: false
 outgoing:
   - "07-消息结构与角色-mscun0k4"
   - "08-工具声明与注册-mscun0k2"
+  - "08-工具执行与结算-mscun0jf"
+  - "10-快照创建与存储-mscun0jo"
 ---
 
 > 树节点：07-工具定义注入

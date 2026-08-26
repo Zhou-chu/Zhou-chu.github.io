@@ -8,6 +8,8 @@ category: "Opencode手撕代码"
 featured: false
 outgoing:
   - "08-工具选择与权限-mscun0id"
+  - "08-工具执行与结算-mscun0jf"
+  - "08-输出截断与managed-output-mscun0jr"
 ---
 
 # 08-工具声明与注册

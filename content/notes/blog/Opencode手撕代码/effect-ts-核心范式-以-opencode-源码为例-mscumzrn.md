@@ -7,6 +7,7 @@ date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
 outgoing:
+  - "02-layer与依赖注入-mscuwj12"
   - "02-fiber与scope-mscumzqz"
 ---
 

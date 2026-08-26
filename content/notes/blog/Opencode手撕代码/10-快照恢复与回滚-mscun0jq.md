@@ -6,6 +6,9 @@ summary: "树节点：10 快照恢复与回滚 父节点：10 快照创建与存
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "10-快照创建与存储-mscun0jo"
+  - "05-context-epoch机制-mscuwj32"
 ---
 
 > 树节点：10-快照恢复与回滚

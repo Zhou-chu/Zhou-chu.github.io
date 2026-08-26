@@ -6,6 +6,8 @@ summary: "父笔记 : 会话输入与Prompt管理 · 02 session lifecycle 子笔
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+outgoing:
+  - "drain和fiber-mscuwj4q"
 ---
 
 > **父笔记**: [[会话输入与Prompt管理]] · [[02-session-lifecycle]]

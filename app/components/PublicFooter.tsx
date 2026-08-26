@@ -28,7 +28,7 @@ export function PublicFooter({
   return (
     <footer className="pub-footer">
       <div className="pub-footer__inner">
-        <div className="pub-footer__brand"><span aria-hidden="true">木子</span><strong>{siteName}</strong></div>
+        <div className="pub-footer__brand"><span aria-hidden="true">木</span><strong>{siteName}</strong></div>
 
         {/* Tagline — driven by site-copy footerMotto */}
         <p className="pub-footer__tagline">{footerMotto}</p>

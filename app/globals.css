@@ -434,7 +434,7 @@ html {
 
 body {
   min-height: 100%;
-  background: linear-gradient(180deg, rgba(232, 238, 229, 0.42), rgba(225, 232, 221, 0.66) 48%, rgba(218, 226, 215, 0.76)) !important;
+  background: linear-gradient(180deg, rgba(246, 240, 226, 0.44), rgba(241, 233, 215, 0.66) 48%, rgba(236, 227, 205, 0.76)) !important;
 }
 
 body::before,
@@ -2320,7 +2320,7 @@ html {
 
 html body {
   min-height: 100%;
-  background: linear-gradient(180deg, rgba(232, 238, 229, 0.38), rgba(225, 232, 221, 0.58) 48%, rgba(218, 226, 215, 0.68)) !important;
+  background: linear-gradient(180deg, rgba(246, 240, 226, 0.40), rgba(241, 233, 215, 0.60) 48%, rgba(236, 227, 205, 0.70)) !important;
 }
 
 html body::before,
@@ -2533,6 +2533,8 @@ html body,
 
 /* 24. Light-mode typography contrast — keep last. */
 :root:not([data-theme="dark"]) {
+  --canvas: #f2ecdc;
+  --paper: #f7f2e5;
   --ink: #142019;
   --muted: #3e4c42;
   --faint: #5e6b61;
@@ -2553,8 +2555,8 @@ html body,
   color: var(--ink);
   font-weight: 600;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.72),
-    0 0 18px rgba(255, 255, 255, 0.28);
+    0 1px 0 rgba(252, 247, 235, 0.72),
+    0 0 18px rgba(252, 247, 235, 0.28);
 }
 
 :root:not([data-theme="dark"]) .home-intro__body,
@@ -2587,7 +2589,7 @@ html body,
 
 :root:not([data-theme="dark"]) .archive-search {
   color: var(--ink);
-  background: rgba(255, 253, 247, 0.42);
+  background: rgba(249, 245, 234, 0.5);
 }
 
 :root:not([data-theme="dark"]) .archive-search::placeholder {
@@ -2672,7 +2674,7 @@ html body,
 /* —— 浅色主题 —— */
 :root:not([data-theme="dark"]) .archive-search,
 :root:not([data-theme="dark"]) .archive-material-pill {
-  background: rgba(255, 253, 247, 0.8);
+  background: rgba(249, 245, 234, 0.84);
   -webkit-backdrop-filter: blur(10px) saturate(0.92);
   backdrop-filter: blur(10px) saturate(0.92);
   border: 1px solid rgba(84, 53, 31, 0.4);
@@ -2704,7 +2706,7 @@ html body,
 :root:not([data-theme="dark"]) .archive-search:hover,
 :root:not([data-theme="dark"]) .archive-material-pill:hover {
   border-color: rgba(84, 53, 31, 0.62);
-  background: rgba(255, 253, 247, 0.93);
+  background: rgba(250, 246, 236, 0.94);
 }
 
 :root:not([data-theme="dark"]) .archive-search:focus,

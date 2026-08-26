@@ -147,11 +147,22 @@ export async function createNote(input: NoteInput, email: string) {
   }
 }
 
+/**
+ * 同名判定：忽略大小写与所有空白（半角空格、制表符、全角空格）。
+ * 例如「会话输入与 Prompt 管理」与「会话输入与Prompt管理」视为同一篇，
+ * 上传时新版本直接覆盖旧版本——一个标题只对应一篇文章。
+ */
+function sameTitleCondition(titleColumn: typeof notes.title, titleValue: string) {
+  const strip = (source: typeof notes.title | string) =>
+    sql`LOWER(REPLACE(REPLACE(REPLACE(${source}, ' ', ''), char(9), ''), char(12288), ''))`;
+  return sql`${strip(titleColumn)} = ${strip(titleValue)}`;
+}
+
 async function findNoteByTitle(title: string, email: string) {
   return getDb()
     .select({ id: notes.id, authorEmail: notes.authorEmail })
     .from(notes)
-    .where(and(eq(notes.authorEmail, email), sql`LOWER(${notes.title}) = LOWER(${title})`))
+    .where(and(eq(notes.authorEmail, email), sameTitleCondition(notes.title, title)))
     .limit(1)
     .get();
 }
@@ -195,7 +206,7 @@ async function findNoteByTitleAnyAuthor(title: string) {
   return getDb()
     .select({ id: notes.id, authorEmail: notes.authorEmail })
     .from(notes)
-    .where(sql`LOWER(${notes.title}) = LOWER(${title})`)
+    .where(sameTitleCondition(notes.title, title))
     .orderBy(desc(notes.updatedAt), desc(notes.id))
     .limit(1)
     .get();
@@ -219,7 +230,7 @@ export async function updateNote(id: number, input: NoteInput, email: string, cl
     .from(notes)
     .where(and(
       eq(notes.authorEmail, email),
-      sql`LOWER(${notes.title}) = LOWER(${input.title})`,
+      sameTitleCondition(notes.title, input.title),
       sql`${notes.id} != ${id}`,
     ))
     .limit(1)

@@ -82,14 +82,8 @@ export default async function HomePage() {
 
         <aside className="home-hero__visual" aria-label="站点主题">
           <div className="home-cabinet-card">
-            <p>THE READING CABINET</p>
-            <div className="home-cabinet-card__rings" aria-hidden="true"><span /><span /><span /></div>
-            <strong>林间书柜</strong>
-            <span>技术 · 阅读 · 写作 · 生活</span>
-            <small>OPEN THE CABINET<br />AND FOLLOW A THOUGHT</small>
             <div className="home-hero__seal" aria-hidden="true">木<br />漏</div>
           </div>
-          <p className="home-hero__credit">一隅木色，留给缓慢生长的念头。</p>
         </aside>
       </section>
 

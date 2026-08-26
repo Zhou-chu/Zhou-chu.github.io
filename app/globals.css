@@ -850,90 +850,26 @@ body::after {
   min-height: 470px;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 42px;
+  padding: 0;
   overflow: hidden;
   border: 10px solid rgba(82, 50, 29, 0.62);
-  border-radius: 180px 180px 18px 18px;
+  border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(28, 34, 27, 0.08), rgba(23, 27, 22, 0.72)),
-    url("/images/materials/wood-blocks.jpg") center / cover;
+    linear-gradient(180deg, rgba(28, 34, 27, 0.04), rgba(23, 27, 22, 0.26)),
+    url("/images/materials/cabinet-komorebi.jpg") center / cover;
   color: #fff6e8;
   box-shadow:
     inset 0 0 0 2px rgba(255, 229, 190, 0.22),
-    inset 0 -90px 100px rgba(12, 14, 11, 0.36),
+    inset 0 -70px 80px rgba(12, 14, 11, 0.2),
     0 22px 50px rgba(43, 30, 20, 0.22);
 }
 
 .home-cabinet-card::before {
   content: "";
   position: absolute;
-  inset: 20px;
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 150px 150px 10px 10px;
-}
-
-.home-cabinet-card > p {
-  position: absolute;
-  top: 44px;
-  left: 50%;
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  opacity: 0.78;
-}
-
-.home-cabinet-card__rings {
-  position: absolute;
-  inset: 94px auto auto 50%;
-  width: 210px;
-  height: 210px;
-  transform: translateX(-50%);
-}
-
-.home-cabinet-card__rings span {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255,244,222,0.28);
-  border-radius: 47% 53% 44% 56%;
-}
-
-.home-cabinet-card__rings span:nth-child(2) { inset: 28px; transform: rotate(16deg); }
-.home-cabinet-card__rings span:nth-child(3) { inset: 60px; transform: rotate(-9deg); }
-
-.home-cabinet-card strong {
-  position: relative;
-  align-self: center;
-  font-family: var(--font-display);
-  font-size: 34px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
-.home-cabinet-card > span:not(.home-hero__seal) {
-  position: relative;
-  align-self: center;
-  margin-top: 8px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-align: center;
-  opacity: 0.84;
-}
-
-.home-cabinet-card small {
-  position: relative;
-  align-self: center;
-  margin-top: 26px;
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.18em;
-  line-height: 1.8;
-  text-align: center;
-  opacity: 0.56;
+  inset: 14px;
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 18px;
 }
 
 .home-cabinet-card .home-hero__seal { right: 26px; bottom: 34px; }
@@ -1135,8 +1071,7 @@ body::after {
   .home-page { padding-top: 18px; }
   .home-hero { padding: 36px 28px; border-radius: 24px; }
   .home-hero::after { inset: 9px; border-radius: 17px; }
-  .home-cabinet-card { min-height: 390px; border-width: 7px; border-radius: 120px 120px 14px 14px; }
-  .home-cabinet-card strong { font-size: 30px; }
+  .home-cabinet-card { min-height: 390px; border-width: 7px; border-radius: 22px; }
   .home-content, .home-research { margin-top: 24px; padding: 32px 18px; border-radius: 20px; }
   .home-section-heading, .home-research__intro { display: block; }
   .home-section-heading > span, .home-research__intro > span { margin-top: 10px; }

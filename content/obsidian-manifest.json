@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 64,
-  "assetCount": 0,
+  "noteCount": 66,
+  "assetCount": 27,
   "notes": [
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
@@ -31,6 +31,20 @@
       "title": "Chapter 1-Vector Spaces",
       "publishedAt": "2026-08-10",
       "hash": "4642a45b8a5569e7ca1c15623b02f6bbd1da81121d94dea3602d23a4d67a1c12"
+    },
+    {
+      "sourcePath": "blog/深度学习/深度学习-多层感知机.md",
+      "slug": "深度学习-多层感知机-mt9utq9b",
+      "title": "深度学习：多层感知机（MLP）",
+      "publishedAt": "2026-08-26",
+      "hash": "b2918d8c14e5234856a38802f654d2ca5cd7fae169a26fbbad7f640fe0741512"
+    },
+    {
+      "sourcePath": "blog/深度学习/深度学习-CNN.md",
+      "slug": "深度学习-cnn-mt9utq9b",
+      "title": "深度学习：卷积神经网络（CNN）",
+      "publishedAt": "2026-08-26",
+      "hash": "2c2d35bc34b007d13767b9c9fe77b79ebd9c986908a0bf19aa483d004dfac050"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

@@ -211,7 +211,15 @@ async function publish(config, args) {
   run("git", ["add", "--", "content", "public/obsidian-assets"]);
   const staged = run("git", ["diff", "--cached", "--name-only"], { capture: true }).trim();
   if (staged) run("git", ["commit", "-m", `content: sync ${result.notes.length} Obsidian notes`]);
-  run("git", ["push", "origin", "HEAD:main"]);
+  try {
+    run("git", ["push", "origin", "HEAD:main"]);
+  } catch {
+    throw new Error(
+      "Git 推送 GitHub 失败（通常是尚未登录或凭据已过期，本机无法弹出授权窗口时尤为常见）。" +
+        "修复方法：在任意终端进入博客项目目录，手动执行一次 git push origin main 并完成浏览器授权；" +
+        "授权会记住凭据，之后发布即可自动推送。若暂时不想动 GitHub，可改用「仅上传」命令直接同步线上博客。"
+    );
+  }
 
   const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
   await writeSyncState(config.vaultPath, result.notes);

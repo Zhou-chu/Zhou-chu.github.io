@@ -22,8 +22,21 @@ function parseArgs(argv) {
     if (value === "--yes" || value === "-y") args.yes = true;
     if (value === "--vault") args.vaultPath = argv[++index];
     if (value === "--site") args.siteUrl = argv[++index];
+    if (value === "--only") args.only = argv[++index];
   }
   return args;
+}
+
+/** 按 --only 过滤笔记（支持完整相对路径或文件名后缀匹配），用于单篇上传/发布。 */
+function selectNotes(notes, only) {
+  if (!only) return notes;
+  const key = String(only).replaceAll("\\", "/").toLowerCase();
+  const picked = notes.filter((note) => {
+    const p = note.relativePath.toLowerCase();
+    return p === key || p.endsWith(`/${key}`) || p.endsWith(key);
+  });
+  if (!picked.length) throw new Error(`--only 未匹配到任何公开笔记：${only}`);
+  return picked;
 }
 
 function run(command, args, options = {}) {
@@ -178,8 +191,9 @@ async function sync(config, args) {
 
 async function upload(config, args) {
   const result = await buildSnapshot(config, args, false);
-  const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
-  console.log(`内容上传完成：${uploaded} 篇笔记；未执行 Git 提交或推送。`);
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune);
+  const scope = args.only ? `（仅 ${args.only}）` : "";
+  console.log(`内容上传完成：${uploaded} 篇笔记${scope}；未执行 Git 提交或推送。`);
 }
 
 async function pull(config, args) {
@@ -221,7 +235,7 @@ async function publish(config, args) {
     );
   }
 
-  const uploaded = await uploadNotes(config.siteUrl, result.notes, args.prune);
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune);
   await writeSyncState(config.vaultPath, result.notes);
   if (assetChanged) {
     const wrangler = process.platform === "win32" ? "npx.cmd" : "npx";

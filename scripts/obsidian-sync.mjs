@@ -40,12 +40,42 @@ function selectNotes(notes, only) {
 }
 
 function run(command, args, options = {}) {
+  // Windows 下 npm/npx 是 .cmd 批处理垫片，execFileSync 无法直接拉起（EINVAL），须经 cmd.exe 转发。
+  if (process.platform === "win32" && /\.(cmd|bat)$/i.test(command)) {
+    const cmdline = `${command} ${args.join(" ")}`;
+    return execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", cmdline], {
+      cwd: projectRoot,
+      encoding: "utf8",
+      stdio: options.capture ? "pipe" : "inherit",
+      ...options,
+    });
+  }
   return execFileSync(command, args, {
     cwd: projectRoot,
     encoding: "utf8",
     stdio: options.capture ? "pipe" : "inherit",
     ...options,
   });
+}
+
+/**
+ * 全自动解析管理员密码：环境变量优先，否则回退读取 Obsidian 插件已保存的密码。
+ * 这样「发布 / 上传」无需每次手动设置 BLOG_ADMIN_PASSWORD 即可一键上线。
+ */
+async function resolveAdminPassword(vaultPath) {
+  const fromEnv = process.env.BLOG_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  if (fromEnv) return fromEnv;
+  const pluginData = path.join(vaultPath, ".obsidian", "plugins", "komorebi-blog-sync", "data.json");
+  try {
+    if (existsSync(pluginData)) {
+      const parsed = JSON.parse(await readFile(pluginData, "utf8"));
+      const stored = parsed && parsed.adminPassword;
+      if (typeof stored === "string" && stored.trim()) return stored.trim();
+    }
+  } catch {
+    // 读取失败视为未配置，由 upload 阶段报出可读错误
+  }
+  return "";
 }
 
 async function loadConfig(args) {
@@ -55,6 +85,7 @@ async function loadConfig(args) {
   config.siteUrl = args.siteUrl || config.siteUrl;
   config.snapshotDirectory = path.resolve(projectRoot, config.snapshotDirectory);
   config.assetDirectory = path.resolve(projectRoot, config.assetDirectory);
+  config.adminPassword = await resolveAdminPassword(config.vaultPath);
   return config;
 }
 
@@ -121,8 +152,7 @@ async function buildSnapshot(config, args, write) {
   return result;
 }
 
-async function adminCookie(siteUrl) {
-  const password = process.env.BLOG_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+async function adminCookie(siteUrl, password) {
   if (!password) return "";
   const response = await fetch(new URL("/api/admin/login", siteUrl), {
     method: "POST",
@@ -136,8 +166,8 @@ async function adminCookie(siteUrl) {
   return cookie;
 }
 
-async function uploadNotes(siteUrl, notes, prune) {
-  const cookie = await adminCookie(siteUrl);
+async function uploadNotes(siteUrl, notes, prune, password) {
+  const cookie = await adminCookie(siteUrl, password);
   let uploaded = 0;
   for (const note of notes) {
     const response = await fetch(new URL("/api/admin/notes", siteUrl), {
@@ -162,7 +192,7 @@ async function uploadNotes(siteUrl, notes, prune) {
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      const hint = response.status === 403 && !cookie ? "；请设置 BLOG_ADMIN_PASSWORD 环境变量" : "";
+      const hint = response.status === 403 && !cookie ? "；请设置 BLOG_ADMIN_PASSWORD 环境变量或确认插件已保存管理员密码" : "";
       throw new Error(`上传《${note.title}》失败：${data.error || `HTTP ${response.status}`}${hint}`);
     }
     uploaded += 1;
@@ -191,7 +221,7 @@ async function sync(config, args) {
 
 async function upload(config, args) {
   const result = await buildSnapshot(config, args, false);
-  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune);
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
   const scope = args.only ? `（仅 ${args.only}）` : "";
 
   // 新增了本地图片时：备份到 Git 并重新部署，让 /obsidian-assets/* 真正可访问。
@@ -254,7 +284,7 @@ async function publish(config, args) {
     );
   }
 
-  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune);
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
   await writeSyncState(config.vaultPath, result.notes);
   if (assetChanged) {
     const wrangler = process.platform === "win32" ? "npx.cmd" : "npx";

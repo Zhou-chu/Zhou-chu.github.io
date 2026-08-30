@@ -93,11 +93,13 @@ function tagsValue(value) {
 function cleanText(markdown) {
   return markdown
     .replace(/```[\s\S]*?```/g, " ")
+    .replace(/\$\$[\s\S]*?\$\$/g, " ")
+    .replace(/\$[^$\n]+\$/g, " ")
     .replace(/!\[.*?\]\(.*?\)/g, " ")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_match, target, alias) => alias || target)
     .replace(/<[^>]+>/g, " ")
-    .replace(/[#>*_`~\-]+/g, " ")
+    .replace(/[#>*_`~\-+]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }

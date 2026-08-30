@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 66,
-  "assetCount": 27,
+  "noteCount": 68,
+  "assetCount": 44,
   "notes": [
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
@@ -33,6 +33,20 @@
       "hash": "4642a45b8a5569e7ca1c15623b02f6bbd1da81121d94dea3602d23a4d67a1c12"
     },
     {
+      "sourcePath": "blog/人工智能的优化方法/chapter-2-extended-real-valued-functions-iernkzyd.md",
+      "slug": "chapter-2-extended-real-valued-functions-iernkzyd",
+      "title": "Chapter 2-Extended Real-Valued Functions",
+      "publishedAt": "2026-08-30",
+      "hash": "2be1ecbdc10ce9738d0d9851fb4f07c0e5582b55486ab8cacb00ccfb5e6ecb8e"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-3-subgradients-stgsfkvt.md",
+      "slug": "chapter-3-subgradients-stgsfkvt",
+      "title": "Chapter 3-Subgradients",
+      "publishedAt": "2026-08-30",
+      "hash": "95b5d290af81ca57f7b41add7e888c3bb96be28f657f1489e20c7059306afa8c"
+    },
+    {
       "sourcePath": "blog/深度学习/深度学习-多层感知机.md",
       "slug": "深度学习-多层感知机-mt9utq9b",
       "title": "深度学习：多层感知机（MLP）",
@@ -44,7 +58,7 @@
       "slug": "深度学习-cnn-mt9utq9b",
       "title": "深度学习：卷积神经网络（CNN）",
       "publishedAt": "2026-08-26",
-      "hash": "2c2d35bc34b007d13767b9c9fe77b79ebd9c986908a0bf19aa483d004dfac050"
+      "hash": "4efeca4069a41c4c8365bd5be461698c544cd1b1a120adfd97230b5b305ee6cd"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

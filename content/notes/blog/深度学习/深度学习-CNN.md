@@ -27,4 +27,34 @@ featured: false
 + 卷积神经网络在MLP Mixer的基础上添加了两个Idea
 	 1. Local Connectivity：既然MLP Mixer由于把patch展平而丢失了空间相对位置关系，那么考虑到每个神经元对应一个感受野（窗口），一个很直观的思路就是，我们把每层的神经元的空间位置关系按照其感受野的空间位置关系进行排列。比如下图，第一层神经元按照网格感受野的方式进行排列，底层的像素通过某个比例向对应的神经元进行线性贡献，然后激活。之后，第一层神经元的结果，又被划分为一个个感受野，被第2层的神经元处理，以此类推，从而不断将感受的层次变宽（每层神经元个数也逐渐变小），直到某层的神经元数量少到可以flatten之后用MLP能处理下来。
 	 ![](/obsidian-assets/ae54b7b514397450.png)
-	2. Parameter Sharing：我们考虑特征的提取，我们注意到，在空间不同位置提取到的同样的局部特征往往具有重大意义（平移不变性）。因此，我们要求这一层的所有神经元参数共享。即，同一层的各个滑动窗口，应当采用同一款特征提取的参数权重（一会我们要训练的参数就是它）：![](/obsidian-assets/dda11627eeeb7d80.png)
+	2. Parameter Sharing：我们考虑特征的提取，我们注意到，在空间不同位置提取到的同样的局部特征往往具有重大意义（平移不变性）。因此，我们要求这一层的所有神经元参数共享。即，同一层的各个滑动窗口，应当采用同一款特征提取的参数权重（一会我们要训练的参数就是它）：![[Pasted image 20260826164353.png
+#### 卷积的定义
++ 对于连续函数：$$(f*g)(t)=\int_{-\infty}^{\infty}f(\tau)g(t-\tau){\rm d}\tau$$
++ 对于离散函数：$$(f*g)(n_=\sum_{m=-\infty}^{\infty}f(m)g(n-m)$$
++ **权重**函数 g 突出随 t 不同的各个部分的 f 。卷积体现 f 由于 g 造成的形状更改
+#### Cross-Correlation（互相关）
++ 互相关是衡量两个序列 f(t)f(t) 和 g(t)g(t) 相似度的一种度量，它是其中一个序列相对于另一个序列**滞后（lag/位移）** 的函数。
++ $$(f*g)(n)=\sum_{m=-\infty}^{\infty}\overline{f(m)}g(m+n)$$
++ $$[f(t)*g(t)]=[\overline{f(-t)}*g(t)](t)$$
++ ![](/obsidian-assets/f30180d688b79652.png)
++ CNN实际使用**互相关**算子。因为在CNN中，卷积核（滤波器）的权重是通过训练**学习**出来的。既然权重本身是未知的需要学习的，那么是否提前把滤波器翻转过来（数学卷积）就不重要了。直接使用互相关（不翻转，直接滑动窗口提取特征）在逻辑和代码实现上都更直观、更高效。因此，后面我们所说的卷积，实际上指的是互相关操作
++ 注意，互相关不满足交互律，尽管卷积是满足的
+#### CNN的演示
++ ![](/obsidian-assets/12e89a04430705ec.png)
++ 这是我们的输入，他是一个 $32\times 32$ 的RGB三色图片，我们按照每种原色拆分出一个维度，因此我们的输入是一个 $32\times 32\times 3$ 的张量
++ 对于这个张量，我们使用一个 $5\times 5\times 3$ 的一个**卷积核（kernel）**。注意这个卷积核只在长宽上是**局部**的，但是它在通道上是**全深度**的。之后，这个卷积核在平面上**滑动窗口**
+	+ ![](/obsidian-assets/3161da0f288efdf7.png)
++ 具体的计算流程如下所示
+	+ ![](/obsidian-assets/ed42f34d3ecdf441.png)
+	+ ![](/obsidian-assets/384df6dd759eb558.png)
+	+ ![](/obsidian-assets/a62ff82bc57c2351.png)
+	+ ![](/obsidian-assets/af4ceec37d1fffc0.png)
+	+ ![](/obsidian-assets/08a5c8fa32cb1140.png)
+	+ ![](/obsidian-assets/6c5b7323dd401f78.png)
+	+ ![](/obsidian-assets/9a785a58c5fee63f.png)
+	+ ![](/obsidian-assets/f3a6bc51554a1618.png)
+	+ ![](/obsidian-assets/80ded46f1a9acec7.png)
+	+ ![](/obsidian-assets/6781791236c43473.png)
+	+ ![](/obsidian-assets/e9a7d145b170c88c.png)
+	+ ![](/obsidian-assets/6cd538efee94a3ed.png)
+	+ ![](/obsidian-assets/985250e962cfe3c7.png)

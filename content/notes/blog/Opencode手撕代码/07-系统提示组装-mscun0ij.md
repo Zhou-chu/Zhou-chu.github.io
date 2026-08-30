@@ -2,7 +2,7 @@
 blog: true
 title: "07-系统提示组装"
 slug: "07-系统提示组装-mscun0ij"
-summary: "树节点：07 系统提示组装 父节点：07 消息结构与角色 子节点：无 07 系统提示组装 OpenCode 的 system prompt 由 两部分拼接 而成：Agent 的静态 system 文本 + 动态的上下文基线（baseline）。上下文基线由多个 Context Source 并行加载后合并生成。 一、组装入口： loadSystemContext() 三个输入 并发加载 （ concurrency: \"unbounded"
+summary: "树节点：07 系统提示组装 父节点：07 消息结构与角色 子节点：无 07 系统提示组装 OpenCode 的 system prompt 由 两部分拼接 而成：Agent 的静态 system 文本 动态的上下文基线（baseline）。上下文基线由多个 Context Source 并行加载后合并生成。 一、组装入口： loadSystemContext() 三个输入 并发加载 （ concurrency: \"unbounded\" "
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

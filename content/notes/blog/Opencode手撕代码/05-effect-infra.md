@@ -2,7 +2,7 @@
 blog: true
 title: "05 — Effect-TS 基础设施 (Effect-TS Infrastructure)"
 slug: "05-effect-ts-基础设施-effect-ts-infrastructure-mscuwj50"
-summary: "05 — Effect TS 基础设施 (Effect TS Infrastructure) Effect TS 是 OpenCode 所有源码的基石 。不先理解 Service + Layer + Node 模式和模块自导出约定，阅读任何一个核心文件都会撞墙。本章前置：00 overview 的设计哲学。 1. 设计哲学：为什么是 Effect TS 来自 00 overview 的 Dimension 1： Effect TS 服务"
+summary: "05 — Effect TS 基础设施 (Effect TS Infrastructure) Effect TS 是 OpenCode 所有源码的基石 。不先理解 Service Layer Node 模式和模块自导出约定，阅读任何一个核心文件都会撞墙。本章前置：00 overview 的设计哲学。 1. 设计哲学：为什么是 Effect TS 来自 00 overview 的 Dimension 1： Effect TS 服务模型 —"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

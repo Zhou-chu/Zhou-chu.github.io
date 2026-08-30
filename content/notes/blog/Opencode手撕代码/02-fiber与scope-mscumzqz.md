@@ -2,7 +2,7 @@
 blog: true
 title: "02-Fiber与Scope"
 slug: "02-fiber与scope-mscumzqz"
-summary: "树节点：02 Fiber与Scope 父节点：02 Effect TS核心范式 子节点：无 概述 Effect TS 中的 Fiber 是轻量级绿色线程， Scope 是资源生命周期的边界。两者共同构成 Opencode 并发模型的基础：Session 执行、工具调用、插件生命周期、文件操作都通过 Fiber + Scope 管理。02 Effect TS核心范式 Opencode 不使用 Effect 的 Supervisor 机制 "
+summary: "树节点：02 Fiber与Scope 父节点：02 Effect TS核心范式 子节点：无 概述 Effect TS 中的 Fiber 是轻量级绿色线程， Scope 是资源生命周期的边界。两者共同构成 Opencode 并发模型的基础：Session 执行、工具调用、插件生命周期、文件操作都通过 Fiber Scope 管理。02 Effect TS核心范式 Opencode 不使用 Effect 的 Supervisor 机制 ，也"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

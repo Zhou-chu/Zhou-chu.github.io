@@ -2,7 +2,7 @@
 blog: true
 title: "06 — 客户端架构与包依赖 (Client Architecture & Package Dependencies)"
 slug: "06-客户端架构与包依赖-client-architecture-package-dependencies-mscuwjph"
-summary: "06 — 客户端架构与包依赖 (Client Architecture & Package Dependencies) OpenCode 的客户端层采用双轨策略（网络 SDK + 嵌入式宿主），由四层单向依赖约束驱动，通过代码生成保持一致性。 1. 四层单向依赖 (Four Layer Unidirectional Dependency) OpenCode 的包之间遵循严格的菱形依赖拓扑：Schema 是唯一的数据契约根基，Core 和"
+summary: "06 — 客户端架构与包依赖 (Client Architecture & Package Dependencies) OpenCode 的客户端层采用双轨策略（网络 SDK 嵌入式宿主），由四层单向依赖约束驱动，通过代码生成保持一致性。 1. 四层单向依赖 (Four Layer Unidirectional Dependency) OpenCode 的包之间遵循严格的菱形依赖拓扑：Schema 是唯一的数据契约根基，Core 和 P"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

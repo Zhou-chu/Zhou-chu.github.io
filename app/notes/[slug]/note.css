@@ -139,6 +139,11 @@
   padding-left: 1.6em;
 }
 
+/* 构建产物会注入 preflight 重置（ul { list-style: none }），顶级列表需显式恢复黑点 */
+.note-body ul {
+  list-style-type: disc;
+}
+
 .note-body li {
   margin: var(--space-1, 0.25rem) 0;
   padding-left: 0.25em;

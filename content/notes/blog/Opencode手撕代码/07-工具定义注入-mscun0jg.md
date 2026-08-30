@@ -2,7 +2,7 @@
 blog: true
 title: "07-工具定义注入"
 slug: "07-工具定义注入-mscun0jg"
-summary: "树节点：07 工具定义注入 父节点：07 消息结构与角色 子节点：无 概述 工具定义注入是 Core → LLM 层的桥梁 ：将 ToolRegistry 中注册的所有工具（built in + application + Location scoped）materialize 为 LLM 层可消费的 ToolDefinition[] ，随每个 LLMRequest 下发给模型。整个过程分三个阶段：注册（registration）、ma"
+summary: "树节点：07 工具定义注入 父节点：07 消息结构与角色 子节点：无 概述 工具定义注入是 Core → LLM 层的桥梁 ：将 ToolRegistry 中注册的所有工具（built in application Location scoped）materialize 为 LLM 层可消费的 ToolDefinition[] ，随每个 LLMRequest 下发给模型。整个过程分三个阶段：注册（registration）、materi"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

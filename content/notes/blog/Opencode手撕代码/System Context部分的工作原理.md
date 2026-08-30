@@ -2,7 +2,7 @@
 blog: true
 title: "System Context部分的工作原理"
 slug: "system-context部分的工作原理-mscuwjpc"
-summary: "这一部分主要内容就是负责整理环境信息，处理得到System Prompt，进而将其作为Baseline，在整个Epoch内部这个System Prompt都不变。 好，这个问题的答案正是 OpenCode 设计中最精妙的地方。让我从\"朴素做法的问题\"讲起，再逐步展开 OpenCode 的机制。 这一部分对应的原码有： + packages/core/src/system context/builtins.ts + packages/co"
+summary: "这一部分主要内容就是负责整理环境信息，处理得到System Prompt，进而将其作为Baseline，在整个Epoch内部这个System Prompt都不变。 好，这个问题的答案正是 OpenCode 设计中最精妙的地方。让我从\"朴素做法的问题\"讲起，再逐步展开 OpenCode 的机制。 这一部分对应的原码有： packages/core/src/system context/builtins.ts packages/core/s"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "03 — 工具系统 (Tool System)"
 slug: "03-工具系统-tool-system-mscuwj48"
-summary: "03 — 工具系统 (Tool System) 工具系统承担两个核心职责：告诉 LLM 当前有哪些工具可用（materialize），以及在 LLM 调用工具时执行并管理输出（settle）。OpenCode 1.18.4 的 Core V2 工具系统采用 私有 Layer + 公开 Node 的组装模型 ：每个模块内部定义私有的 const layer （Effect Layer），对外只暴露 export const node （ "
+summary: "03 — 工具系统 (Tool System) 工具系统承担两个核心职责：告诉 LLM 当前有哪些工具可用（materialize），以及在 LLM 调用工具时执行并管理输出（settle）。OpenCode 1.18.4 的 Core V2 工具系统采用 私有 Layer 公开 Node 的组装模型 ：每个模块内部定义私有的 const layer （Effect Layer），对外只暴露 export const node （ ma"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

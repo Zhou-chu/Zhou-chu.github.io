@@ -2,7 +2,7 @@
 blog: true
 title: "01-项目架构与包结构"
 slug: "01-项目架构与包结构-mscuwigy"
-summary: "树节点：01 项目架构与包结构 父节点：Opencode的工作原理 子节点：01 核心入口与启动流程 | 01 核心概念名词表 01 项目架构与包结构 OpenCode 是一个基于 Bun monorepo（ package.json:7 ）构建的 AI 编程助手，使用 Effect TS v4 作为核心运行时框架（ packages/schema/package.json:15 ），以 Drizzle ORM+SQLite 为持久化层"
+summary: "树节点：01 项目架构与包结构 父节点：Opencode的工作原理 子节点：01 核心入口与启动流程 | 01 核心概念名词表 01 项目架构与包结构 OpenCode 是一个基于 Bun monorepo（ package.json:7 ）构建的 AI 编程助手，使用 Effect TS v4 作为核心运行时框架（ packages/schema/package.json:15 ），以 Drizzle ORM SQLite 为持久化层"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

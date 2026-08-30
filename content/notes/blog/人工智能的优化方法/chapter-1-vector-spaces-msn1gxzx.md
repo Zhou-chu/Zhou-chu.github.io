@@ -2,7 +2,7 @@
 blog: true
 title: "Chapter 1-Vector Spaces"
 slug: "chapter-1-vector-spaces-msn1gxzx"
-summary: "1.1 Definition 一个定义在实数 $\\mathbb{R}$ 上的向量空间 $\\mathbb{E}$（或称为“实向量空间”），是指由称为 向量 (vectors) 的元素组成的集合，且满足以下条件： (A) 对于 $\\mathbb{E}$ 中任意两个向量 $\\mathbf{x}, \\mathbf{y}$，都存在一个对应的向量 $\\mathbf{x} + \\mathbf{y}$，称为 $\\mathbf{x}$ 和 $\\mathb"
+summary: "凸优化全书的空间约定：从实向量空间的基本定义出发，理解有限维、内积与范数等基石概念。"
 date: 2026-08-10
 category: "人工智能的优化方法"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "关于Effect-ts 中的Effect的理解"
 slug: "关于effect-ts-中的effect的理解-mscuwj3t"
-summary: "这个问题触及了 Effect TS 最核心的设计理念。让我从\"什么是 Effect\"讲到\"为什么这里要传 Effect\"。 一、Effect 是什么：一张\"菜谱\" Effect 不是 string 。它是一张 还没执行的菜谱 ——描述了\"需要做什么事来得到一个 string\"，但描述本身 不做任何事 。 类比 | | 菜谱 | 做菜 | | | | | | Effect | Effect.sync(() = 切菜() + 炒菜()) |"
+summary: "这个问题触及了 Effect TS 最核心的设计理念。让我从\"什么是 Effect\"讲到\"为什么这里要传 Effect\"。 一、Effect 是什么：一张\"菜谱\" Effect 不是 string 。它是一张 还没执行的菜谱 ——描述了\"需要做什么事来得到一个 string\"，但描述本身 不做任何事 。 类比 | | 菜谱 | 做菜 | | | | | | Effect | Effect.sync(() = 切菜() 炒菜()) | E"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

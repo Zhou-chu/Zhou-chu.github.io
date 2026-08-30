@@ -2,7 +2,7 @@
 blog: true
 title: "事件系统与持久化"
 slug: "事件系统与持久化-mscuwjpd"
-summary: "树节点：11 事件系统与持久化 父节点：11 Provider Turn完整流程 子节点：无 事件系统与持久化 OpenCode 的事件系统遵循 Event Sourcing + PubSub 模式，是整个系统实时性与持久化的枢纽。Provider Turn 中的每一步（文本生成、工具调用、上下文更新）都通过事件总线广播，由 Projector 投影到数据库。 架构概览 核心文件 ： packages/core/src/event.ts"
+summary: "树节点：11 事件系统与持久化 父节点：11 Provider Turn完整流程 子节点：无 事件系统与持久化 OpenCode 的事件系统遵循 Event Sourcing PubSub 模式，是整个系统实时性与持久化的枢纽。Provider Turn 中的每一步（文本生成、工具调用、上下文更新）都通过事件总线广播，由 Projector 投影到数据库。 架构概览 核心文件 ： packages/core/src/event.ts —"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

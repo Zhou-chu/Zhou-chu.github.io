@@ -2,7 +2,7 @@
 blog: true
 title: "08-工具执行与结算"
 slug: "08-工具执行与结算-mscun0jf"
-summary: "树节点：08 工具执行与结算 父节点：08 工具声明与注册 子节点：无 08 工具执行与结算 概述 工具执行与结算（Settlement）是从 LLM 返回 tool call 事件开始，到工具结果被持久化为 SessionEvent 的完整流水线。核心由三个模块协作完成： packages/core/src/tool/tool.ts （单工具执行）、 packages/core/src/tool/registry.ts （查找+权限+"
+summary: "树节点：08 工具执行与结算 父节点：08 工具声明与注册 子节点：无 08 工具执行与结算 概述 工具执行与结算（Settlement）是从 LLM 返回 tool call 事件开始，到工具结果被持久化为 SessionEvent 的完整流水线。核心由三个模块协作完成： packages/core/src/tool/tool.ts （单工具执行）、 packages/core/src/tool/registry.ts （查找 权限 "
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

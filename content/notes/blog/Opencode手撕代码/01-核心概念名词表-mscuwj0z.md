@@ -2,7 +2,7 @@
 blog: true
 title: "01-核心概念名词表"
 slug: "01-核心概念名词表-mscuwj0z"
-summary: "树节点：01 核心概念名词表 父节点：01 项目架构与包结构 子节点：无 01 核心概念名词表 本文档提取 opencode dev/CONTEXT.md （225 行）中定义的全部核心术语，并补充 AGENTS.md 中的架构概念。术语定义以 CONTEXT.md 的 Language 节（ :5 86 ）和 Relationships 节（ :88 199 ）为准。 格式： English Term — 中文解释 + 原文定义 + "
+summary: "树节点：01 核心概念名词表 父节点：01 项目架构与包结构 子节点：无 01 核心概念名词表 本文档提取 opencode dev/CONTEXT.md （225 行）中定义的全部核心术语，并补充 AGENTS.md 中的架构概念。术语定义以 CONTEXT.md 的 Language 节（ :5 86 ）和 Relationships 节（ :88 199 ）为准。 格式： English Term — 中文解释 原文定义 来源行号"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

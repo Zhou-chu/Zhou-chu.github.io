@@ -2,7 +2,7 @@
 blog: true
 title: "OpenCode 的工作原理"
 slug: "opencode-的工作原理-mscuwj2k"
-summary: "OpenCode 的工作原理 基于 opencode dev 源码的完整学习笔记索引。本页是 单一入口 Hub ——架构速览、模块导航、推荐阅读顺序的集中入口。 所有笔记以实际源码为第一基准，旧笔记仅供参考。 核心架构（10 秒版） OpenCode 是一个 Effect TS 多包 AI 编程助手： 一次 Provider Turn 的完整路径： 笔记树导航（38 篇 + 本页） 01 — 项目架构与核心概念 | 笔记 | 核心内容 "
+summary: "OpenCode 的工作原理 基于 opencode dev 源码的完整学习笔记索引。本页是 单一入口 Hub ——架构速览、模块导航、推荐阅读顺序的集中入口。 所有笔记以实际源码为第一基准，旧笔记仅供参考。 核心架构（10 秒版） OpenCode 是一个 Effect TS 多包 AI 编程助手： 一次 Provider Turn 的完整路径： 笔记树导航（38 篇 本页） 01 — 项目架构与核心概念 | 笔记 | 核心内容 | "
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

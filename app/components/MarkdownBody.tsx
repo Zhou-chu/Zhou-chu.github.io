@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -127,7 +128,7 @@ export function MarkdownBody({ source, headingIds = false }: MarkdownBodyProps) 
   const usedSlugs = headingIds ? new Set<string>() : null;
 
   return <ReactMarkdown
-    remarkPlugins={[remarkGfm, remarkMath]}
+    remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
     rehypePlugins={[
       [rehypeKatex, { strict: false, throwOnError: false }],
       [rehypeHighlight, { detect: true, ignoreMissing: true }],

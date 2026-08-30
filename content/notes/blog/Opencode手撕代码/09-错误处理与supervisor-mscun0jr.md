@@ -2,7 +2,7 @@
 blog: true
 title: "09-错误处理与Supervisor"
 slug: "09-错误处理与supervisor-mscun0jr"
-summary: "树节点：09 错误处理与Supervisor 父节点：09 Fork与Fiber生命周期 子节点：无 OpenCode 使用 Effect 的类型化错误通道（E channel） 和 Schema.TaggedError 模式进行错误处理。整个系统不使用 Effect Supervisor，而是通过 FiberSet 管理并发 + 显式的错误传播链来实现容错。 Effect 错误通道（E Channel） 每个 Effect 有三个类型"
+summary: "树节点：09 错误处理与Supervisor 父节点：09 Fork与Fiber生命周期 子节点：无 OpenCode 使用 Effect 的类型化错误通道（E channel） 和 Schema.TaggedError 模式进行错误处理。整个系统不使用 Effect Supervisor，而是通过 FiberSet 管理并发 显式的错误传播链来实现容错。 Effect 错误通道（E Channel） 每个 Effect 有三个类型参数"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "Chapter 3-Subgradients"
 slug: "chapter-3-subgradients-stgsfkvt"
-summary: "3.1 定义与初步示例 (Definitions and First Examples) 定义 3.1：次梯度 (Subgradient) 令 $f: \\mathbb{E} \\to ( \\infty, \\infty]$ 是一个正常函数，且 $\\mathbf{x} \\in \\text{dom}(f)$。如果向量 $\\mathbf{g} \\in \\mathbb{E}^ $ 满足以下不等式，则称其为 $f$ 在点 $\\mathbf{x}$ 处"
+summary: "次梯度的定义与初步示例：凸函数在不可导点处的次梯度，及其全局托举性质。"
 date: 2026-08-30
 category: "人工智能的优化方法"
 featured: false
@@ -163,7 +163,7 @@ $$
 \emptyset, & \|\mathbf{x}\| > 1
 \end{cases}
 $$
-这上面这个式子似乎“自相矛盾”，因为dual norm的定义看上去就让它很难成立，但其实要满足要求，就只能$$||y||_*=<y,x>$$
+这上面这个式子似乎“自相矛盾”，因为dual norm的定义看上去就让它很难成立，但其实要满足要求，就只能$\|y\|_* = \langle y, x \rangle$
 + 因此，对于这个单位球的法锥，当 $x$ 在球内部的时候，法锥只有0向量；当 $x$ 在球面上的时候，法锥只有和 $x$ 同方向的 $y$ （这里说的 $y$ 没有区分 $\mathbb{E}$ 和 $\mathbb{E}^*$，因为实际上可以说明 $\mathbb{E}^*$ 中的 $y$ 在 $\mathbb{E}$ 中有一个唯一映射的向量与之对应，所以我们很多时候不区分它们）
 ---
 ### Example 3.7 (Subgradient of the dual function)
@@ -214,4 +214,4 @@ $$
 concluding that:
 $$
 \boxed{-\mathbf{g}(\mathbf{x}_0) \in \partial(-q)(\boldsymbol{\lambda}_0).}
-$$*
+$$

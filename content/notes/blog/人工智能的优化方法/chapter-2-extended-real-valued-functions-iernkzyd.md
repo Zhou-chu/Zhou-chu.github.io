@@ -2,7 +2,7 @@
 blog: true
 title: "Chapter 2-Extended Real-Valued Functions"
 slug: "chapter-2-extended-real-valued-functions-iernkzyd"
-summary: "在本书中，我们的underlying spaces都是 有限维 的、存在内积和范数的空间 2.1 Extended Real Valued Functions and Closedness + 我们考虑在实数 $\\mathbb{R}$ 的基础上，扩充引入 $\\infty$ 和 $ \\infty$，它们有这样的运算律 + !390 + 直觉上，其中唯一“不自然”的就是这个 $0\\cdot \\infty=0$ ，但是在我们讨论的范围呢，这个"
+summary: "扩展实值函数与闭性：把实数扩充上 ∞ 与 −∞，讨论有效定义域、示性函数等凸分析的基础对象。"
 date: 2026-08-30
 category: "人工智能的优化方法"
 featured: false
@@ -94,7 +94,7 @@ $y_n \ge \dfrac{1}{x_n} \to +\infty,$
 $(x_n, y_n) \to (x^*, y^*)$ 且乘法连续，故 $x_n y_n \to x^* y^*$。又每个 $x_n y_n \ge 1$，数列极限保序性给出 $x^* y^* \ge 1$。
 两步合起来，$(x^*, y^*) \in \mathrm{epi}(f)$。$\blacksquare$
 **几何直觉**：当 $x \to 0^+$ 时 $f(x) \to +\infty$，图像「往无穷高跑了」。所以上境图虽然在直线 $x = 0$ 上方「断掉」，但**没有任何极限点落在那条线上**——想靠近它就得爬到无穷高，而 $y$ 坐标必须是有限实数，爬不上去。
-**这就是整个反例的核心**：定义域的「缺口」被函数值在该处爆到 $+\infty$ 给「补」上了。上境$图没有漏，所以函数闭。
+**这就是整个反例的核心**：定义域的「缺口」被函数值在该处爆到 $+\infty$ 给「补」上了。上境图没有漏，所以函数闭。
 ### 定义 2.5 · 下半连续
 > **定义 2.5**（下半连续性 lower semicontinuity）。称函数 $f : \mathbb{E} \to [-\infty, \infty]$ 在点 $\mathbf{x} \in \mathbb{E}$ **下半连续**，如果
 > $$f(\mathbf{x}) \le \liminf_{n \to \infty} f(\mathbf{x}_n)$$

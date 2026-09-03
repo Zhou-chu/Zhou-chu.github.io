@@ -1,9 +1,16 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 68,
+  "noteCount": 70,
   "assetCount": 44,
   "notes": [
+    {
+      "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",
+      "slug": "deepseek-harness-rescue-log-0830",
+      "title": "Deepseek Harness 抢救日志 (0830)",
+      "publishedAt": "2026-08-30",
+      "hash": "dfadb30d00281440b54918efb44c0bfd2c0eab651b04470acbd2ea3009b05f2b"
+    },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
       "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
@@ -59,6 +66,13 @@
       "title": "深度学习：卷积神经网络（CNN）",
       "publishedAt": "2026-08-26",
       "hash": "4efeca4069a41c4c8365bd5be461698c544cd1b1a120adfd97230b5b305ee6cd"
+    },
+    {
+      "sourcePath": "blog/LLMGW 网关/随想——LLMGW 本地 LLM 网关.md",
+      "slug": "llmgw-local-llm-gateway",
+      "title": "LLMGW 本地 LLM 网关 — 工程开发文档 v3.0",
+      "publishedAt": "2026-09-03",
+      "hash": "fedbd66ba7958e80ca72d9e9832dfb1c6389b5a7b4b77753fe17ae2b00e8d0fc"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

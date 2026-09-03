@@ -58,3 +58,12 @@ next-env.d.ts
 /.playwright-mcp/
 /.playwright-cli/
 /skills/
+/.workbuddy-ai/
+
+# 本项目用 npm 管理依赖；误跑 pnpm 产生的锁文件不入库
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
+
+# 一次性整理脚本（任务已完成，仅留档不入库）
+/.copy-assets.mjs
+/.organize-chapters.mjs

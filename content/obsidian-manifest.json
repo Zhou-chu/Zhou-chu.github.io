@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 70,
-  "assetCount": 44,
+  "noteCount": 81,
+  "assetCount": 45,
   "notes": [
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",
@@ -40,11 +40,53 @@
       "hash": "4642a45b8a5569e7ca1c15623b02f6bbd1da81121d94dea3602d23a4d67a1c12"
     },
     {
+      "sourcePath": "blog/人工智能的优化方法/chapter-10-the-proximal-gradient-method-aifd8bf.md",
+      "slug": "chapter-10-the-proximal-gradient-method-aifd8bf",
+      "title": "Chapter 10-The Proximal Gradient Method",
+      "publishedAt": "2026-09-03",
+      "hash": "7cf11908f8e5c0caa75829d7e3e2a23dadc0a737bccbf81d434656f71bd5979b"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-11-the-block-proximal-gradient-method-3yshuan.md",
+      "slug": "chapter-11-the-block-proximal-gradient-method-3yshuan",
+      "title": "Chapter 11-The Block Proximal Gradient Method",
+      "publishedAt": "2026-09-03",
+      "hash": "f648acda3d52a2314dbfe91d6a1191b4aaf3e300ba4e1fb28ae5e3bd1458e104"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-12-dual-based-proximal-gradient-methods-d9mmnlz.md",
+      "slug": "chapter-12-dual-based-proximal-gradient-methods-d9mmnlz",
+      "title": "Chapter 12-Dual-Based Proximal Gradient Methods",
+      "publishedAt": "2026-09-03",
+      "hash": "d3f2ea2c7b4beb80211c8748e804001db065de322171fde77ea14ba374168785"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-13-the-generalized-conditional-gradient-method-by1fx8x.md",
+      "slug": "chapter-13-the-generalized-conditional-gradient-method-by1fx8x",
+      "title": "Chapter 13-The Generalized Conditional Gradient Method",
+      "publishedAt": "2026-09-03",
+      "hash": "04def3238b1976aec289e17f7713b1de0dc14ba5e0b652af45b5fa4a28d258a8"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-14-alternating-minimization-1srrl6p.md",
+      "slug": "chapter-14-alternating-minimization-1srrl6p",
+      "title": "Chapter 14-Alternating Minimization",
+      "publishedAt": "2026-09-03",
+      "hash": "21711ede4aea1ede6410aa5ba1168496c739ce73286df154c882d84970775447"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-15-admm-wa7pabv.md",
+      "slug": "chapter-15-admm-wa7pabv",
+      "title": "Chapter 15-ADMM",
+      "publishedAt": "2026-09-03",
+      "hash": "f5f63dfc41743e6b391bfca312af7d038e59bb410889e59e2eb8039a299e1a6a"
+    },
+    {
       "sourcePath": "blog/人工智能的优化方法/chapter-2-extended-real-valued-functions-iernkzyd.md",
       "slug": "chapter-2-extended-real-valued-functions-iernkzyd",
       "title": "Chapter 2-Extended Real-Valued Functions",
       "publishedAt": "2026-08-30",
-      "hash": "1023d96aacc1b2855e03795636375cb89af7ef714d1dc7d88f8b654785e3375e"
+      "hash": "775b2fad3aeef75b7f46a244aafabf123ac1c2a6e5086f68d88121fd25ab4091"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-3-subgradients-stgsfkvt.md",
@@ -52,6 +94,41 @@
       "title": "Chapter 3-Subgradients",
       "publishedAt": "2026-08-30",
       "hash": "2fb9705136e2442e40bdbf030a893e64e1febc359be78ed23ae14228df6c07f6"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-4-conjugate-functions-ugnf7dg.md",
+      "slug": "chapter-4-conjugate-functions-ugnf7dg",
+      "title": "Chapter 4-Conjugate Functions",
+      "publishedAt": "2026-09-03",
+      "hash": "6e77a8897ed210854e466b75247720f3317dae513ded352eb943142fff0d1a1f"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-5-smoothness-and-strong-convexity-66gf4lq.md",
+      "slug": "chapter-5-smoothness-and-strong-convexity-66gf4lq",
+      "title": "Chapter 5-Smoothness and Strong Convexity",
+      "publishedAt": "2026-09-03",
+      "hash": "799b4dbbbe469b2d94163457682a6c19660c5ca7c9af92227963b8e81d7e54ab"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-6-the-proximal-operator-6knzu5o.md",
+      "slug": "chapter-6-the-proximal-operator-6knzu5o",
+      "title": "Chapter 6-The Proximal Operator",
+      "publishedAt": "2026-09-03",
+      "hash": "dc7864ecc811789b34fdd22573d0df2932e131e3ad1c3221e04e862301319d79"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-7-spectral-functions-31gqg57.md",
+      "slug": "chapter-7-spectral-functions-31gqg57",
+      "title": "Chapter 7-Spectral Functions",
+      "publishedAt": "2026-09-03",
+      "hash": "c5edf05ee9ec8cf45956b5a37a027b9976248945f4fd1524e65b1071e2957150"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/chapter-9-mirror-descent-m3qkmag.md",
+      "slug": "chapter-9-mirror-descent-m3qkmag",
+      "title": "Chapter 9-Mirror Descent",
+      "publishedAt": "2026-09-03",
+      "hash": "d5dec41ab88310ca2ff5b787d99da2475d7b9f3aebe12e3c23c104c3f0f34d20"
     },
     {
       "sourcePath": "blog/深度学习/深度学习-多层感知机.md",

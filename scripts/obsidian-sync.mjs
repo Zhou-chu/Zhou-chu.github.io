@@ -127,7 +127,14 @@ function gitChangedFiles() {
 
 function assertPublishWorktree(changedFiles, allowedRoots) {
   const unrelated = changedFiles.filter((file) => !allowedRoots.some((root) => file === root || file.startsWith(`${root}/`) || file.startsWith(`${root}\\`)));
-  if (unrelated.length) throw new Error(`检测到同步范围之外的未提交修改，已停止自动发布：\n- ${unrelated.join("\n- ")}`);
+  if (unrelated.length) {
+    throw new Error(
+      `检测到同步范围之外的未提交修改，已停止自动发布：\n- ${unrelated.join("\n- ")}\n\n` +
+        `发布只会代提交 content/ 与 public/obsidian-assets/ 两个目录。处理办法二选一：\n` +
+        `  ① 是缓存或临时产物（工具目录、误生成的锁文件、一次性脚本等）→ 把它们的路径加进 .gitignore；\n` +
+        `  ② 需要保留 → 先在博客目录 git add + git commit 单独提交它们，再点「🚀 发布」。`
+    );
+  }
 }
 
 function assertRemoteCurrent() {
@@ -247,7 +254,12 @@ async function upload(config, args) {
 
 async function pull(config, args) {
   const changed = gitChangedFiles();
-  if (changed.length) throw new Error("博客项目中存在未提交修改，已停止拉取；请先提交或处理这些修改");
+  if (changed.length) {
+    throw new Error(
+      `博客项目中存在未提交修改，已停止拉取（拉取会覆盖快照，必须先让工作区干净）：\n- ${changed.join("\n- ")}\n\n` +
+        `处理办法：在博客目录 git add . && git commit 提交这些改动；若其中含临时产物，加进 .gitignore 后即可自动忽略。`
+    );
+  }
   run("git", ["pull", "--ff-only", "origin", "main"]);
   const result = await pullSnapshotToVault({
     vaultPath: config.vaultPath,

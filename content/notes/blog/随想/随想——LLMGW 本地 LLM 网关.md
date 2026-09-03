@@ -4,7 +4,7 @@ title: "LLMGW 本地 LLM 网关 — 工程开发文档 v3.0"
 slug: "llmgw-local-llm-gateway"
 summary: "面向 AI 开发 Agent 的可执行工程规格：基于 Rust 全栈核心（Tauri 2 + Rust 数据面 + React UI）的本地 LLM 网关。"
 date: 2026-09-03
-category: "LLMGW 网关"
+category: "随想"
 featured: false
 tags:
   - "LLM网关"

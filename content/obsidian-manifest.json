@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 81,
+  "noteCount": 85,
   "assetCount": 45,
   "notes": [
     {
@@ -86,7 +86,7 @@
       "slug": "chapter-2-extended-real-valued-functions-iernkzyd",
       "title": "Chapter 2-Extended Real-Valued Functions",
       "publishedAt": "2026-08-30",
-      "hash": "775b2fad3aeef75b7f46a244aafabf123ac1c2a6e5086f68d88121fd25ab4091"
+      "hash": "5a935ad389191f5dfc6b4aa3a578075813ae1ec20cb3dd82a6b264443fcf78bc"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-3-subgradients-stgsfkvt.md",
@@ -124,6 +124,13 @@
       "hash": "c5edf05ee9ec8cf45956b5a37a027b9976248945f4fd1524e65b1071e2957150"
     },
     {
+      "sourcePath": "blog/人工智能的优化方法/chapter-8-primal-and-dual-projected-subgradient-methods-jadr3iq.md",
+      "slug": "chapter-8-primal-and-dual-projected-subgradient-methods-jadr3iq",
+      "title": "Chapter 8-Primal and Dual Projected Subgradient Methods",
+      "publishedAt": "2026-09-03",
+      "hash": "c5e081401e9dd812d00cde1f535281a9070395b9bb0cb5def1f5ceb20e6f8d65"
+    },
+    {
       "sourcePath": "blog/人工智能的优化方法/chapter-9-mirror-descent-m3qkmag.md",
       "slug": "chapter-9-mirror-descent-m3qkmag",
       "title": "Chapter 9-Mirror Descent",
@@ -143,6 +150,27 @@
       "title": "深度学习：卷积神经网络（CNN）",
       "publishedAt": "2026-08-26",
       "hash": "4efeca4069a41c4c8365bd5be461698c544cd1b1a120adfd97230b5b305ee6cd"
+    },
+    {
+      "sourcePath": "blog/随想/随想-让Harness像git管理一样管理agent的上下文.md",
+      "slug": "harness-git-style-agent-context",
+      "title": "让 Harness 像 git 一样管理 Agent 的上下文",
+      "publishedAt": "2026-09-05",
+      "hash": "69d55d22570d372b068c99bcfca087a00c84b84f2a51c26b1d9586b94f60dd26"
+    },
+    {
+      "sourcePath": "blog/随想/随想——模型的“在手”与“上手”.md",
+      "slug": "model-at-hand-and-ready-to-hand",
+      "title": "模型的\"在手\"与\"上手\"——从上下文蒸馏到差分意识训练",
+      "publishedAt": "2026-09-05",
+      "hash": "b2d71f8ee38051f2697678af178a499240c24e1be75acb03dd1e26c38823cab4"
+    },
+    {
+      "sourcePath": "blog/随想/随想——在Harness的agent上下文中面向对象.md",
+      "slug": "object-oriented-agent-context-in-harness",
+      "title": "在 Harness 的 agent 上下文中面向对象",
+      "publishedAt": "2026-09-05",
+      "hash": "8dd1dae696cd7e16d77dba23ceb256dde4dab52d173d4d17d1997e379711c8d4"
     },
     {
       "sourcePath": "blog/随想/随想——LLMGW 本地 LLM 网关.md",

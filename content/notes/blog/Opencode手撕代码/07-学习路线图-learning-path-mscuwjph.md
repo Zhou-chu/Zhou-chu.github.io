@@ -6,6 +6,10 @@ summary: "07 — 学习路线图 (Learning Path) 一份从零到深入理解 Ope
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 07 — 学习路线图 (Learning Path)

@@ -6,6 +6,10 @@ summary: "observe 代码详解 这个函数是 packages/core/src/system context/
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "system-context部分的工作原理-mscuwjpc"
   - "make函数代码详解-mscuwj2f"

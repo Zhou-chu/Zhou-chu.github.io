@@ -6,6 +6,10 @@ summary: "01 — 系统上下文代数 (System Context Algebra) 设计意图 Ope
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 01 — 系统上下文代数 (System Context Algebra)

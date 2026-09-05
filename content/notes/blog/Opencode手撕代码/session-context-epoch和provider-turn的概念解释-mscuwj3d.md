@@ -6,6 +6,10 @@ summary: "1. Session — 持久对话身份 Session 是 OpenCode 的 最外层�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 ## 1. Session — 持久对话身份

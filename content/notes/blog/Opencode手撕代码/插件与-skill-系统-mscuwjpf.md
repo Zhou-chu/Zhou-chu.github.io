@@ -6,6 +6,10 @@ summary: "树节点：11 插件与Skill系统 父节点：11 Provider Turn完整
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 > 树节点：11-插件与Skill系统

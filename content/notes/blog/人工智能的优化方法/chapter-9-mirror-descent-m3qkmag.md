@@ -6,6 +6,11 @@ summary: "镜面下降（Mirror Descent）：用 Bregman 散度替代欧氏距�
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "镜像下降"
 ---
 
 > 本章研究**镜面下降法（mirror descent）**及其变体，本质是**投影次梯度法（Ch8）向非欧空间的推广**。

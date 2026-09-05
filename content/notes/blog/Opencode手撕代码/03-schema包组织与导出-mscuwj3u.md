@@ -6,6 +6,10 @@ summary: "树节点：03 Schema包组织与导出 父节点：Opencode的工作�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "03-标识符与品牌类型-mscuwihm"
   - "03-核心实体schema-mscun018"

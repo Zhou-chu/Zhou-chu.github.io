@@ -6,6 +6,10 @@ summary: "树节点：04 全链路概览 父节点：Opencode的工作原理 子
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 > 树节点：04-全链路概览

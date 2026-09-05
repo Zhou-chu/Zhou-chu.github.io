@@ -6,6 +6,10 @@ summary: "06 — 客户端架构与包依赖 (Client Architecture & Package Depe
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 06 — 客户端架构与包依赖 (Client Architecture & Package Dependencies)

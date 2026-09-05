@@ -6,6 +6,10 @@ summary: "02 — 会话生命周期 (Session Lifecycle) 设计意图：Admission
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 02 — 会话生命周期 (Session Lifecycle)

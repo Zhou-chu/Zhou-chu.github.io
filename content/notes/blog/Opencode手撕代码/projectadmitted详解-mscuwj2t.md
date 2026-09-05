@@ -6,6 +6,10 @@ summary: "父笔记 : 会话输入与Prompt管理 · 02 session lifecycle 调用
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 > **父笔记**: [[会话输入与Prompt管理]] · [[02-session-lifecycle]]

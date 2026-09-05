@@ -6,6 +6,10 @@ summary: "03 — 工具系统 (Tool System) 工具系统承担两个核心职责
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 03 — 工具系统 (Tool System)

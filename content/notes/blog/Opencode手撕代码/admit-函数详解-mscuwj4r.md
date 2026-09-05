@@ -6,6 +6,10 @@ summary: "SessionInput.admit() 鈥?閫愯瑙ｆ瀽 鏂囦欢 锛歚packages/c
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 ## `SessionInput.admit()` 鈥?閫愯瑙ｆ瀽

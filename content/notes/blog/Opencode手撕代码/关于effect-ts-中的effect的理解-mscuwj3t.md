@@ -6,6 +6,10 @@ summary: "这个问题触及了 Effect TS 最核心的设计理念。让我从\"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "prepareonce-的四个出口-mscuwj40"
   - "system-context部分的工作原理-mscuwjpc"

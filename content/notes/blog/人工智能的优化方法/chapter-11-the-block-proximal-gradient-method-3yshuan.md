@@ -6,6 +6,11 @@ summary: "块坐标分解的近端梯度法：把复合模型按变量分块，�
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "块邻近梯度法"
 ---
 
 前面 Chapter 10 讲了**单个**复合模型 $\min f(x)+g(x)$ 的 proximal gradient 方法，$f$ 和 $g$ 被**整体**一起处理。到了 Chapter 11，主角换成**变量分块**——决策变量被切成 $p$ 块 $(x_1,\dots,x_p)$，只有一块在每一步被更新。这就是 **variables decomposition method**。

@@ -6,6 +6,10 @@ summary: "树节点：10 快照创建与存储 父节点：Opencode的工作原�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "10-快照恢复与回滚-mscun0jq"
 ---

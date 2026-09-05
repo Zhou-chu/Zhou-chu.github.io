@@ -6,6 +6,10 @@ summary: "树节点：02 Fiber与Scope 父节点：02 Effect TS核心范式 子�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 > 树节点：02-Fiber与Scope

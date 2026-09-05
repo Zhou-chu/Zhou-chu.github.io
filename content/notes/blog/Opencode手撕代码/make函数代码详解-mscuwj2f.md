@@ -6,6 +6,10 @@ summary: "好的，这是整个 packages/core/src/system context/index.ts 里最
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "system-context部分的工作原理-mscuwjpc"
   - "轮询式比较的调用链和相关代码-mscuwjpq"

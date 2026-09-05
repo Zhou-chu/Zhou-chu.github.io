@@ -6,6 +6,10 @@ summary: "为什么朴素 MLP 处理图像参数量爆炸？从 MLP-Mixer 到 CN
 date: 2026-08-26
 category: "深度学习"
 featured: false
+tags:
+  - "深度学习"
+  - "神经网络"
+  - "笔记"
 ---
 
 ## Convolutional Neural Network

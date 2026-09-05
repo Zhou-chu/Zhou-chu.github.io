@@ -6,6 +6,11 @@ summary: "近端算子：把“最小化一个函数+一个最小二乘正则”
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "邻近算子"
 ---
 
 在本书中，我们的 underlying space 仍然是**有限维欧氏空间** $\mathbb{E}$（带内积 $\langle\cdot,\cdot\rangle$ 和欧氏范数 $\|\mathbf{x}\|=\sqrt{\langle\mathbf{x},\mathbf{x}\rangle}$）。这一章是全书真正的“发动机”——前面五章把凸分析、次梯度、共轭、强凸性都备齐了，从这一章起我们开始造**算法积木**。

@@ -6,6 +6,11 @@ summary: "交替方向乘子法 ADMM：从增广拉格朗日法出发，通过�
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "ADMM"
 ---
 
 这一章是整本书的"收官实战篇"。前面我们花了 Ch3 讲次梯度、Ch4 讲共轭函数、Ch6 讲近端算子、Ch10.5 讲近端点法、Ch14 讲坐标下降——这一章把这些零件全部焊到一个极其工程友好的算法框架上：**ADMM（Alternating Direction Method of Multipliers）**。

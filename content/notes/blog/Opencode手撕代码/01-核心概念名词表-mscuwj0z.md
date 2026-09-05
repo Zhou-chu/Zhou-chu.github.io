@@ -6,6 +6,10 @@ summary: "树节点：01 核心概念名词表 父节点：01 项目架构与包
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "01-项目架构与包结构-mscuwigy"
 ---

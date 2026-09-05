@@ -6,6 +6,11 @@ summary: "凸优化全书的空间约定：从实向量空间的基本定义出�
 date: 2026-08-10
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "向量空间"
 ---
 
 ## 1.1 Definition

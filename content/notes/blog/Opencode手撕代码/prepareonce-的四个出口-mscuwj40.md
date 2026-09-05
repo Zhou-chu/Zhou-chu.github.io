@@ -6,6 +6,10 @@ summary: "这个问题问得很准——它触及了 prepareOnce 的 完整控�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "轮询式比较的调用链和相关代码-mscuwjpq"
   - "关于effect-ts-中的effect的理解-mscuwj3t"

@@ -6,6 +6,10 @@ summary: "05 — Effect TS 基础设施 (Effect TS Infrastructure) Effect TS 是
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 # 05 — Effect-TS 基础设施 (Effect-TS Infrastructure)

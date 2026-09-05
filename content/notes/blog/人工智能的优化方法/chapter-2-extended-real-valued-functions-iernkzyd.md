@@ -6,6 +6,11 @@ summary: "扩展实值函数与闭性：把实数扩充上 ∞ 与 −∞，讨�
 date: 2026-08-30
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "广义实值函数"
 ---
 
 在本书中，我们的underlying spaces都是**有限维**的、存在内积和范数的空间
@@ -486,7 +491,7 @@ $\blacksquare$
 
 **闭 $\iff$ lsc $\iff$ $\alpha \le 0$。** $\blacksquare$
 
-###### 两种武器的对比
+### 两种武器的对比
 
 |   |   |   |   |
 |---|---|---|---|
@@ -498,14 +503,14 @@ lsc 快的根本原因：**这个函数的"病灶"只有一处**（$x=0$），�
 
 **经验法则**：$f$ 由几段光滑函数拼起来时，先找拼接点，只在拼接点上验 lsc。这个套路后面验 $\|\cdot\|_0$（书页 19）、验各种罚函数时会反复用。
 
-#### 连续 $\iff$ $\alpha = 0$
+### 连续 $\iff$ $\alpha = 0$
 $\mathrm{dom}(f_\alpha) = [0,1]$，在定义域上连续只需要检查定义域内的序列。同样地，除 $x = 0$ 外处处连续，所以还是只看 $x = 0$：
 
 取 $x_n = 1/n \in \mathrm{dom}$，$x_n \to 0 \in \mathrm{dom}$，有 $f_\alpha(x_n) = 1/n \to 0$。连续要求 $f_\alpha(x_n) \to f_\alpha(0) = \alpha$，故必须 $\alpha = 0$。
 
 反之 $\alpha = 0$ 时 $f_0(x) = x$ 在 $[0,1]$ 上，就是恒等函数，处处连续。$\blacksquare$
 
-#### 这个例子在说什么
+### 这个例子在说什么
 
 |                       |              |              |              |
 | --------------------- | ------------ | ------------ | ------------ |
@@ -543,13 +548,13 @@ $$\text{连续} \ \subsetneq\ \text{闭} \ = \ \text{lsc} \ \subsetneq\ \text{�
 > 所以在 $\mathbf{0}$ 点，函数值从 $0$ 突然跳到 $1$，不连续。
 
 + 但它是**闭函数**。这正好再次说明：连续性比闭性强，闭性才是优化中更适合使用的条件。
-#### 把 $\ell_0$ 拆成坐标函数
+### 把 $\ell_0$ 拆成坐标函数
 定义一元函数 $I : \mathbb{R} \to \{0,1\}$：
 $$I(y) = \begin{cases} 0, & y = 0, \\ 1, & y \ne 0. \end{cases}$$
 则
 $$f(\mathbf{x}) = \sum_{i=1}^n I(x_i).$$
 **为什么这样拆**：这一步把一个看起来不连续的整体函数，拆成了 $n$ 个简单的一元函数，然后可以调用刚刚学过的 **Thm 2.7(b)**。
-#### 用水平集证明 $I$ 闭
+### 用水平集证明 $I$ 闭
 根据 **Thm 2.6(iii)**，证明 $I$ 闭，只需要证明对任意 $\alpha \in \mathbb{R}$，水平集
 $$\operatorname{Lev}(I,\alpha) = \{y \in \mathbb{R} : I(y) \le \alpha\}$$
 是闭集。分情况：
@@ -593,7 +598,7 @@ $$
 $$
 这就是 **Thm 2.6 的第三种武器（水平集法）**第一次正式出场。$\ell_0 的上境图不太好直接画，但它的水平集只有三种形状，一眼就能看出闭。
 **和稀疏优化的连接**：$\|\mathbf{x}\|_0$ 统计非零坐标数，所以最小化它会倾向于寻找稀疏解。它虽然不连续、也不是凸函数，但它是闭的；因此在适当的紧性或强制性条件下，后面的存在性定理仍然能使用。
-### Thm 2.12 · 闭函数版本的 Weierstrass 定理
+## Thm 2.12 · 闭函数版本的 Weierstrass 定理
 > **定理 2.12**（闭函数的 Weierstrass 定理 Weierstrass theorem for closed functions）。设 $f : \mathbb{E} \to (-\infty,\infty]$ 是 proper 闭函数，且 $C$ 是满足
 > $$C \cap \operatorname{dom}(f) \ne \emptyset$$
 > 的紧集。那么：
@@ -603,7 +608,7 @@ $$
 + 经典 Weierstrass 定理说：连续函数在非空紧集上能取到最小值。
   - Beck 把连续性换成了更弱的闭性（等价于 lsc），所以这个结论仍然成立。
   - 这正是前面一直铺垫的理由：**优化真正需要的不是连续，而是下半连续。**
-#### 先抠清楚定理的三个条件
+### 先抠清楚定理的三个条件
 **第一，$f$ proper。**
 $f : \mathbb{E} \to (-\infty,\infty]$ 已经排除了 $-\infty$，所以不可能出现某个点的函数值就是 $-\infty$。这是证明 (a) 反证时的最后一堵墙。
 **第二，$f$ 闭。**
@@ -612,7 +617,7 @@ $$f(\bar{\mathbf{x}}) \le \liminf f(\mathbf{x}_{n_k}).$$
 所以这个定理的本质是：**lsc + 紧性 $\Longrightarrow$ 下界和极小值存在。**
 **第三，$C \cap \operatorname{dom}(f) \ne \emptyset$。**
 这保证 $C$ 中至少有一个点让 $f$ 取有限值。于是最小值不会是 $+\infty$，后面才能取一列逼近一个有限的最优值 $f_{\mathrm{opt}}$。
-#### (a) 有下界：反证 + 紧性 + lsc
+### (a) 有下界：反证 + 紧性 + lsc
 假设 $f$ 在 $C$ 上没有下界。则可以取序列 $\{\mathbf{x}_n\}\subseteq C$，使
 $$f(\mathbf{x}_n) \to -\infty. \tag{2.3}$$
 因为 $C$ 紧，根据 Bolzano–Weierstrass 定理，这个序列存在收敛子列 $\{\mathbf{x}_{n_k}\}$，并且
@@ -626,7 +631,7 @@ $$f(\bar{\mathbf{x}}) \le -\infty,$$
 只能说明 $f(\bar{\mathbf{x}})=-\infty$。但 $f$ 的值域是 $(-\infty,\infty]$，不允许取 $-\infty$，矛盾。
 所以 $f$ 在 $C$ 上必然有下界。$\blacksquare$
 
-#### (b) 最小值能取到：最小化序列 + 紧性 + lsc
+### (b) 最小值能取到：最小化序列 + 紧性 + lsc
 记 $f$ 在 $C$ 上的下确界为 $f_{\mathrm{opt}}$。按照本书的约定，作者写 $\min$ 不代表已经知道极值能取到，所以这里先把 $f_{\mathrm{opt}}$ 理解为下确界。
 由下确界的定义，存在一列 $\{\mathbf{x}_n\}\subseteq C$，使
 $$f(\mathbf{x}_n) \to f_{\mathrm{opt}}.$$
@@ -643,7 +648,7 @@ $$f_{\mathrm{opt}}\le f(\bar{\mathbf{x}}).$$
 两边合起来：
 $$f(\bar{\mathbf{x}})=f_{\mathrm{opt}}.$$
 因此 $\bar{\mathbf{x}}$ 是 $f$ 在 $C$ 上的最小点，最小值确实被取到。$\blacksquare$
-#### 定理 2.12 的证明骨架
+### 定理 2.12 的证明骨架
 $$
 \boxed{
 \text{无界/不取到}
@@ -658,7 +663,7 @@ $$
 + (a) 如果函数值能一路掉到 $-\infty$，lsc 会逼出函数取 $-\infty$，与 proper 矛盾；
 + (b) 如果最小值不一定取到，先取最小化序列，紧性给收敛子列，lsc 再把极限点变成真正的最小点。
 **为什么这是本章的转折点**：前面一直在讨论"什么叫闭"、"怎么证明闭"；从 Thm 2.12 开始，闭性第一次兑现成一个优化结论——**最小值存在**。
-### 定义 2.13 · 强制性
+## 定义 2.13 · 强制性
 > 当 $C$ 不紧时，Weierstrass 定理本身不能保证最小值能取到。不过，如果用闭性替代紧性，同时函数具有一种叫作**强制性**（coerciveness）的性质，仍然可以保证最小值存在。
 > **定义 2.13**（强制性 coerciveness）。proper 函数 $f : \mathbb{E} \to (-\infty,\infty]$ 称为**强制的**，如果
 > $$\lim_{\|\mathbf{x}\|\to\infty}f(\mathbf{x})=\infty.$$
@@ -672,7 +677,7 @@ $$
 
 > 它满足 $\|\mathbf{x}\|\to\infty$ 时 $f(\mathbf{x})\to+\infty$，因此是强制的。
 **注意强制性不是连续性，也不是凸性。** 它只描述函数在无穷远处的增长行为；一个函数可以不连续、非凸，但仍然强制。
-### Thm 2.14 · 强制性保证闭集上的最小值存在
+## Thm 2.14 · 强制性保证闭集上的最小值存在
 > **定理 2.14**（强制性下的取值 attainment under coerciveness）。设 $f : \mathbb{E} \to (-\infty,\infty]$ 是 proper、闭且强制的函数，且 $S\subseteq\mathbb{E}$ 是非空闭集，满足
 > $$S \cap \operatorname{dom}(f) \ne \emptyset.$$
 > 则 $f$ 在 $S$ 上能取到最小值。
@@ -683,7 +688,7 @@ $$
 | Thm 2.12 | 紧 | proper + 闭 |
 | Thm 2.14 | 只需非空闭 | proper + 闭 + 强制 |
 
-#### 完整证明（书页 21）
+### 完整证明（书页 21）
 **思路骨架**（先记牢，再逐句展开）：
 
 $$
@@ -723,29 +728,29 @@ $$f(\mathbf{x}) > f(\mathbf{x}_0) \quad \text{对所有满足}\ \|\mathbf{x}\| >
 - 由 $\mathbf{x}_0 \in S \cap B[\mathbf{0}, M]$ 知 $S \cap B[\mathbf{0}, M] \ne \emptyset$；
 - 同时 $S \cap B[\mathbf{0}, M] \subseteq \mathrm{dom}(f)$，所以 $(S \cap B[\mathbf{0}, M]) \cap \mathrm{dom}(f) \ne \emptyset$。
 **Thm 2.12 的所有前提都满足**——$f$ 在 $S \cap B[\mathbf{0}, M]$ 上取到最小值 $\bar{\mathbf{x}}$，而 $\bar{\mathbf{x}} \in S$，所以它也是 $f$ 在 $S$ 上的最小值点。$\blacksquare$
-#### 证明的两条经验
+### 证明的两条经验
 **经验 1**：当一个极值定理里出现 "强制" 两个字时，**第一时间想到 "球"**。强制性的全部威力就是把无穷远处的可能性一刀切掉——具体方式是用一个足够大的有限半径球把所有"还算合格"的候选点圈起来。
 **经验 2**：**闭集 + 闭球 = 紧集**。这是把 "闭集" 转化为 "紧集" 的标准变形。后面 Thm 2.18 部分最小化、Thm 2.21 局部 Lipschitz、§2.4 支撑函数的闭性证明，全靠这招。
 **前向指针**：Thm 2.14 的模式在 §3.5 共轭函数的存在性里会**反过来用**——给定一个 proper 闭凸函数，我们要证明它的共轭也存在，那时就把"闭集"换成"约束 + 强制"再调用本定理。
 
 ---
-## 2.3 Convex Functions
+# 2.3 Convex Functions
 书页 21 中段，作者用一节标题宣告新主题：
 > **2.3 Convex Functions**
 子节标题：
 > **2.3.1 Definition and Basic Properties**
 导言一句话：「与闭性一样，扩展实值函数的凸性也可以用 epigraph 来写。」——这是 **epigraph 技巧**的第二次正式出场（第一次是 Def 2.2 闭函数），后面 §2.4 还会用第三次（支撑函数 $\sigma_C$ 永远闭凸）。
 **学完 §2.2 后的全局视角**：§2.1–2.2 把"闭"立为核心；§2.3 在"闭"之上叠加"凸"。凸性的引入与闭性走的是**同一条路**：用 $\mathrm{epi}(f)$ 的集合性质定义函数性质。
-### 定义 2.15 · 凸函数 = 上境图凸
+## 定义 2.15 · 凸函数 = 上境图凸
 > **定义 2.15**（凸函数 convex functions）。扩展实值函数 $f : \mathbb{E} \to [-\infty, \infty]$ 称为**凸的**，如果 $\mathrm{epi}(f)$ 是一个凸集。
 **又是只用一行就把整个概念焊死**。和 Def 2.2 闭函数的写法一模一样——再确认一次「epigraph 翻译」是本书函数论的脊梁。
-#### 一个推论式等价刻画
+### 一个推论式等价刻画
 书页 21 紧接着给出的等价条件：
 > 一个 proper 扩展实值函数 $f : \mathbb{E} \to (-\infty,\infty]$ 是凸的，**当且仅当**：
 > 1. $\mathrm{dom}(f)$ 是凸集；
 > 2. $f$ 在 $\mathrm{dom}(f)$ 上的限制是定义在凸域上的**实值凸函数**（即对所有 $\mathbf{x}, \mathbf{y} \in \mathrm{dom}(f)$ 和 $\lambda \in [0,1]$ 满足 Jensen 不等式）。
 这就是说：**凸函数 = 凸定义域 + 凸限制**。把 proper 这条拆成 dom 凸（域形状）+ 限制凸（域内行为），两件事子互相正交。
-#### 用公式表达凸性（式 2.5）
+### 用公式表达凸性（式 2.5）
 proper 凸函数 $f : \mathbb{E} \to (-\infty, \infty]$ 等价于：
 $$
 
@@ -753,7 +758,7 @@ f(\lambda \mathbf{x} + (1-\lambda)\mathbf{y}) \le \lambda f(\mathbf{x}) + (1-\la
 $$
 
 注意式 (2.5) **不要求** $\mathbf{x}, \mathbf{y} \in \mathrm{dom}(f)$——只要 $f$ 是 proper 且凸，不等式对 $\mathbf{x}, \mathbf{y} \in \mathbb{E}$ 也成立，但若其中一点不在 $\mathrm{dom}(f)$ 则 $f(\cdot) = +\infty$，不等式自动满足（$\infty \le \cdot$ 平凡成立）。所以真正常用的还是 $\mathbf{x}, \mathbf{y} \in \mathrm{dom}(f)$ 这一版。
-### Jensen 不等式 · 凸函数的最核心性质
+## Jensen 不等式 · 凸函数的最核心性质
 > **Jensen 不等式**（Jensen's inequality）。设 $f : \mathbb{E} \to (-\infty, \infty]$ 是凸函数，$\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_k \in \mathbb{E}$，$\lambda = (\lambda_1, \ldots, \lambda_k) \in \Delta_k$（即 $\lambda_i \ge 0$、$\sum_i \lambda_i = 1$）。则  
 > $$f\!\left(\sum_{i=1}^k \lambda_i \mathbf{x}_i\right) \le \sum_{i=1}^k \lambda_i f(\mathbf{x}_i). \tag{Jensen}$$
 **两点必须记住**：
@@ -761,7 +766,7 @@ $$
 + (2.5) 是 Jensen 的 $k=2$ 特殊情形。归纳即得：$\Delta_k$ 上的 Jensen 等价于"任意二元凸组合满足"。
 **Jensen 的几何读法**：左边的 $f$ 作用在"凸组合后的点"上，右边是"凸组合后的函数值"——凸性保证"先合再算"比"先算再合"小（函数值更低）。**凸函数 = "运算顺序无所谓，混着算更划算"。**
 **前向指针**：Jensen 是 §3 共轭函数、Fenchel–Young 不等式、Ch7 谱函数全书的根。不等式 $f(\mathbf{x}) + f^*(\mathbf{x}^*) \ge \mathbf{x}^\top \mathbf{x}^*$ 就是 Jensen 的特殊情形（凸 + 凹共轭），Ch4 会回扣这里。
-### Thm 2.16 · 保凸运算（开始）
+## Thm 2.16 · 保凸运算（开始）
 > **定理 2.16**（保持凸性的运算 operations preserving convexity）。
 > (a) 设 $A : \mathbb{E} \to \mathbb{V}$ 是线性变换（$\mathbb{E}, \mathbb{V}$ 是两个 underlying vector spaces），$\mathbf{b} \in \mathbb{V}$，且 $f : \mathbb{V} \to (-\infty, \infty]$ 是扩展实值凸函数。则由  
 > $g(\mathbf{x}) = f(A(\mathbf{x}) + \mathbf{b})$  

@@ -6,6 +6,10 @@ summary: "树节点：09 错误处理与Supervisor 父节点：09 Fork与Fiber�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "09-fork与fiber生命周期-mscun0jo"
 ---

@@ -6,6 +6,10 @@ summary: "这一部分主要内容就是负责整理环境信息，处理得到S
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "make函数代码详解-mscuwj2f"
   - "轮询式比较的调用链和相关代码-mscuwjpq"

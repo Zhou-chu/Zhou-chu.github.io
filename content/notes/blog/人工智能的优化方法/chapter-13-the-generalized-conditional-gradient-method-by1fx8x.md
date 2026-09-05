@@ -6,6 +6,11 @@ summary: "广义条件梯度法（Frank–Wolfe 的复合推广）：线性预�
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "广义条件梯度法"
 ---
 
 在本书中，本章所有 underlying spaces 都是**有限维欧氏空间**，默认范数即欧氏范数 $\|\cdot\|=\sqrt{\langle\cdot,\cdot\rangle}$。这一章是 Frank–Wolfe / 条件梯度法（CGM）的"全家桶"：从朴素 Frank–Wolfe 推广到复合问题 $f+g$，再分"非凸、凸、强凸（含负结果）"三档收敛分析，最后给分块随机版本。

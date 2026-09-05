@@ -6,6 +6,10 @@ summary: "树节点：06 Context Source与Registry 父节点：Opencode的工作
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 ---
 
 > 树节点：06-Context-Source与Registry

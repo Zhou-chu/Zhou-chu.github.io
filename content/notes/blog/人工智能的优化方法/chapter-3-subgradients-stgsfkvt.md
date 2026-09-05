@@ -6,6 +6,11 @@ summary: "次梯度的定义与初步示例：凸函数在不可导点处的次�
 date: 2026-08-30
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "次梯度"
 ---
 
 ## 3.1 定义与初步示例 (Definitions and First Examples)

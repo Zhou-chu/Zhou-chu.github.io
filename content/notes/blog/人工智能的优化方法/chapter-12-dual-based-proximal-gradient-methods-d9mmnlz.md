@@ -6,6 +6,11 @@ summary: "基于对偶的近端梯度法：把 f(x)+g(Ax) 这类带线性映射�
 date: 2026-09-03
 category: "人工智能的优化方法"
 featured: false
+tags:
+  - "最优化"
+  - "凸优化"
+  - "Beck"
+  - "对偶邻近梯度法"
 ---
 
 本章的 underlying spaces 全是有限维欧几里得空间（章首明言）。本章是前面装备的**大汇演**：Ch4 共轭函数（构造对偶）、Ch5 强凸—共轭对应（把强凸翻译成对偶的光滑）、Ch6 近端算子与 Moreau 分解（把对偶近端步还原成原端近端步）、Ch10 proximal gradient 与 FISTA（套到对偶）、Ch11 block proximal gradient（驱动 dual block）。

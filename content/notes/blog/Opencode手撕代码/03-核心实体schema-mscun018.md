@@ -6,6 +6,10 @@ summary: "树节点：03 核心实体Schema 父节点：03 Schema包组织与导
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "03-schema包组织与导出-mscuwj3u"
   - "09-fork与fiber生命周期-mscun0jo"

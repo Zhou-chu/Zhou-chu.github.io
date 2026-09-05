@@ -6,6 +6,10 @@ summary: "树节点：05 会话输入与Prompt管理 父节点：05 Session创�
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false
+tags:
+  - "OpenCode"
+  - "源码解析"
+  - "Effect-TS"
 outgoing:
   - "05-session创建与状态机-mscun046"
 ---

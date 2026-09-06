@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 85,
+  "noteCount": 86,
   "assetCount": 45,
   "notes": [
     {
@@ -598,6 +598,13 @@
       "title": "TypeScript 核心语法 —— 以 Opencode 源码为例",
       "publishedAt": "2026-08-03",
       "hash": "40ffa98baae9e8412073c6fdf32414590654ffa762999681c69d0288f02d6b63"
+    },
+    {
+      "sourcePath": "blog/TI杯赛道二/report.md",
+      "slug": "ti-cup-track2-ccs-research-report",
+      "title": "可编程恒流信号源装置（TI杯赛道二）权威资料调研报告",
+      "publishedAt": "2026-09-06",
+      "hash": "f00d85a11722d190650fd16715da6d908e945abeb36623661b4d36459c901115"
     }
   ]
 }

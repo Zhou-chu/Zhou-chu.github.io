@@ -2,7 +2,7 @@
 blog: true
 title: "Effect-TS 核心范式 —— 以 Opencode 源码为例"
 slug: "effect-ts-核心范式-以-opencode-源码为例-mscumzrn"
-summary: "树节点：02 Effect TS核心范式 父节点：02 TypeScript核心语法 子节点：02 Layer与依赖注入 | 02 Fiber与Scope Effect TS 核心范式 —— 以 Opencode 源码为例 Effect TS 是整个 Opencode 的执行框架。它不仅仅是一个\"错误处理库\"，而是一个完整的副作用建模系统。本文用 Opencode 的真实代码解释其核心概念。 1. Effect 作为惰性程序描述 定义 "
+summary: "树节点：02 Effect TS核心范式 父节点：02 TypeScript核心语法 子节点：02 Layer与依赖注入 | 02 Fiber与Scope Effect TS 核心范式 —— 以 Opencode 源码为例 Effect TS 是整个 Opencode 的执行框架。它不仅仅是一个\"错误处理库\"，而是一个完整的副作用建模系统。本文用 Opencode 的真实代码解释其核心概念。 1. Effect 作为惰性程序描述 定义"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

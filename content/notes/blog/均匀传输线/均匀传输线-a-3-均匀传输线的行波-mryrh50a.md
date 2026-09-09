@@ -109,11 +109,11 @@ $$
 $$
 两边对时间 $t$ 求导：
 $$
-\omega-\beta\frac{{\rm d}x}{{\rm d}t}=0
+\omega-\beta\frac{ {\rm d}x}{ {\rm d}t}=0
 $$
 因此：
 $$
-\frac{{\rm d}x}{{\rm d}t}
+\frac{ {\rm d}x}{ {\rm d}t}
 =
 \frac{\omega}{\beta}
 $$
@@ -125,7 +125,7 @@ v_{\rm p}=\frac{\omega}{\beta}
 $$
 由于 $\omega>0$、$\beta>0$，所以：
 $$
-\frac{{\rm d}x}{{\rm d}t}>0
+\frac{ {\rm d}x}{ {\rm d}t}>0
 $$
 这说明固定相位点随时间向 $x$ 增大的方向移动。因此，含有相位项：
 $$
@@ -246,11 +246,11 @@ $$
 $$
 两边对时间求导：
 $$
-\omega+\beta\frac{{\rm d}x}{{\rm d}t}=0
+\omega+\beta\frac{ {\rm d}x}{ {\rm d}t}=0
 $$
 因此：
 $$
-\frac{{\rm d}x}{{\rm d}t}
+\frac{ {\rm d}x}{ {\rm d}t}
 =
 -\frac{\omega}{\beta}
 $$

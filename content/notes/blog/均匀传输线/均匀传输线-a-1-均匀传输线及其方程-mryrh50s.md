@@ -99,11 +99,11 @@ $$ \text{电阻压降}=R_0{\rm d}x\cdot i(x,t) $$$$ \text{电感压降}=L_0{\rm 
 
 将上式两边同除以 ${\rm d}x$，得：
 
-$$ \frac{u(x,t)-u(x+{\rm d}x,t)}{{\rm d}x} = R_0i(x,t)+L_0\frac{\partial i(x,t)}{\partial t} $$
+$$ \frac{u(x,t)-u(x+{\rm d}x,t)}{ {\rm d}x} = R_0i(x,t)+L_0\frac{\partial i(x,t)}{\partial t} $$
 
 当 ${\rm d}x\to 0$ 时，左侧就是电压对位置的负偏导数：
 
-$$ \lim_{{\rm d}x\to 0} \frac{u(x,t)-u(x+{\rm d}x,t)}{{\rm d}x} = -\frac{\partial u(x,t)}{\partial x} $$
+$$ \lim_{ {\rm d}x\to 0} \frac{u(x,t)-u(x+{\rm d}x,t)}{ {\rm d}x} = -\frac{\partial u(x,t)}{\partial x} $$
 
 因此得到第一条传输线方程：
 
@@ -123,7 +123,7 @@ $$ i_C=C_0{\rm d}x\cdot \frac{\partial u(x,t)}{\partial t} $$
 所以：
 $$ i(x,t)-i(x+{\rm d}x,t) = G_0{\rm d}x\cdot u(x,t) + C_0{\rm d}x\cdot \frac{\partial u(x,t)}{\partial t} $$
 两边同除以 ${\rm d}x$：
-$$ \frac{i(x,t)-i(x+{\rm d}x,t)}{{\rm d}x} = G_0u(x,t) + C_0\frac{\partial u(x,t)}{\partial t} $$
+$$ \frac{i(x,t)-i(x+{\rm d}x,t)}{ {\rm d}x} = G_0u(x,t) + C_0\frac{\partial u(x,t)}{\partial t} $$
 令 ${\rm d}x\to0$，可得：
 $$ \boxed{ \frac{\partial i(x,t)}{\partial x} = -G_0u(x,t) -C_0\frac{\partial u(x,t)}{\partial t} } $$
 它说明：线路电流沿 $x$ 方向的变化，来源于介质漏电和导线间电容充、放电。

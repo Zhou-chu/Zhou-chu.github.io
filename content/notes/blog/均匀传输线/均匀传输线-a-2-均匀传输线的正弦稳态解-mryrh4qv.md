@@ -119,39 +119,39 @@ j\omega\dot U(x)
 $$
 而对位置 $x$ 求导仍然保留为普通微分。于是，第一条时域方程对应的相量方程为：
 $$
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =
 -R_0\dot I(x)-j\omega L_0\dot I(x)
 $$
 整理得：
 $$
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =
 -\left(R_0+j\omega L_0\right)\dot I(x)
 $$
 代入 $Z_0=R_0+j\omega L_0$，得到：
 $$
 \boxed{
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =-Z_0\dot I(x)
 }
 $$
 同理，第二条时域方程对应的相量方程为：
 $$
-\frac{{\rm d}\dot I(x)}{{\rm d}x}
+\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 =
 -G_0\dot U(x)-j\omega C_0\dot U(x)
 $$
 即：
 $$
-\frac{{\rm d}\dot I(x)}{{\rm d}x}
+\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 =
 -\left(G_0+j\omega C_0\right)\dot U(x)
 $$
 代入 $Y_0=G_0+j\omega C_0$，得到：
 $$
 \boxed{
-\frac{{\rm d}\dot I(x)}{{\rm d}x}
+\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 =-Y_0\dot U(x)
 }
 $$
@@ -160,11 +160,11 @@ $$
 \boxed{
 \begin{cases}
 \displaystyle
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =-Z_0\dot I(x)
 \\[1em]
 \displaystyle
-\frac{{\rm d}\dot I(x)}{{\rm d}x}
+\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 =-Y_0\dot U(x)
 \end{cases}
 }
@@ -173,26 +173,26 @@ $$
 ### 4. 电压相量的二阶方程
 对第一条相量方程再对 $x$ 求导：
 $$
-\frac{{\rm d}^2\dot U(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot U(x)}{ {\rm d}x^2}
 =
--Z_0\frac{{\rm d}\dot I(x)}{{\rm d}x}
+-Z_0\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 $$
 由于均匀传输线的 $Z_0$ 不随位置 $x$ 变化，因此可以直接提出微分号外。
 由第二条相量方程：
 $$
-\frac{{\rm d}\dot I(x)}{{\rm d}x}
+\frac{ {\rm d}\dot I(x)}{ {\rm d}x}
 =-Y_0\dot U(x)
 $$
 代入得：
 $$
-\frac{{\rm d}^2\dot U(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot U(x)}{ {\rm d}x^2}
 =
 -Z_0\left[-Y_0\dot U(x)\right]
 $$
 因此：
 $$
 \boxed{
-\frac{{\rm d}^2\dot U(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot U(x)}{ {\rm d}x^2}
 -Z_0Y_0\dot U(x)=0
 }
 $$
@@ -205,39 +205,39 @@ $$
 于是电压相量满足：
 $$
 \boxed{
-\frac{{\rm d}^2\dot U(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot U(x)}{ {\rm d}x^2}
 -\gamma^2\dot U(x)=0
 }
 $$
 ### 5. 电流相量的二阶方程
 对第二条相量方程再对 $x$ 求导：
 $$
-\frac{{\rm d}^2\dot I(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot I(x)}{ {\rm d}x^2}
 =
--Y_0\frac{{\rm d}\dot U(x)}{{\rm d}x}
+-Y_0\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 $$
 由第一条相量方程：
 $$
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =-Z_0\dot I(x)
 $$
 代入得：
 $$
-\frac{{\rm d}^2\dot I(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot I(x)}{ {\rm d}x^2}
 =
 -Y_0\left[-Z_0\dot I(x)\right]
 $$
 所以：
 $$
 \boxed{
-\frac{{\rm d}^2\dot I(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot I(x)}{ {\rm d}x^2}
 -Z_0Y_0\dot I(x)=0
 }
 $$
 又因为 $\gamma^2=Z_0Y_0$，所以：
 $$
 \boxed{
-\frac{{\rm d}^2\dot I(x)}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot I(x)}{ {\rm d}x^2}
 -\gamma^2\dot I(x)=0
 }
 $$
@@ -300,7 +300,7 @@ $$
 ### 7. 电压相量的一般解
 电压相量满足：
 $$
-\frac{{\rm d}^2\dot U}{{\rm d}x^2}
+\frac{ {\rm d}^2\dot U}{ {\rm d}x^2}
 -\gamma^2\dot U=0
 $$
 其特征方程为：
@@ -329,7 +329,7 @@ $$
 ### 8. 电流相量的一般解
 由第一条相量形式电报方程：
 $$
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =-Z_0\dot I(x)
 $$
 可得：
@@ -337,11 +337,11 @@ $$
 \dot I(x)
 =
 -\frac{1}{Z_0}
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 $$
 将电压通解代入：
 $$
-\frac{{\rm d}\dot U(x)}{{\rm d}x}
+\frac{ {\rm d}\dot U(x)}{ {\rm d}x}
 =
 -\gamma\dot U^+e^{-\gamma x}
 +

@@ -16,21 +16,21 @@
       "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
       "title": "均匀传输线：A-1：均匀传输线及其方程",
       "publishedAt": "2026-07-24",
-      "hash": "ce31e998a89ae37de4d32b0bebfbff32fcec1b7e4b4d4b6e67577c28d806936e"
+      "hash": "95fcdc7138c2dc1187b5fce07d820aa5b1bd1e645c87ba3319d053f97d57989f"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv.md",
       "slug": "均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv",
       "title": "均匀传输线：A-2：均匀传输线的正弦稳态解",
       "publishedAt": "2026-07-24",
-      "hash": "b37990790a6bca7b32dac86081fa1cbdc484628de51c46dccdac61ebefad07c6"
+      "hash": "f160fc271d00c1ed7299eaad0c1f8c33c95150bf4c263109394c838443b1b7ec"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-3-均匀传输线的行波-mryrh50a.md",
       "slug": "均匀传输线-a-3-均匀传输线的行波-mryrh50a",
       "title": "均匀传输线：A-3：均匀传输线的行波",
       "publishedAt": "2026-07-24",
-      "hash": "8c7cc9a5e36022695614752d51181b2e1ab689ae636641819d69eac98d506e20"
+      "hash": "5de1133104c5093d916cbd32af96e13d6ae781ba1ff4a817965aa84c631f328b"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-1-vector-spaces-msn1gxzx.md",
@@ -161,7 +161,7 @@
     {
       "sourcePath": "blog/随想/随想——模型的“在手”与“上手”.md",
       "slug": "model-at-hand-and-ready-to-hand",
-      "title": "模型的\"在手\"与\"上手\"——从上下文蒸馏到差分意识训练",
+      "title": "模型的“在手”与“上手”——从上下文蒸馏到差分意识训练",
       "publishedAt": "2026-09-05",
       "hash": "b2d71f8ee38051f2697678af178a499240c24e1be75acb03dd1e26c38823cab4"
     },

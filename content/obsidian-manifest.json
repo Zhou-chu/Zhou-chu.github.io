@@ -1,15 +1,50 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 86,
-  "assetCount": 45,
+  "noteCount": 91,
+  "assetCount": 78,
   "notes": [
+    {
+      "sourcePath": "blog/电机设计/电机设计课硅钢片调研报告.md",
+      "slug": "电机设计课硅钢片调研报告-mdj01",
+      "title": "电机设计课：硅钢片在永磁同步电机铁心中的应用与选型",
+      "publishedAt": "2026-09-16",
+      "hash": "f8bf469b337220049a9aeee9bddd3403ee44fb0d7119aef4a5da963bd55bd4df"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第1讲-Introduction-导论-pe1l01.md",
+      "slug": "电力电子-第1讲-Introduction-导论-pe1l01",
+      "title": "电力电子：第 1 讲 Introduction（导论）学习笔记",
+      "publishedAt": "2026-09-15",
+      "hash": "eedd467979e19144040cc53a7883c6fab853cf1e0ee999a93cd55d41638d5e69"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第1讲-电力系统概述-pwr1l01.md",
+      "slug": "电力系统分析-第1章-第1讲-电力系统概述-pwr1l01",
+      "title": "电力系统分析：第1章 第1讲：电力系统概述（Lecture 1）",
+      "publishedAt": "2026-09-14",
+      "hash": "6bd7f685ab75bb712577122b1ca77bd65294ee2a4478c542128262f7e5a3d473"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第2讲-电力系统概述-pwr1l02.md",
+      "slug": "电力系统分析-第1章-第2讲-电力系统概述-pwr1l02",
+      "title": "电力系统分析：第1章 第2讲：电力系统概述（Lecture 2）",
+      "publishedAt": "2026-09-14",
+      "hash": "cea2f4f15d4e518040a343fbf74dd5b662cf2dfcccd57d3d0fa6cf38ca653b26"
+    },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",
       "slug": "deepseek-harness-rescue-log-0830",
       "title": "Deepseek Harness 抢救日志 (0830)",
       "publishedAt": "2026-08-30",
       "hash": "dfadb30d00281440b54918efb44c0bfd2c0eab651b04470acbd2ea3009b05f2b"
+    },
+    {
+      "sourcePath": "blog/高等电路网络分析/高等电路网络分析-形成网络方程的系统化方法-hcna01.md",
+      "slug": "高等电路网络分析-形成网络方程的系统化方法-hcna01",
+      "title": "高等电路网络分析：形成网络方程的系统化方法",
+      "publishedAt": "2026-09-15",
+      "hash": "5318f20a3a293ed06db4dbaa92453189d2c82abff3e1d70c0bed8e2a96fc09fc"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",

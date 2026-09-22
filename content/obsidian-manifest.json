@@ -1,9 +1,16 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 91,
-  "assetCount": 78,
+  "noteCount": 94,
+  "assetCount": 89,
   "notes": [
+    {
+      "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
+      "slug": "电机设计-ansys-rmxprt-参数调整-mdj03",
+      "title": "电机设计：Ansys RMxprt 参数调整速查",
+      "publishedAt": "2026-09-21",
+      "hash": "c75fe3f6e03f273d6a7837c6d6595e7ec535d382a1203d06a9c9441e105e7891"
+    },
     {
       "sourcePath": "blog/电机设计/电机设计课硅钢片调研报告.md",
       "slug": "电机设计课硅钢片调研报告-mdj01",
@@ -12,11 +19,25 @@
       "hash": "f8bf469b337220049a9aeee9bddd3403ee44fb0d7119aef4a5da963bd55bd4df"
     },
     {
+      "sourcePath": "blog/电机设计/什么是织构-硅钢片的晶粒取向分布.md",
+      "slug": "什么是织构-硅钢片晶粒取向-mdj02",
+      "title": "什么是织构：硅钢片中的晶粒取向分布",
+      "publishedAt": "2026-09-17",
+      "hash": "513e038d4ac00e48b81db1425efbb2c64fa5bcbe87e950a2db2d5d37348cfe3b"
+    },
+    {
       "sourcePath": "blog/电力电子/电力电子-第1讲-Introduction-导论-pe1l01.md",
       "slug": "电力电子-第1讲-Introduction-导论-pe1l01",
       "title": "电力电子：第 1 讲 Introduction（导论）学习笔记",
       "publishedAt": "2026-09-15",
       "hash": "eedd467979e19144040cc53a7883c6fab853cf1e0ee999a93cd55d41638d5e69"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第2章-二极管整流器-AC-DC学习笔记.md",
+      "slug": "电力电子-第2章-二极管整流器-AC-DC-acdc02",
+      "title": "电力电子：第 2 章 二极管整流器（Diode Rectifiers）学习笔记",
+      "publishedAt": "2026-09-22",
+      "hash": "4ac7141387c6cc47191e1c82faa681100083fa8be2453a5e347fc24253a34e2a"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第1讲-电力系统概述-pwr1l01.md",
@@ -30,7 +51,7 @@
       "slug": "电力系统分析-第1章-第2讲-电力系统概述-pwr1l02",
       "title": "电力系统分析：第1章 第2讲：电力系统概述（Lecture 2）",
       "publishedAt": "2026-09-14",
-      "hash": "cea2f4f15d4e518040a343fbf74dd5b662cf2dfcccd57d3d0fa6cf38ca653b26"
+      "hash": "13dc98f4417d46002d8d4770c15a755560e8935a9faf3f5b3fca20ef429f1c3a"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",

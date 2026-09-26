@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 94,
-  "assetCount": 89,
+  "noteCount": 97,
+  "assetCount": 132,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -87,6 +87,13 @@
       "title": "均匀传输线：A-3：均匀传输线的行波",
       "publishedAt": "2026-07-24",
       "hash": "5de1133104c5093d916cbd32af96e13d6ae781ba1ff4a817965aa84c631f328b"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/核心知识库.md",
+      "slug": "最优化-核心知识库-跨章链条与证明技巧-optkb01",
+      "title": "核心知识库 · Beck《First-Order Methods in Optimization》",
+      "publishedAt": "2026-09-23",
+      "hash": "7d633d01683931b44799c9e1ef52d4ec1345c692ff59071929718dc9d5c8a660"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-1-vector-spaces-msn1gxzx.md",
@@ -234,6 +241,20 @@
       "title": "LLMGW 本地 LLM 网关 — 工程开发文档 v3.0",
       "publishedAt": "2026-09-03",
       "hash": "fedbd66ba7958e80ca72d9e9832dfb1c6389b5a7b4b77753fe17ae2b00e8d0fc"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第1讲-绪论与系统的数学模型-acs01.md",
+      "slug": "自动控制原理-第1讲-绪论与系统的数学模型-acs01",
+      "title": "自动控制原理：第 1 讲 绪论与系统的数学模型",
+      "publishedAt": "2026-09-24",
+      "hash": "39b098ead7ad15c7ab0098f8383047ff4c94f290d81b9cebac762ea2602a0503"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第2讲-方框图信号流图与状态空间-acs02.md",
+      "slug": "自动控制原理-第2讲-方框图信号流图与状态空间-acs02",
+      "title": "自动控制原理：第 2 讲 系统的数学模型（方框图、信号流图与状态空间）",
+      "publishedAt": "2026-09-24",
+      "hash": "ffacc459c437a52981e4750a3fb9aeabec0960e7e16524e561ca2c46ceded301"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

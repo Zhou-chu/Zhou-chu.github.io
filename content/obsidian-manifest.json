@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 97,
-  "assetCount": 132,
+  "noteCount": 100,
+  "assetCount": 153,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -40,6 +40,13 @@
       "hash": "4ac7141387c6cc47191e1c82faa681100083fa8be2453a5e347fc24253a34e2a"
     },
     {
+      "sourcePath": "blog/电力电子/电力电子-宽禁带功率半导体器件综述-SiC与GaN-wbg01.md",
+      "slug": "宽禁带功率半导体器件综述-SiC与GaN-wbg01",
+      "title": "宽禁带功率半导体器件综述 Digest：SiC 与 GaN",
+      "publishedAt": "2026-09-27",
+      "hash": "d3071b1f2c2236f7737e92514e1338ce701e3d2b35d88206355d88d5236d7bd1"
+    },
+    {
       "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第1讲-电力系统概述-pwr1l01.md",
       "slug": "电力系统分析-第1章-第1讲-电力系统概述-pwr1l01",
       "title": "电力系统分析：第1章 第1讲：电力系统概述（Lecture 1）",
@@ -52,6 +59,20 @@
       "title": "电力系统分析：第1章 第2讲：电力系统概述（Lecture 2）",
       "publishedAt": "2026-09-14",
       "hash": "13dc98f4417d46002d8d4770c15a755560e8935a9faf3f5b3fca20ef429f1c3a"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03.md",
+      "slug": "电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03",
+      "title": "电力系统分析：第2章 第3讲：电力线路参数与等值电路",
+      "publishedAt": "2026-09-28",
+      "hash": "11835b4702d5d570152b14c89b1c51ca5b4145b90620bc8eb5d7bbafa1cce901"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04.md",
+      "slug": "电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04",
+      "title": "电力系统分析：第2章 第4讲：变压器参数与等值电路",
+      "publishedAt": "2026-09-28",
+      "hash": "32553eaa0e811b8b0b1537287ea0e235e92eb432749e5187fd8bf2bb918d888e"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",

@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 100,
-  "assetCount": 153,
+  "noteCount": 102,
+  "assetCount": 190,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -33,11 +33,25 @@
       "hash": "eedd467979e19144040cc53a7883c6fab853cf1e0ee999a93cd55d41638d5e69"
     },
     {
+      "sourcePath": "blog/电力电子/电力电子-第2讲-功率器件-Power-Devices-pe1l02.md",
+      "slug": "电力电子-第2讲-功率器件-Power-Devices-pe1l02",
+      "title": "电力电子：第 2 讲 功率器件（Power Devices）学习笔记",
+      "publishedAt": "2026-09-29",
+      "hash": "302be4b2e6b777e11eab69c21d714d5f22050a121a33e09962a257725a441c01"
+    },
+    {
       "sourcePath": "blog/电力电子/电力电子-第2章-二极管整流器-AC-DC学习笔记.md",
       "slug": "电力电子-第2章-二极管整流器-AC-DC-acdc02",
       "title": "电力电子：第 2 章 二极管整流器（Diode Rectifiers）学习笔记",
       "publishedAt": "2026-09-22",
       "hash": "4ac7141387c6cc47191e1c82faa681100083fa8be2453a5e347fc24253a34e2a"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第4讲-晶闸管可控整流-AC-DC-pe1l04.md",
+      "slug": "电力电子-第4讲-晶闸管可控整流-AC-DC-pe1l04",
+      "title": "电力电子：第 4 讲 晶闸管 AC-DC 变换器（Thyristor AC-DC Converters）学习笔记",
+      "publishedAt": "2026-09-29",
+      "hash": "20bdac7cf8e7bf9abb3b5f4eb0b077a65a82d20f890a7e39a48e996f2ea70678"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-宽禁带功率半导体器件综述-SiC与GaN-wbg01.md",

@@ -34,6 +34,14 @@ export function ArticleToc() {
   // ── Discover headings from the DOM ──────────────────────────────
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reading rendered DOM headings on mount is the canonical TOC pattern; no cascading renders at scale
   useLayoutEffect(() => {
+    scanHeadings();
+    // 正文由 MarkdownClient 在浏览器端渲染（Workers Free plan CPU 限制），
+    // 标题在首次挂载时尚不存在；渲染完成后它会广播 markdown:rendered。
+    window.addEventListener("markdown:rendered", scanHeadings);
+    return () => window.removeEventListener("markdown:rendered", scanHeadings);
+  }, []);
+
+  function scanHeadings() {
     const els = document.querySelectorAll<HTMLHeadingElement>(
       ".note-body h2[id], .note-body h3[id]",
     );
@@ -50,7 +58,7 @@ export function ArticleToc() {
     // Reading the rendered DOM is the standard TOC pattern
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHeadings(items);
-  }, []);
+  }
 
   // ── IntersectionObserver for active section ─────────────────────
   useEffect(() => {

@@ -2721,3 +2721,24 @@ html body,
   color: var(--moss);
   font-weight: 600;
 }
+
+/* ── 正文客户端渲染占位（MarkdownClient）────────────────────────── */
+.markdown-loading {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 400 13px/1.8 "PingFang SC", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  color: var(--muted, #66675e);
+  animation: markdown-loading-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes markdown-loading-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .markdown-loading { animation: none; }
+}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { MarkdownBody } from "../../components/MarkdownBody";
+import { MarkdownClient } from "../../components/MarkdownClient";
 import type { PublicNote } from "../../lib/sample-notes";
 import { getDb } from "../../../db/index";
 import { notes } from "../../../db/schema";
@@ -206,7 +206,9 @@ export default async function NotePage({ params }: PageProps) {
 
           {/* ── Reading body ── */}
           <div className="note-body">
-            <MarkdownBody source={resolvedContent} headingIds />
+            {/* Workers Free plan CPU 限制（10ms）下服务端渲染长文必触发 Error 1102，
+                正文改由浏览器端渲染，见 MarkdownClient 组件注释 */}
+            <MarkdownClient source={resolvedContent} headingIds />
           </div>
 
           {/* ── Article end marker ── */}

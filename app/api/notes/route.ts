@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const after = url.searchParams.get("after");
     const limit = url.searchParams.get("limit");
     const cursor = after ? Number(after) : undefined;
-    const limitNum = limit ? Math.min(Number(limit), 100) : 20;
+    const limitNum = limit ? Math.min(Number(limit), 500) : 20;
 
     const result = await listPublishedNotes(cursor, limitNum);
     const notesList = result as Array<Record<string, unknown>>;

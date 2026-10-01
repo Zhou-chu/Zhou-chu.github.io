@@ -2,7 +2,7 @@
 blog: true
 title: "04-Server请求处理：HTTP → Core 的桥接层"
 slug: "04-server请求处理-http-core-的桥接层-mscuwizn"
-summary: "树节点：04 Server请求处理 父节点：04 全链路概览 子节点：无 04 Server请求处理：HTTP → Core 的桥接层 Server 包负责将 HTTP 请求路由到 Core 层的领域操作，使用 Effect HttpApi 框架定义类型安全的 API 端点。 一、路由组装 — routes.ts 文件 : packages/server/src/routes.ts (64 行) 两个入口 ( :39 49 )： cre"
+summary: "Server 包负责将 HTTP 请求路由到 Core 层的领域操作，使用 Effect HttpApi 框架定义类型安全的 API 端点。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "07-消息结构与角色"
 slug: "07-消息结构与角色-mscun0k4"
-summary: "树节点：07 消息结构与角色 父节点：Opencode的工作原理 子节点：07 系统提示组装 | 07 工具定义注入 | 07 缓存策略 07 消息结构与角色 OpenCode 存在 两套消息系统 ：内部持久化的 SessionMessage （Schema 层定义）和 LLM 协议层的 Message （ @opencode ai/llm 包）。两者通过 toLLMMessage() 翻译层桥接。 一、SessionMessage —"
+summary: "OpenCode 存在两套消息系统：内部持久化的 SessionMessage（Schema 层定义）和 LLM 协议层的 Message（@opencode-ai/llm 包）。两者通过 toLLMMessage() 翻译层桥接。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

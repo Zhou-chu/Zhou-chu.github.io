@@ -2,7 +2,7 @@
 blog: true
 title: "10-快照恢复与回滚"
 slug: "10-快照恢复与回滚-mscun0jq"
-summary: "树节点：10 快照恢复与回滚 父节点：10 快照创建与存储 子节点：无 概述 Revert 机制允许用户 将对话回退到某条 assistant 消息之前的状态 ，同时恢复该消息产生的文件变更。它利用 10 快照创建与存储 中每条 assistant message 记录的 snapshot 信息来定位需要恢复的文件，通过 Snapshot.restore() 将文件内容还原，并以事件驱动方式更新 Session 的持久化状态。 核心数据"
+summary: "Revert 机制允许用户将对话回退到某条 assistant 消息之前的状态，同时恢复该消息产生的文件变更。它利用 10-快照创建与存储 中每条 assistant message 记录的 snapshot 信息来定位需要恢复的文件，通过 Snapshot.restore() 将文件内容还原，…"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

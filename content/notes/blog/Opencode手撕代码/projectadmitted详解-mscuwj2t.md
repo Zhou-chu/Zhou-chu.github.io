@@ -2,7 +2,7 @@
 blog: true
 title: "projectAdmitted详解"
 slug: "projectadmitted详解-mscuwj2t"
-summary: "父笔记 : 会话输入与Prompt管理 · 02 session lifecycle 调用链：谁调了 projectAdmitted？ 先搞清楚它在整个流程中的位置： admit() 只负责 发布事件 ，不写库。 projectAdmitted 是事件系统在事件持久化 之后 调用的投影回调，负责把事件内容 投影 到业务表里。这和你在 System Context 模块看到的 ContextUpdated → 投影器写 SessionMe"
+summary: "父笔记: 会话输入与Prompt管理 ·"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

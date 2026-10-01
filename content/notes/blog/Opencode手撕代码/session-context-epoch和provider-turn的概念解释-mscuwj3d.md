@@ -2,7 +2,7 @@
 blog: true
 title: "Session、Context Epoch和Provider Turn的概念解释"
 slug: "session-context-epoch和provider-turn的概念解释-mscuwj3d"
-summary: "1. Session — 持久对话身份 Session 是 OpenCode 的 最外层容器 ——一次用户与 AI 交互的完整生命周期。 关键特性： 拥有稳定 ID（ ses 前缀），持久化在 session 表中 同一 Session 内，Agent/Model 可以切换，但历史消息保留 不同 Session 并发运行 （Coordinator 按 sessionID 做 Key 串行，不同 Session 互不阻塞） 📌 pack"
+summary: "Session 是 OpenCode 的最外层容器——一次用户与 AI 交互的完整生命周期。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

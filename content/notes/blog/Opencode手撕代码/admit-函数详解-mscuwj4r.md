@@ -2,7 +2,7 @@
 blog: true
 title: "admit()函数详解"
 slug: "admit-函数详解-mscuwj4r"
-summary: "SessionInput.admit() 鈥?閫愯瑙ｆ瀽 鏂囦欢 锛歚packages/core/src/session/input.ts 锛? 绗?41 81 琛? 鍓嶇疆绫诲瀷 绗?51 52 琛岋細骞傜瓑妫€鏌? find() 鏌? SessionInputTable 锛氳繖涓?messageID 鏄笉鏄凡缁忔寔涔呭寲杩囦簡锛? 濡傛灉鏈? 鈫?鐩存帴杩斿洖宸叉湁鐨? Admitted 瀵硅薄銆傝繖鏄竴灞傚箓绛変繚鎶わ細鍚"
+summary: "admit() 鑷繁涓嶅啓鏁版嵁搴撱€? 瀹冨彂甯冧竴涓?PromptAdmitted 浜嬩欢銆傝繖鍜屼綘鍦?System Context 閲岀湅鍒扮殑妯″紡涓€妯′竴鏍封€斺€擿ContextUpdated 涔熸槸鍏堝彂浜嬩欢锛屾姇褰卞櫒鍐嶅啓搴撱€?events.publish() …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "observe 代码详解"
 slug: "observe-代码详解-mscuwj4p"
-summary: "observe 代码详解 这个函数是 packages/core/src/system context/index.ts 中私有 const observe ——但它是\"轮询式比较\"的 执行起点 ——所有 Context Source 在这里被并发加载。 函数签名 value 的类型是 SystemContext ——还记得 make() 的返回值吗？它就是一个 { [ContextTypeId]: PackedSource[] } 。"
+summary: "value 的类型是 SystemContext——还记得 make() 的返回值吗？它就是一个 { [ContextTypeId]: PackedSource[] }。这里的 value 是 combine() 把多个 Source 拼在一起的结果，包含所有已注册的 Context Source。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

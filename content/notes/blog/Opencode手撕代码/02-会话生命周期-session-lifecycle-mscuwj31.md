@@ -2,7 +2,7 @@
 blog: true
 title: "02 — 会话生命周期 (Session Lifecycle)"
 slug: "02-会话生命周期-session-lifecycle-mscuwj31"
-summary: "02 — 会话生命周期 (Session Lifecycle) 设计意图：Admission ≠ Execution OpenCode V2 的会话生命周期围绕一个核心原则构建： Prompt 的持久化准入 (Admission) 与模型执行 (Execution) 是分离的 。 为什么要分离 | 理由 | 说明 | | | | | 崩溃安全 (Persistence first) | 即使进程在 Provider Turn 中途崩溃，"
+summary: "OpenCode V2 的会话生命周期围绕一个核心原则构建：Prompt 的持久化准入 (Admission) 与模型执行 (Execution) 是分离的。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

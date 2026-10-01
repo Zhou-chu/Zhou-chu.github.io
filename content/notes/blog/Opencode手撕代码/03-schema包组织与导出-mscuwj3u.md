@@ -2,7 +2,7 @@
 blog: true
 title: "03-Schema包组织与导出"
 slug: "03-schema包组织与导出-mscuwj3u"
-summary: "树节点：03 Schema包组织与导出 父节点：Opencode的工作原理 子节点：03 标识符与品牌类型 | 03 核心实体Schema | 03 事件与Manifest 概述 @opencode ai/schema 是 OpenCode 项目中 最底层的共享契约包 ，承担\"浏览器安全、可序列化、跨包共享\"的类型定义职责。它不包含任何运行行为、副作用或宿主实现——只定义结构、约束和标识符。所有上层包（Protocol、Server、C"
+summary: "@opencode-ai/schema 是 OpenCode 项目中最底层的共享契约包，承担\"浏览器安全、可序列化、跨包共享\"的类型定义职责。它不包含任何运行行为、副作用或宿主实现——只定义结构、约束和标识符。所有上层包（Protocol、Server、Core、SDK）单向依赖它。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "09-取消与中断传播"
 slug: "09-取消与中断传播-mscun0jy"
-summary: "树节点：09 取消与中断传播 父节点：09 Fork与Fiber生命周期 子节点：无 OpenCode 的中断系统建立在 Effect 的 Fiber.interrupt 之上，从 HTTP API 层一直传播到工具执行层。整体链路为： 用户请求 → SessionExecution → RunCoordinator.interrupt → Fiber.interrupt → tool cleanup 。 中断入口：SessionExe"
+summary: "OpenCode 的中断系统建立在 Effect 的 Fiber.interrupt 之上，从 HTTP API 层一直传播到工具执行层。整体链路为：用户请求 → SessionExecution → RunCoordinator.interrupt → Fiber.interrupt → …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

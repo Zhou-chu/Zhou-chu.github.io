@@ -2,7 +2,7 @@
 blog: true
 title: "Drain和Fiber"
 slug: "drain和fiber-mscuwj4q"
-summary: "父笔记 : run coordinator.ts详解 · 02 session lifecycle · 会话输入与Prompt管理 两个概念一个来自 Effect 并发模型，一个来自 OpenCode 的执行模型。 Fiber Fiber 是 Effect 运行时里的 并发执行单元 。放在 JS 语境下最好理解：它不是线程（OS 线程），不是进程，而是类似协程的轻量实体。 它是什么 关键特性： | 特性 | 含义 | | | | | 协"
+summary: "父笔记: run-coordinator.ts详解 · 02-session-lifecycle · 会话输入与Prompt管理"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

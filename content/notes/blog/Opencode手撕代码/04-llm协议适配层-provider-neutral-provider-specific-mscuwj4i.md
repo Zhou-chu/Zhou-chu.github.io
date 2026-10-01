@@ -2,7 +2,7 @@
 blog: true
 title: "04-LLM协议适配层：Provider-Neutral → Provider-Specific"
 slug: "04-llm协议适配层-provider-neutral-provider-specific-mscuwj4i"
-summary: "树节点：04 LLM协议适配层 父节点：04 全链路概览 子节点：无 04 LLM协议适配层：Provider Neutral → Provider Specific @opencode ai/llm 包实现了一套 Schema first 的 LLM 抽象层，将通用的 LLMRequest 转化为各个 Provider 的原生 HTTP 请求。 一、顶层 API — llm.ts 文件 : packages/llm/src/llm.t"
+summary: "@opencode-ai/llm 包实现了一套 Schema-first 的 LLM 抽象层，将通用的 LLMRequest 转化为各个 Provider 的原生 HTTP 请求。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "10-快照创建与存储"
 slug: "10-快照创建与存储-mscun0jo"
-summary: "树节点：10 快照创建与存储 父节点：Opencode的工作原理 子节点：10 快照恢复与回滚 概述 Snapshot 模块负责 捕获 Location 范围内文件系统的内容寻址快照 ，本质是对工作区文件状态的时间点快照。底层基于 Git bare repository 存储，每次 capture 生成一个 Git Tree SHA 作为 Snapshot ID。核心用于两步对比（Provider Turn 前后）来检测文件变更，以及为"
+summary: "Snapshot 模块负责捕获 Location 范围内文件系统的内容寻址快照，本质是对工作区文件状态的时间点快照。底层基于 Git bare repository 存储，每次 capture 生成一个 Git Tree SHA 作为 Snapshot ID。核心用于两步对比（Provider …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

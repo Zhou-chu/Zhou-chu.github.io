@@ -2,7 +2,7 @@
 blog: true
 title: "run-coordinator.ts详解"
 slug: "run-coordinator-ts详解-mscuwjpg"
-summary: "父笔记 : 会话输入与Prompt管理 · 02 session lifecycle 子笔记 : Drain和Fiber run coordinator.ts 是 OpenCode 里最精妙的状态机之一。我从类型到执行流程逐层拆解。 SessionRunCoordinator — 逐行详解 公共接口 四个操作，一个原则： 同一个 Key 串行，不同 Key 并发。 对于 OpenCode， Key 就是 SessionSchema.ID"
+summary: "父笔记: 会话输入与Prompt管理 · 02-session-lifecycle > 子笔记: Drain和Fiber"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

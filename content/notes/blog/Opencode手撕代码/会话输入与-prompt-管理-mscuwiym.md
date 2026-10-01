@@ -2,7 +2,7 @@
 blog: true
 title: "会话输入与 Prompt 管理"
 slug: "会话输入与-prompt-管理-mscuwiym"
-summary: "树节点：05 会话输入与Prompt管理 父节点：05 Session创建与状态机 子节点：无 会话输入与 Prompt 管理 用户消息和工具结果如何进入 Opencode 系统——从 admit() 持续化接纳，到事件投影为数据库消息，再到 Runner 的 promote() 提升为 LLM 可见的上下文。 数据模型 Prompt 输入类型 packages/schema/src/prompt input.ts:21 26 File"
+summary: "用户消息和工具结果如何进入 Opencode 系统——从 admit() 持续化接纳，到事件投影为数据库消息，再到 Runner 的 promote() 提升为 LLM 可见的上下文。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

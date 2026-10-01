@@ -2,7 +2,7 @@
 blog: true
 title: "Mid-Conversation System Message — 对话中期系统更新"
 slug: "mid-conversation-system-message-对话中期系统更新-mscun05b"
-summary: "树节点：06 Mid Conversation更新 父节点：06 Context Source与Registry 子节点：无 Mid Conversation System Message — 对话中期系统更新 当 System Context 在 Session 运行期间发生变化（如日期跨天、AGENTS.md 被编辑、技能列表变更），OpenCode 通过 持久化的 Mid Conversation System Message 将"
+summary: "当 System Context 在 Session 运行期间发生变化（如日期跨天、AGENTS.md 被编辑、技能列表变更），OpenCode 通过持久化的 Mid-Conversation System Message 将变化注入到 LLM 的对话历史中。这不仅是一个\"通知模型\"的动作，…"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

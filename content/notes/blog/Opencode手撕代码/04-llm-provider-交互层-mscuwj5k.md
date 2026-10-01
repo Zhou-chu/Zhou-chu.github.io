@@ -2,7 +2,7 @@
 blog: true
 title: "04 — LLM/Provider 交互层"
 slug: "04-llm-provider-交互层-mscuwj5k"
-summary: "04 — LLM/Provider 交互层 一次 Provider Turn 从请求组装到响应投影的完整生命周期。 1. Provider Turn 生命周期 1.1 定义 📌 Provider Turn : One request to a model provider and the response projected from that request. 一次 Provider Turn 就是\"调用一次 LLM\"。包括组装请求"
+summary: "一次 Provider Turn 从请求组装到响应投影的完整生命周期。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

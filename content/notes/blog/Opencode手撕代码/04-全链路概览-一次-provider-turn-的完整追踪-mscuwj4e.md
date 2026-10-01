@@ -2,7 +2,7 @@
 blog: true
 title: "04-全链路概览：一次 Provider Turn 的完整追踪"
 slug: "04-全链路概览-一次-provider-turn-的完整追踪-mscuwj4e"
-summary: "树节点：04 全链路概览 父节点：Opencode的工作原理 子节点：04 Server请求处理 | 04 LLM协议适配层 04 全链路概览：一次 Provider Turn 的完整追踪 本文追踪一次用户输入从 HTTP 请求 → 数据库记录 → Runner 执行 → LLM 调用 → 工具结算 → 事件发布的 完整调用链 。 一、整体架构流 二、逐阶段详解 阶段 1：用户输入到达 — HTTP 层 入口 : packages/se"
+summary: "本文追踪一次用户输入从 HTTP 请求 → 数据库记录 → Runner 执行 → LLM 调用 → 工具结算 → 事件发布的完整调用链。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

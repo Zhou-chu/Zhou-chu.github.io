@@ -2,7 +2,7 @@
 blog: true
 title: "08-工具声明与注册"
 slug: "08-工具声明与注册-mscun0k2"
-summary: "08 工具声明与注册 树节点：08 工具声明与注册 父节点：Opencode的工作原理 子节点：08 工具选择与权限 | 08 工具执行与结算 | 08 输出截断与Managed Output 1. 概览 OpenCode 的工具系统采用 三层架构 ：声明层（ Tool.make ）→ 注册层（ ToolRegistry / ApplicationTools ）→ 执行层（ settle ）。每层职责清晰，独立可测。 核心概念： Too"
+summary: "OpenCode 的工具系统采用三层架构：声明层（Tool.make）→ 注册层（ToolRegistry / ApplicationTools）→ 执行层（settle）。每层职责清晰，独立可测。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

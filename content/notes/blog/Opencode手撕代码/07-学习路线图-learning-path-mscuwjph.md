@@ -2,7 +2,7 @@
 blog: true
 title: "07 — 学习路线图 (Learning Path)"
 slug: "07-学习路线图-learning-path-mscuwjph"
-summary: "07 — 学习路线图 (Learning Path) 一份从零到深入理解 OpenCode 核心架构的渐进式学习路线。 六阶段渐进路线 第一阶段：掌握词汇表（约 30 分钟） 目标 ：建立核心概念的直觉，不需要理解实现细节。 阅读材料 ： CONTEXT.md ，辅以00 — 总览与架构 CONTEXT.md 是 OpenCode 的术语词典。它定义了 Session History、System Context、Context Epo"
+summary: "一份从零到深入理解 OpenCode 核心架构的渐进式学习路线。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

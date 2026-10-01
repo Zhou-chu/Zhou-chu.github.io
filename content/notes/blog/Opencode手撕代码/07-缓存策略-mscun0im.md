@@ -2,7 +2,7 @@
 blog: true
 title: "07-缓存策略"
 slug: "07-缓存策略-mscun0im"
-summary: "树节点：07 缓存策略 父节点：07 消息结构与角色 子节点：无 概述 Opencode 的 prompt caching 默认开启（ cache: \"auto\" ），在请求编译阶段自动注入 cache breakpoints 到支持内联标记的 protocol（Anthropic Messages、Bedrock Converse），以最少配置获得 tool use 循环中的大幅 token 成本减免。 1. CacheHint 类型"
+summary: "Opencode 的 prompt caching 默认开启（cache: \"auto\"），在请求编译阶段自动注入 cache breakpoints 到支持内联标记的 protocol（Anthropic Messages、Bedrock Converse），以最少配置获得 tool-use …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "Baseline 与 Snapshot — 上下文世代的持久状态"
 slug: "baseline-与-snapshot-上下文世代的持久状态-mscuwizj"
-summary: "树节点：06 Baseline与Snapshot 父节点：06 Context Source与Registry 子节点：无 Baseline 与 Snapshot — 上下文世代的持久状态 这是 System Context 代数中关于 持久化 的部分：一个 Context Epoch 如何存储其不可变基线，以及如何通过 JSON 快照实现增量比较。 数据模型 session context epoch 表 packages/core/"
+summary: "这是 System Context 代数中关于持久化的部分：一个 Context Epoch 如何存储其不可变基线，以及如何通过 JSON 快照实现增量比较。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "08-工具选择与权限"
 slug: "08-工具选择与权限-mscun0id"
-summary: "08 工具选择与权限 树节点：08 工具选择与权限 父节点：08 工具声明与注册 子节点：无 1. 概览 OpenCode 的权限系统在 两个层级 运作： 定义层（materialize 时） ： whollyDisabled 过滤完全禁用的工具，决定哪些工具对 LLM 可见 执行层（settle 时） ： PermissionV2.assert() 在工具实际执行前做授权检查，支持 allow / deny / ask 三态 核心区别"
+summary: "OpenCode 的权限系统在两个层级运作： - 定义层（materialize 时）：whollyDisabled 过滤完全禁用的工具，决定哪些工具对 LLM 可见 - 执行层（settle 时）：PermissionV2.assert() 在工具实际执行前做授权检查，支持 allow / …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

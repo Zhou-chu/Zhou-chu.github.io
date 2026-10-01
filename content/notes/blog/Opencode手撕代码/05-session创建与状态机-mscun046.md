@@ -2,7 +2,7 @@
 blog: true
 title: "05-Session创建与状态机"
 slug: "05-session创建与状态机-mscun046"
-summary: "树节点：05 Session创建与状态机 父节点：Opencode的工作原理 子节点：05 Context Epoch机制 | 05 Runner执行循环 | 05 Compaction与历史管理 | 05 会话输入与Prompt管理 1. Session 概述 Session 是 OpenCode 中最核心的持久化实体，代表一次完整的对话会话。每个 Session 拥有独立的 ID、project 归属、location（文件系统位置"
+summary: "Session 是 OpenCode 中最核心的持久化实体，代表一次完整的对话会话。每个 Session 拥有独立的 ID、project 归属、location（文件系统位置）、消息历史和 Context Epoch 状态。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

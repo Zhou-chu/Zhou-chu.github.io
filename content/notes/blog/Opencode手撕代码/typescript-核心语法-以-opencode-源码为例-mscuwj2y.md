@@ -2,7 +2,7 @@
 blog: true
 title: "TypeScript 核心语法 —— 以 Opencode 源码为例"
 slug: "typescript-核心语法-以-opencode-源码为例-mscuwj2y"
-summary: "树节点：02 TypeScript核心语法 父节点：Opencode的工作原理 子节点：02 Effect TS核心范式 | 02 Layer与依赖注入 | 02 Fiber与Scope TypeScript 核心语法 —— 以 Opencode 源码为例 本文面向有编程经验但刚接触 TypeScript 的开发者。以 Opencode 项目的真实代码为案例，逐一解释 TS 中最重要的类型系统特性及其使用场景。 1. Schema.Cl"
+summary: "这三种结构是 Effect/Schema 提供的运行时 + 类型定义方式： - Schema.Struct：定义 plain object 的结构（运行时数据校验 + TypeScript 类型推导） - Schema.Class：定义带构造器的 class 式 schema（除了 Struct …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "Session Runner 完整执行流程"
 slug: "session-runner-完整执行流程-mscuwjps"
-summary: "父笔记 : 02 session lifecycle · 04 llm interaction 子笔记 : 会话输入与Prompt管理 · run coordinator.ts详解 · Drain和Fiber runner/llm.ts 是 OpenCode 最核心的文件——把 SystemContext 、 SessionInput 、 SessionHistory 、 SessionContextEpoch 、 Coordinato"
+summary: "父笔记: 02-session-lifecycle · 04-llm-interaction > 子笔记: 会话输入与Prompt管理 · run-coordinator.ts详解 · Drain和Fiber"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

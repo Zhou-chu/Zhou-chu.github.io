@@ -2,7 +2,7 @@
 blog: true
 title: "Compaction 与历史管理"
 slug: "compaction-与历史管理-mscun056"
-summary: "树节点：05 Compaction与历史管理 父节点：05 Session创建与状态机 子节点：无 Compaction 与历史管理 当会话消息积累到接近模型上下文窗口上限时，Opencode 自动将早期对话 压缩 为结构化摘要，保留近期消息不变。Compaction 由 SessionCompaction 模块驱动， SessionHistory 模块负责过滤后的消息加载。 配置 packages/core/src/session/c"
+summary: "packages/core/src/session/compaction.ts:1"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "05-Context-Epoch机制"
 slug: "05-context-epoch机制-mscuwj32"
-summary: "树节点：05 Context Epoch机制 父节点：05 Session创建与状态机 子节点：无 1. 概念：什么是 Context Epoch？ Context Epoch 是 OpenCode 中 System Context 的不可变代数 。一个 Epoch 内， baseline （发送给 LLM 的完整系统提示文本）始终不变；只有 snapshot （每个 Context Source 的 durable 对比状态）可以渐进"
+summary: "Context Epoch 是 OpenCode 中 System Context 的不可变代数。一个 Epoch 内，baseline（发送给 LLM 的完整系统提示文本）始终不变；只有 snapshot（每个 Context Source 的 durable 对比状态）可以渐进更新。当 …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

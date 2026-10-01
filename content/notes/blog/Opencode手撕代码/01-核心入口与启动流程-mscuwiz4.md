@@ -2,7 +2,7 @@
 blog: true
 title: "01-核心入口与启动流程"
 slug: "01-核心入口与启动流程-mscuwiz4"
-summary: "树节点：01 核心入口与启动流程 父节点：01 项目架构与包结构 子节点：无 01 核心入口与启动流程 OpenCode 有四个主要入口： CLI 主命令 （ @opencode ai/opencode ）、 旧版 CLI （ @opencode ai/cli ）、 TUI （ @opencode ai/tui ）和 Desktop （ @opencode ai/desktop ），全部指向相同的 Server Core。 入口总览 1"
+summary: "OpenCode 有四个主要入口：CLI 主命令（@opencode-ai/opencode）、旧版 CLI（@opencode-ai/cli）、TUI（@opencode-ai/tui）和 Desktop（@opencode-ai/desktop），全部指向相同的 Server Core。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

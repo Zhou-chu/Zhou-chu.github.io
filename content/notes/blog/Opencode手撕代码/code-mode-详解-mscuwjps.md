@@ -2,7 +2,7 @@
 blog: true
 title: "Code Mode 详解"
 slug: "code-mode-详解-mscuwjps"
-summary: "Code Mode 详解 Code Mode 是 OpenCode 1.18.4 引入的 受限 JavaScript 编排环境 ——让模型编写小程序，在显式指定的工具树上顺序、分支、并行地调用工具，但不拥有任何环境权限。它由 @opencode ai/codemode 包（ packages/codemode/ ）提供核心解释器，再由 OpenCode 产品层（ packages/opencode/src/tool/code mode."
+summary: "Code Mode 是 OpenCode 1.18.4 引入的受限 JavaScript 编排环境——让模型编写小程序，在显式指定的工具树上顺序、分支、并行地调用工具，但不拥有任何环境权限。它由 @opencode-ai/codemode 包（packages/codemode/）提供核心解释器，…"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

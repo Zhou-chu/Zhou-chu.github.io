@@ -2,7 +2,7 @@
 blog: true
 title: "03-事件与Manifest"
 slug: "03-事件与manifest-mscuwj4q"
-summary: "树节点：03 事件与Manifest 父节点：03 Schema包组织与导出 子节点：无 概述 Opencode 采用 Event Sourcing（事件溯源） 模式管理所有状态变更。核心思想：不直接修改数据库行，而是持久化不可变的 事件（Event） ，再由 投影器（Projector） 将事件还原为当前状态。Schema 包的 event.ts 提供了事件定义的基础设施。 1. Event 基础定义 文件 : packages/sc"
+summary: "Opencode 采用 Event Sourcing（事件溯源） 模式管理所有状态变更。核心思想：不直接修改数据库行，而是持久化不可变的 事件（Event），再由 投影器（Projector） 将事件还原为当前状态。Schema 包的 event.ts 提供了事件定义的基础设施。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

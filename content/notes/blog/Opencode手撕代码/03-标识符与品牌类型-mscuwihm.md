@@ -2,7 +2,7 @@
 blog: true
 title: "03-标识符与品牌类型"
 slug: "03-标识符与品牌类型-mscuwihm"
-summary: "树节点：03 标识符与品牌类型 父节点：03 Schema包组织与导出 子节点：无 概述 OpenCode 使用 Effect TS 的 Brand （品牌类型）机制为所有领域标识符创建类型安全的字符串别名。核心思路：ID 在运行时是 string ，但在编译期被赋予唯一的品牌标记，编译器能阻止将 SessionID 误传给期望 ProjectID 的函数。 相关文件： packages/schema/src/identifier.ts"
+summary: "OpenCode 使用 Effect-TS 的 Brand（品牌类型）机制为所有领域标识符创建类型安全的字符串别名。核心思路：ID 在运行时是 string，但在编译期被赋予唯一的品牌标记，编译器能阻止将 SessionID 误传给期望 ProjectID 的函数。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

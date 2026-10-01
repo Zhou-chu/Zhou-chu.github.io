@@ -2,7 +2,7 @@
 blog: true
 title: "make函数代码详解"
 slug: "make函数代码详解-mscuwj2f"
-summary: "好的，这是整个 packages/core/src/system context/index.ts 里最核心的函数—— SystemContext.make ，它做了类型擦除、闭包预编译、三层数据结构嵌套三件事。我逐行讲解。 函数签名 泛型 ：调用者传入的 Source 有自己的值类型（ string 、 File[] 、 Skill[] ……）， A 就是这个类型 入参 ：一个完整的 Source ——包含 key、codec、loa"
+summary: "- 泛型 <A>：调用者传入的 Source 有自己的值类型（string、File[]、Skill[]……），A 就是这个类型 - 入参：一个完整的 Source<A>——包含 key、codec、load、baseline、update、removed - …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "01 — 系统上下文代数 (System Context Algebra)"
 slug: "01-系统上下文代数-system-context-algebra-mscuwj7y"
-summary: "01 — 系统上下文代数 (System Context Algebra) 设计意图 OpenCode 的系统提示符需要回答一个看似简单的问题： 模型当前看到的\"系统上下文\"是什么？ 传统方案走的是字符串拼接路线：各处代码把自己想注入的文本片段 push 进一个全局数组，组装时 join(\"\\n\\n\") 一把梭。这套方案有三个致命问题。 问题一：无法比较。 每次轮到 provider turn，你无法知道某个片段到底变了没有。只能每次都"
+summary: "OpenCode 的系统提示符需要回答一个看似简单的问题：模型当前看到的\"系统上下文\"是什么？"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

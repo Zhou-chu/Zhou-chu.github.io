@@ -2,7 +2,7 @@
 blog: true
 title: "prepareOnce 的四个出口"
 slug: "prepareonce-的四个出口-mscuwj40"
-summary: "这个问题问得很准——它触及了 prepareOnce 的 完整控制流 。让我把四个 return 路径全部标出来，你就知道 Updated 分支什么时候命中。 prepareOnce 的四个出口 从 packages/core/src/session/context epoch.ts 中 prepareOnce 函数，一共有 4 个 return 语句 ，它们互斥： 出口 4 的命中条件 ReconcileResult 的联合类型是 U"
+summary: "这个问题问得很准——它触及了 prepareOnce 的完整控制流。让我把四个 return 路径全部标出来，你就知道 Updated 分支什么时候命中。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

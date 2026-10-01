@@ -2,7 +2,7 @@
 blog: true
 title: "08-输出截断与Managed-Output"
 slug: "08-输出截断与managed-output-mscun0jr"
-summary: "树节点：08 输出截断与Managed Output 父节点：08 工具声明与注册 子节点：无 08 输出截断与Managed Output 概述 工具执行结果可能非常庞大（数千行日志、大型 JSON），直接塞入 Session History 会挤压上下文窗口。OpenCode 的 ToolOutputStore 在工具结果被持久化到历史之前，对其进行智能截断：保留头尾预览，将完整内容写入临时文件（Managed Output Fil"
+summary: "工具执行结果可能非常庞大（数千行日志、大型 JSON），直接塞入 Session History 会挤压上下文窗口。OpenCode 的 ToolOutputStore 在工具结果被持久化到历史之前，对其进行智能截断：保留头尾预览，将完整内容写入临时文件（Managed Output File），…"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

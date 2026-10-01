@@ -2,7 +2,7 @@
 blog: true
 title: "02-Layer与依赖注入"
 slug: "02-layer与依赖注入-mscuwj12"
-summary: "树节点：02 Layer与依赖注入 父节点：02 Effect TS核心范式 子节点：无 概述 Effect TS 的 Layer 是 服务配方的描述 ——它声明如何构造一个服务以及该服务依赖哪些其他服务，但不立即执行。Layer 的核心哲学是\"声明所需，推迟提供\"：每个模块声明它需要什么依赖，由组合器在顶层统一解决。02 Effect TS核心范式 在 Opencode 中，Layer 体系分为三个层次： 1. 服务声明 ：用 Con"
+summary: "Effect-TS 的 Layer 是服务配方的描述——它声明如何构造一个服务以及该服务依赖哪些其他服务，但不立即执行。Layer 的核心哲学是\"声明所需，推迟提供\"：每个模块声明它需要什么依赖，由组合器在顶层统一解决。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

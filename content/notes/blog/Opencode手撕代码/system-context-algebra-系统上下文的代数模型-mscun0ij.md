@@ -2,7 +2,7 @@
 blog: true
 title: "System Context Algebra — 系统上下文的代数模型"
 slug: "system-context-algebra-系统上下文的代数模型-mscun0ij"
-summary: "树节点：06 Context Source与Registry 父节点：Opencode的工作原理 子节点：06 Baseline与Snapshot | 06 Mid Conversation更新 System Context Algebra — 系统上下文的代数模型 System Context 是 OpenCode 用于管理 可独立刷新、类型安全的系统上下文源 的代数模型。它解决了 LLM agent 一个核心问题：如何让对话中的环境"
+summary: "System Context 是 OpenCode 用于管理可独立刷新、类型安全的系统上下文源的代数模型。它解决了 LLM agent 一个核心问题：如何让对话中的环境信息（日期、项目路径、可用技能、AGENTS.md 指令等）在变化时被增量感知，而不是每次全文重发。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

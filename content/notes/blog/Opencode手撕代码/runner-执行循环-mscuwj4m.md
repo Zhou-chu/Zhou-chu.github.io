@@ -2,7 +2,7 @@
 blog: true
 title: "Runner 执行循环"
 slug: "runner-执行循环-mscuwj4m"
-summary: "树节点：05 Runner执行循环 父节点：05 Session创建与状态机 子节点：无 Runner 执行循环 SessionRunner 是 Opencode 的 心脏 ——它将历史记录转化为 LLM 请求，流式消费响应，持久化事件，执行工具调用，然后循环直到会话自然终止或被中断。 架构总览 Runner 由 6 个协作模块组成： | 文件 | 职责 | | | | | runner/index.ts | 定义 SessionRun"
+summary: "SessionRunner 是 Opencode 的心脏——它将历史记录转化为 LLM 请求，流式消费响应，持久化事件，执行工具调用，然后循环直到会话自然终止或被中断。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "03-核心实体Schema"
 slug: "03-核心实体schema-mscun018"
-summary: "树节点：03 核心实体Schema 父节点：03 Schema包组织与导出 子节点：无 概述 packages/schema/src/ 目录定义了 Opencode 所有核心实体的 Effect Schema 类型。Schema 包是轻量级的共享类型层，被 Core、Server 和 Client 共同依赖。所有实体通过 Schema.Struct 定义，自动生成编解码器和类型推断。 索引导出见 packages/schema/src/"
+summary: "packages/schema/src/ 目录定义了 Opencode 所有核心实体的 Effect Schema 类型。Schema 包是轻量级的共享类型层，被 Core、Server 和 Client 共同依赖。所有实体通过 Schema.Struct 定义，自动生成编解码器和类型推断。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

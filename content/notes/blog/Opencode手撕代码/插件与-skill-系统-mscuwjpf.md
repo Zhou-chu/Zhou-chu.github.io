@@ -2,7 +2,7 @@
 blog: true
 title: "插件与 Skill 系统"
 slug: "插件与-skill-系统-mscuwjpf"
-summary: "树节点：11 插件与Skill系统 父节点：11 Provider Turn完整流程 子节点：无 插件与 Skill 系统 Plugin 是 OpenCode 的扩展机制，Skill 是 AI Agent 的能力注入机制。两者在架构层面协同工作：Plugin 提供基础设施扩展（如 Provider、Agent、Command），Skill 提供 AI 可调用的知识和指令。 架构概览 Plugin 系统 核心接口 文件 ： package"
+summary: "Plugin 是 OpenCode 的扩展机制，Skill 是 AI Agent 的能力注入机制。两者在架构层面协同工作：Plugin 提供基础设施扩展（如 Provider、Agent、Command），Skill 提供 AI 可调用的知识和指令。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

@@ -2,7 +2,7 @@
 blog: true
 title: "00 — 项目总览 (Project Overview)"
 slug: "00-项目总览-project-overview-mscuwj2z"
-summary: "00 — 项目总览 (Project Overview) OpenCode = AI 编程助手的 Effect TS 多包架构：Schema 层定义纯数据契约，Core 承载领域逻辑，Protocol 定义 HTTP 路由，Server 实现 HTTP API，Client 生成双入口 SDK，SDK Next 提供嵌入式宿主，Code Mode 提供受限代码执行。 1. 包依赖图 (Package Dependency Diagram"
+summary: "OpenCode = AI 编程助手的 Effect-TS 多包架构：Schema 层定义纯数据契约，Core 承载领域逻辑，Protocol 定义 HTTP 路由，Server 实现 HTTP API，Client 生成双入口 SDK，SDK-Next 提供嵌入式宿主，Code Mode …"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

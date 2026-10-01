@@ -2,7 +2,7 @@
 blog: true
 title: "Provider Turn 完整流程"
 slug: "provider-turn-完整流程-mscuwjpu"
-summary: "树节点：11 Provider Turn完整流程 父节点：Opencode的工作原理 子节点：11 事件系统与持久化 | 11 插件与Skill系统 Provider Turn 完整流程 一个 Provider Turn 是 OpenCode 执行引擎的核心循环：从 Session 中取出待处理的输入 → 组装 LLM 请求 → 流式接收响应 → 结算工具调用 → 判断是否继续。本文逐步骤拆解实现细节。 总体架构 每个 Provider"
+summary: "一个 Provider Turn 是 OpenCode 执行引擎的核心循环：从 Session 中取出待处理的输入 → 组装 LLM 请求 → 流式接收响应 → 结算工具调用 → 判断是否继续。本文逐步骤拆解实现细节。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

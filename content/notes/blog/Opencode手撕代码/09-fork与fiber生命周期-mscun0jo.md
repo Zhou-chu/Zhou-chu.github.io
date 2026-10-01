@@ -2,7 +2,7 @@
 blog: true
 title: "09-Fork与Fiber生命周期"
 slug: "09-fork与fiber生命周期-mscun0jo"
-summary: "树节点：09 Fork与Fiber生命周期 父节点：Opencode的工作原理 子节点：09 取消与中断传播 | 09 错误处理与Supervisor OpenCode 基于 Effect 运行时构建，其并发模型的核心是 Fiber （轻量级虚拟线程）与 Fork （创建 Fiber 的操作）。理解 Fork 的变体与 Fiber 的生命周期管理，是掌握 05 Runner执行循环 和 08 工具执行与结算 的前提。 Effect.fo"
+summary: "OpenCode 基于 Effect 运行时构建，其并发模型的核心是 Fiber（轻量级虚拟线程）与 Fork（创建 Fiber 的操作）。理解 Fork 的变体与 Fiber 的生命周期管理，是掌握 05-Runner执行循环 和 08-工具执行与结算 的前提。"
 date: 2026-08-03
 category: "Opencode手撕代码"
 featured: false

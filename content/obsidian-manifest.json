@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 102,
-  "assetCount": 190,
+  "noteCount": 104,
+  "assetCount": 212,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -87,6 +87,20 @@
       "title": "电力系统分析：第2章 第4讲：变压器参数与等值电路",
       "publishedAt": "2026-09-28",
       "hash": "32553eaa0e811b8b0b1537287ea0e235e92eb432749e5187fd8bf2bb918d888e"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第5讲-标幺制与等值电路-pwr2l05.md",
+      "slug": "电力系统分析-第2章-第5讲-标幺制与等值电路-pwr2l05",
+      "title": "电力系统分析：第2章 第5讲：标幺制与等值电路",
+      "publishedAt": "2026-10-12",
+      "hash": "946ca8023b4a335bd241b5a5d02a5a3a9ea344c89e2a55f7f371ed4fad9c583b"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第6讲-简单电力系统潮流计算-pwr3l06.md",
+      "slug": "电力系统分析-第3章-第6讲-简单电力系统潮流计算-pwr3l06",
+      "title": "电力系统分析：第3章 第6讲：简单电力系统潮流计算",
+      "publishedAt": "2026-10-12",
+      "hash": "a89617321bbc5e1860aa792c81d9ae4c36e5b64aa6a49528ab67118e54dd2367"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",

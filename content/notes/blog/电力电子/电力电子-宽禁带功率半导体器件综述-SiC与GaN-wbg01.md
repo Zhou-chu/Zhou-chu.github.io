@@ -1,7 +1,7 @@
 ---
 blog: true
 title: "宽禁带功率半导体器件综述 Digest：SiC 与 GaN"
-slug: "宽禁带功率半导体器件综述-SiC与GaN-wbg01"
+slug: "宽禁带功率半导体器件综述-sic与gan-wbg01"
 summary: "一篇 WBG 功率器件综述的英文摘要：硅的物理极限为何成为瓶颈，SiC 与 GaN 两条技术路线的器件进展（SBD/JBS/JFET/MOSFET/IGBT、HEMT），以及常关型设计、高温封装等当年列出的开放问题。"
 date: 2026-09-27
 category: "电力电子"

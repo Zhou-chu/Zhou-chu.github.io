@@ -1,7 +1,7 @@
 ---
 blog: true
 title: "电力电子：第 1 讲 Introduction（导论）学习笔记"
-slug: "电力电子-第1讲-Introduction-导论-pe1l01"
+slug: "电力电子-第1讲-introduction-导论-pe1l01"
 summary: "全课程框架课：电力电子的定义与任务、为什么必须工作在开关模式、四种功率变换与电路拓扑、理想功率器件特性与器件可控性分类，以及电力电子的典型应用与功率等级。"
 date: 2026-09-15
 category: "电力电子"

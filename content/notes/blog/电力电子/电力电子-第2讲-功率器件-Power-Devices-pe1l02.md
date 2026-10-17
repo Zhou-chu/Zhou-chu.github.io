@@ -1,7 +1,7 @@
 ---
 blog: true
 title: "电力电子：第 2 讲 功率器件（Power Devices）学习笔记"
-slug: "电力电子-第2讲-功率器件-Power-Devices-pe1l02"
+slug: "电力电子-第2讲-功率器件-power-devices-pe1l02"
 summary: "从理想开关的七条目标出发，说明真实器件在通态、断态与换流三类状态下的定额与损耗来源，再按功率二极管、晶闸管、功率晶体管、MOSFET、IGBT 的顺序逐个展开结构、静态特性、开关过程与额定值，最后以安全工作区 SOA 与六维对比表收口，并给出宽禁带器件（SiC、GaN）的演进方向。"
 date: 2026-09-29
 category: "电力电子"

@@ -1,0 +1,556 @@
+/* ==========================================================================
+   木漏れ日 · Forest-timber refinement layer
+   Loaded after globals.css (see app/layout.tsx), so it wins without adding
+   yet another "keep last" block there. Selectors are prefixed with `html body`
+   to outrank the stacked overrides in globals.css.
+
+   Direction: Japanese natural wood (和の木) — pale hinoki/sugi instead of dark
+   walnut, kinari & washi tones, sumi ink, shoji-thin lines, generous 間 (ma).
+
+   Ideas:
+   - Pale hinoki timber, cut from the wood-grain photo under a light wash,
+     frames the hero glass (mask-composite ring keeps the glass see-through).
+   - Dappled sunlight (木漏れ日) drifts slowly across the hero glass.
+   - Topic index becomes a quiet list where each thread grows a branch whose
+     length follows its note count.
+   - Header/footer: legible ink on paper in light mode, thin hinoki beam line.
+   - Quiet motion (transform/opacity only, off under reduced motion):
+     drifting light, a few falling leaves (homepage only), branches that grow.
+   ========================================================================== */
+
+:root {
+  /* hinoki 檜 / sugi 杉 / kinari 生成り / sumi 墨 / koke 苔 */
+  --ft-hinoki: #d9bf96;
+  --ft-hinoki-deep: #b8956a;
+  --ft-sumi: #2b2a26;
+  --ft-beam: linear-gradient(90deg, transparent, var(--ft-hinoki-deep) 14%, var(--ft-hinoki) 50%, var(--ft-hinoki-deep) 86%, transparent);
+  --ft-frame-wash: linear-gradient(180deg, rgba(246, 232, 205, 0.62), rgba(222, 196, 156, 0.5));
+  --ft-sun: 255, 240, 200;
+  --ft-leaf: #6f8a55;
+  --ft-leaf-2: #a9b77a;
+  --ft-branch: linear-gradient(90deg, #a58260, #c4a57c 60%, #8fa16a);
+  --ft-row-line: rgba(120, 92, 60, 0.2);
+}
+
+:root[data-theme="dark"] {
+  --ft-frame-wash: linear-gradient(180deg, rgba(120, 98, 70, 0.35), rgba(60, 46, 32, 0.5));
+  --ft-sun: 255, 226, 160;
+  --ft-leaf: #9fbf86;
+  --ft-leaf-2: #c7cf96;
+  --ft-branch: linear-gradient(90deg, #9a7d5c, #bfa27a 60%, #9fbf86);
+  --ft-row-line: rgba(232, 222, 200, 0.14);
+}
+
+/* --------------------------------------------------------------------------
+   Typography: actually load the serif the design declares (Google Fonts link
+   lives in layout.tsx). Body text keeps the system sans for CJK speed.
+   -------------------------------------------------------------------------- */
+html body .home-intro__heading,
+html body .home-section-heading h2,
+html body .home-research__heading,
+html body .pub-header__brand strong,
+html body .pub-footer__brand strong {
+  font-family: "Noto Serif SC", "Songti SC", STSong, serif;
+}
+
+html body .home-intro__heading {
+  letter-spacing: 0.02em;
+}
+
+/* --------------------------------------------------------------------------
+   Header: readable wordmark + toggle in light mode, timber beam underline.
+   -------------------------------------------------------------------------- */
+html body .pub-header {
+  position: sticky;
+}
+
+html body .pub-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--ft-beam);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+:root:not([data-theme="dark"]) body .pub-header__brand,
+:root:not([data-theme="dark"]) body .pub-header__brand strong {
+  color: var(--ink);
+}
+
+:root:not([data-theme="dark"]) body .pub-header__brand small {
+  color: var(--timber-deep);
+  opacity: 0.8;
+}
+
+:root:not([data-theme="dark"]) body .pub-header .theme-toggle {
+  border-color: rgba(84, 53, 31, 0.28);
+  background: rgba(255, 252, 244, 0.6);
+  color: var(--ink);
+}
+
+:root:not([data-theme="dark"]) body .pub-header .theme-toggle:hover {
+  background: rgba(255, 252, 244, 0.9);
+}
+
+:root:not([data-theme="dark"]) body .theme-toggle__icon {
+  background: rgba(84, 53, 31, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Hero: drop the stale 3:2 aspect ratio, add a timber frame and sunlight.
+   -------------------------------------------------------------------------- */
+html body .home-page .home-hero {
+  --ft-frame: 10px;
+  position: relative;
+  aspect-ratio: auto;
+  border-width: 0;
+  border-radius: 30px;
+  padding-block: clamp(48px, 5.5vw, 72px);
+}
+
+/* Timber frame: wood photo painted only in the border ring. */
+html body .home-page .home-hero::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: var(--ft-frame);
+  border: 0;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  animation: none;
+  border-radius: inherit;
+  background:
+    var(--ft-frame-wash),
+    url("/images/materials/wood-grain.jpg") center / 420px auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 232, 0.5);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* glass sits inside the timber ring */
+html body .home-page .home-hero::after {
+  inset: calc(var(--ft-frame) - 1px);
+  border-radius: calc(30px - var(--ft-frame));
+}
+
+/* Dappled sunlight drifting across the glass (木漏れ日). */
+html body .home-page .home-hero__copy::before {
+  content: "";
+  position: absolute;
+  inset: -18% -40% -22% -12%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(var(--ft-sun), 0.34) 0 4%, transparent 11%),
+    radial-gradient(circle at 34% 64%, rgba(var(--ft-sun), 0.22) 0 3%, transparent 9%),
+    radial-gradient(ellipse at 62% 30%, rgba(var(--ft-sun), 0.26) 0 5%, transparent 14%),
+    radial-gradient(circle at 80% 72%, rgba(var(--ft-sun), 0.18) 0 3%, transparent 10%),
+    radial-gradient(ellipse at 48% 8%, rgba(var(--ft-sun), 0.2) 0 6%, transparent 18%);
+  filter: blur(6px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] body .home-page .home-hero__copy::before {
+  opacity: 0.4;
+}
+
+@media (max-width: 767px) {
+  html body .home-page .home-hero { --ft-frame: 7px; border-radius: 22px; }
+  html body .home-page .home-hero::after { border-radius: calc(22px - var(--ft-frame)); }
+  html body .home-page .home-hero__copy::before { inset: -8% -6% -8% -6%; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html body .home-page .home-hero__copy::before {
+    animation: ft-dapple 22s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ft-dapple {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
+  50% { transform: translate3d(3%, -2%, 0) scale(1.04); opacity: 0.6; }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.02); opacity: 0.9; }
+}
+
+/* Image cabinet: echo the timber frame instead of a flat brown border. */
+html body .home-page .home-cabinet-card {
+  border-color: var(--ft-hinoki);
+  box-shadow:
+    0 18px 40px rgba(40, 30, 18, 0.18),
+    inset 0 0 0 1px rgba(255, 248, 232, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   Topic index → growing threads: one hairline row per topic, with a branch
+   whose length follows the note count (set as --share on the tile).
+   -------------------------------------------------------------------------- */
+html body .home-page .home-research__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(28px, 4vw, 56px);
+  row-gap: 0;
+  border-top: 1px solid var(--ft-row-line);
+}
+
+html body .home-page .home-research__tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 8px;
+  min-height: 0;
+  height: auto;
+  padding: 16px 6px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--ft-row-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  color: var(--ink);
+  transform: none;
+  transition: background-color 180ms ease;
+}
+
+html body .home-page .home-research__tile:hover {
+  background: rgba(var(--ft-sun), 0.14);
+  transform: none;
+}
+
+html body .home-page .home-research__tile:focus-visible {
+  outline: 2px solid var(--moss);
+  outline-offset: 2px;
+}
+
+html body .home-page .home-research__index {
+  grid-row: 1 / span 2;
+  align-self: start;
+  padding-top: 3px;
+  color: var(--timber);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+html body .home-page .home-research__label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", STSong, serif;
+  font-size: 17px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .home-page .home-research__count {
+  color: var(--muted);
+  font-weight: 600;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+html body .home-page .home-research__growth {
+  grid-column: 2 / span 2;
+  position: relative;
+  display: block;
+  height: 10px;
+}
+
+/* the branch */
+html body .home-page .home-research__growth::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: calc(max(var(--share, 0.1), 0.06) * (100% - 12px));
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ft-branch);
+  transform-origin: left center;
+  transition: transform 260ms ease;
+}
+
+/* the leaf at its tip */
+html body .home-page .home-research__growth::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(max(var(--share, 0.1), 0.06) * (100% - 12px));
+  width: 9px;
+  height: 9px;
+  border-radius: 0 70% 0 70%;
+  background: var(--ft-leaf);
+  transform: rotate(-12deg);
+  transition: transform 260ms ease;
+}
+
+html body .home-page .home-research__tile:hover .home-research__growth::after {
+  transform: rotate(-24deg) scale(1.15);
+}
+
+/* section heading on the frosted cabinet: keep it legible on both themes */
+html body .home-page .home-research__intro {
+  margin-bottom: 22px;
+}
+
+@media (max-width: 767px) {
+  html body .home-page .home-research__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Footer: brand · motto · links on one row, timber beam on top.
+   -------------------------------------------------------------------------- */
+html body .pub-footer {
+  position: relative;
+  padding: 0 24px;
+}
+
+html body .pub-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--ft-beam);
+  opacity: 0.55;
+}
+
+html body .pub-footer__inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 0 32px;
+}
+
+html body .pub-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  color: var(--ink);
+}
+
+html body .pub-footer__brand > span {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--timber);
+  border-radius: 50%;
+  color: var(--timber);
+}
+
+html body .pub-footer__tagline {
+  margin: 0;
+  justify-self: center;
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+html body .pub-footer__meta {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 6px 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+html body .pub-footer__meta a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+html body .pub-footer__meta a:hover {
+  color: var(--moss);
+}
+
+@media (max-width: 767px) {
+  html body .pub-footer__inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+    padding: 24px 0 28px;
+  }
+
+  html body .pub-footer__brand,
+  html body .pub-footer__meta {
+    justify-self: center;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion: falling leaves (homepage only), growing branches, swaying tips.
+   Transform/opacity only. Everything is static under reduced motion.
+   -------------------------------------------------------------------------- */
+.ft-leaves {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ft-leaves span {
+  position: absolute;
+  top: -6vh;
+  left: var(--x, 10%);
+  width: var(--size, 12px);
+  height: var(--size, 12px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* the leaf itself sways sideways inside its falling wrapper */
+.ft-leaves span::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0 72% 0 72%;
+  background: var(--tone, var(--ft-leaf));
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.ft-leaves span:nth-child(1) { --x: 8%;  --size: 13px; --dur: 26s; --delay: -4s;  --tone: var(--ft-leaf); }
+.ft-leaves span:nth-child(2) { --x: 22%; --size: 10px; --dur: 31s; --delay: -17s; --tone: var(--ft-leaf-2); }
+.ft-leaves span:nth-child(3) { --x: 41%; --size: 14px; --dur: 28s; --delay: -9s;  --tone: var(--ft-hinoki); }
+.ft-leaves span:nth-child(4) { --x: 58%; --size: 9px;  --dur: 34s; --delay: -22s; --tone: var(--ft-leaf); }
+.ft-leaves span:nth-child(5) { --x: 73%; --size: 12px; --dur: 29s; --delay: -13s; --tone: var(--ft-leaf-2); }
+.ft-leaves span:nth-child(6) { --x: 86%; --size: 11px; --dur: 33s; --delay: -2s;  --tone: var(--ft-hinoki-deep); }
+.ft-leaves span:nth-child(7) { --x: 94%; --size: 13px; --dur: 27s; --delay: -19s; --tone: var(--ft-leaf); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ft-leaves span {
+    animation: ft-fall var(--dur, 28s) linear var(--delay, 0s) infinite;
+  }
+
+  .ft-leaves span::before {
+    animation: ft-sway calc(var(--dur, 28s) / 5) ease-in-out var(--delay, 0s) infinite alternate;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-leaves { display: none; }
+}
+
+@media (max-width: 767px) {
+  .ft-leaves span:nth-child(n + 5) { display: none; }
+}
+
+@keyframes ft-fall {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 0.85; }
+  50%  { transform: translate3d(-6vw, 55vh, 0) rotate(160deg); }
+  90%  { opacity: 0.75; }
+  100% { transform: translate3d(4vw, 112vh, 0) rotate(330deg); opacity: 0; }
+}
+
+@keyframes ft-sway {
+  from { transform: translateX(-18px) rotate(-18deg); }
+  to   { transform: translateX(18px) rotate(22deg); }
+}
+
+/* branches grow in, then the tip leaf sways like it is in a light breeze */
+@media (prefers-reduced-motion: no-preference) {
+  html body .home-page .home-research__growth::before {
+    animation: ft-grow 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  html body .home-page .home-research__growth::after {
+    transform-origin: 0 100%;
+    animation:
+      ft-bud 500ms ease-out 700ms both,
+      ft-breeze 4.5s ease-in-out 1.2s infinite alternate;
+  }
+
+  @supports (animation-timeline: view()) {
+    html body .home-page .home-research__growth::before {
+      animation-timeline: view();
+      animation-range: entry 10% cover 35%;
+    }
+
+    html body .home-page .home-research__growth::after {
+      animation-timeline: view(), auto;
+      animation-range: entry 25% cover 40%, normal;
+    }
+  }
+}
+
+@keyframes ft-grow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes ft-bud {
+  from { opacity: 0; transform: rotate(-12deg) scale(0.2); }
+  to   { opacity: 1; transform: rotate(-12deg) scale(1); }
+}
+
+@keyframes ft-breeze {
+  from { transform: rotate(-16deg); }
+  to   { transform: rotate(4deg); }
+}
+
+/* recent-notes shelf: books lean a touch when picked */
+@media (prefers-reduced-motion: no-preference) {
+  html body .home-page .home-ledger__link {
+    transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  html body .home-page .home-ledger__link:hover,
+  html body .home-page .home-ledger__link:focus-visible {
+    transform: translateY(-6px) rotate(-1.2deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Recent-notes shelf: pale hinoki back panel in light mode (dark walnut read
+   as Western); dark mode keeps a deeper, warmer wood.
+   -------------------------------------------------------------------------- */
+:root:not([data-theme="dark"]) body .home-page .home-ledger {
+  background-image:
+    linear-gradient(rgba(226, 204, 168, 0.62), rgba(196, 164, 122, 0.66)),
+    url("/images/materials/wood-grain.jpg");
+  border-color: var(--ft-hinoki);
+  box-shadow:
+    inset 0 10px 24px rgba(92, 64, 36, 0.22),
+    0 18px 40px rgba(40, 30, 18, 0.16);
+}
+
+:root:not([data-theme="dark"]) body .home-page .home-ledger__link {
+  box-shadow:
+    0 10px 18px rgba(70, 48, 26, 0.18),
+    inset 0 0 0 1px rgba(255, 250, 238, 0.35);
+}
+
+html body .home-page .home-research__count {
+  opacity: 1;
+  color: var(--ink);
+}

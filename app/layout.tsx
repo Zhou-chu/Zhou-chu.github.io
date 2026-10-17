@@ -5,6 +5,7 @@ import { PublicHeader } from "./components/PublicHeader";
 import { PublicFooter } from "./components/PublicFooter";
 import { defaultSiteCopy } from "./lib/site-copy";
 import "./globals.css";
+import "./forest-timber.css";
 
 // ─── Resolve site copy for shared shell ───────────────────────────────
 // Falls back to compiled defaults when DB is unavailable.
@@ -49,6 +50,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="/images/materials/forest-waterfall.jpg" fetchPriority="high" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&display=swap" />
         {/* Pre-hydration theme script — prevents flash of wrong theme */}
         <script
           dangerouslySetInnerHTML={{

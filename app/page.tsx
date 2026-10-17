@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { defaultSiteCopy, type SiteCopy } from "./lib/site-copy";
 import { listPublicNoteIndex } from "./lib/public-note-index";
 import {
@@ -59,9 +60,14 @@ export default async function HomePage() {
   const recent = entries.slice(0, 5);
   const categoryCounts = aggregateCategoryCounts(entries);
   const totalNotes = entries.length;
+  const maxCategoryCount = Math.max(1, ...categoryCounts.map(({ count }) => count));
 
   return (
     <div className="home-page">
+      {/* 几片缓缓飘落的叶子：纯装饰、不可交互，减少动态效果时由 CSS 隐藏 */}
+      <div className="ft-leaves" aria-hidden="true">
+        {Array.from({ length: 7 }, (_, i) => <span key={i} />)}
+      </div>
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero__copy">
           <p className="home-kicker"><span aria-hidden="true" />{copy.cKicker}</p>
@@ -133,10 +139,17 @@ export default async function HomePage() {
         {categoryCounts.length > 0 ? (
           <div className="home-research__grid">
             {categoryCounts.map(({ category, count }, index) => (
-              <Link key={category} className="home-research__tile" href={`/archive?material=${encodeURIComponent(category)}`}>
+              <Link
+                key={category}
+                className="home-research__tile"
+                href={`/archive?material=${encodeURIComponent(category)}`}
+                style={{ "--share": (count / maxCategoryCount).toFixed(3) } as CSSProperties}
+              >
                 <span className="home-research__index">{String(index + 1).padStart(2, "0")}</span>
                 <span className="home-research__label">{category}</span>
                 <span className="home-research__count">{count} 篇</span>
+                {/* 枝条长度随篇数生长（纯装饰，篇数已由上方文字给出） */}
+                <span className="home-research__growth" aria-hidden="true" />
               </Link>
             ))}
           </div>

@@ -3,7 +3,17 @@
 Canonical design token and component contract for the gm-2 public surfaces.
 Every visual decision flows from this document. No raw values in product code.
 
-**Status:** Active. Replaces the retired "Quiet Writing Desk" system.
+**Status:** Partially superseded (2026-10-18). The live site has moved to a
+Japanese natural-wood direction — 和の木 / 木漏れ日: forest photography behind
+frosted glass, pale hinoki timber frames and shelf, kinari/sumi/moss palette,
+and quiet transform/opacity motion (drifting light, a few falling leaves on the
+homepage, growing topic branches; all off under `prefers-reduced-motion`).
+That layer lives in `app/forest-timber.css` and intentionally overrides §1
+"photography, not texture / zero shadow" and the §9 bans on wood frames and
+shadows. Reading surfaces, contrast, accessibility and performance rules below
+still apply. Do not "restore" the bans without asking the site owner.
+
+**Original status:** Active. Replaces the retired "Quiet Writing Desk" system.
 **Scope:** Public routes only (`/`, `/archive`, `/notes/[slug]`, shared chrome and states).
 **Admin Boundary:** Section 10 preserves backward-compatible legacy aliases for untouched
 admin surfaces; admin tokens and selectors remain functional but are not part of

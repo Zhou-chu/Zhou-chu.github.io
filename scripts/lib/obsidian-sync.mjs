@@ -4,7 +4,13 @@ import path from "node:path";
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
 const IMAGE_EXTENSIONS = new Set([".avif", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"]);
-const IGNORED_DIRECTORIES = new Set([".git", ".obsidian", ".trash", "node_modules"]);
+// 所有点开头的目录（.git/.obsidian/.trash/.workbuddy-ai 等工具目录）一律不参与同步：
+// 工具在其中留下的临时 md 副本曾被计入发布集，造成重复 slug 阻塞拉取。
+const IGNORED_DIRECTORIES = new Set(["node_modules"]);
+
+function isIgnoredDirectory(name) {
+  return name.startsWith(".") || IGNORED_DIRECTORIES.has(name);
+}
 
 export function normalizePath(value) {
   return value.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -110,13 +116,17 @@ function titleFromBody(body, relativePath) {
   return path.basename(relativePath, path.extname(relativePath));
 }
 
-function slugify(value) {
-  return value
+/** \u4e0e\u670d\u52a1\u7aef db/notes.ts \u7684 cleanSlug \u4fdd\u6301\u540c\u4e00\u89c4\u5219\uff0c\u4fdd\u8bc1 Vault / GitHub / D1 \u4e09\u5904 slug \u4e00\u81f4\u3002 */
+export function normalizeSlug(value) {
+  return String(value)
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
+    .replace(/^-+|-+$/g, "");
+}
+
+function slugify(value) {
+  return normalizeSlug(value).slice(0, 80);
 }
 
 function stableSlug(title, relativePath) {
@@ -136,7 +146,7 @@ async function walkFiles(root, current = root) {
   const entries = await readdir(current, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
-    if (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name)) continue;
+    if (entry.isDirectory() && isIgnoredDirectory(entry.name)) continue;
     const absolute = path.join(current, entry.name);
     if (entry.isDirectory()) files.push(...await walkFiles(root, absolute));
     if (entry.isFile()) files.push(absolute);
@@ -169,7 +179,7 @@ export async function readPublishedNotes(vaultPath, options = {}) {
     if (!isSafeRelativePath(relativePath)) throw new Error(`不安全的笔记路径：${relativePath}`);
     const fileStats = await stat(absolutePath);
     const title = stringValue(parsed.attributes.title) || titleFromBody(parsed.body, relativePath);
-    const slug = stringValue(parsed.attributes.slug) || stableSlug(title, relativePath);
+    const slug = normalizeSlug(stringValue(parsed.attributes.slug)) || stableSlug(title, relativePath);
     const summary = stringValue(parsed.attributes.summary)
       || stringValue(parsed.attributes.description)
       || cleanText(parsed.body).slice(0, 220);
@@ -326,7 +336,7 @@ export function serializeSnapshotNote(note) {
   return lines.join("\n");
 }
 
-export async function createSnapshot({ vaultPath, snapshotDirectory, assetDirectory, defaultCategory, write = true }) {
+export async function createSnapshot({ vaultPath, snapshotDirectory, assetDirectory, defaultCategory, write = true, writeAssets = write }) {
   const sourceNotes = await readPublishedNotes(vaultPath, { defaultCategory });
   const titleToSlug = new Map();
   for (const note of sourceNotes) {
@@ -338,7 +348,7 @@ export async function createSnapshot({ vaultPath, snapshotDirectory, assetDirect
   const notes = [];
   const assets = new Set();
   for (const sourceNote of sourceNotes) {
-    const transformed = await transformAssets(sourceNote, assetDirectory, write);
+    const transformed = await transformAssets(sourceNote, assetDirectory, writeAssets);
     for (const filename of transformed.assets) assets.add(filename);
     notes.push({
       ...sourceNote,

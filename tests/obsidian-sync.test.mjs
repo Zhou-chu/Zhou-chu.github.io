@@ -79,3 +79,62 @@ test("hashes and copies a local Obsidian attachment into the public snapshot", a
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("ignores public notes inside tool dot-directories such as .workbuddy-ai", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "obsidian-dotdir-"));
+  try {
+    const vault = path.join(root, "vault");
+    const note = "---\nblog: true\ntitle: 同一篇\nslug: same-slug\n---\n正文\n";
+    await mkdir(path.join(vault, "blog"), { recursive: true });
+    await mkdir(path.join(vault, ".workbuddy-ai", "tmp"), { recursive: true });
+    await writeFile(path.join(vault, "blog", "note.md"), note);
+    await writeFile(path.join(vault, ".workbuddy-ai", "tmp", "note.dup.md"), note);
+    const result = await createSnapshot({
+      vaultPath: vault,
+      snapshotDirectory: path.join(root, "snapshot"),
+      assetDirectory: path.join(root, "assets"),
+      defaultCategory: "随想",
+      write: false,
+    });
+    assert.deepEqual(result.notes.map((item) => item.relativePath), ["blog/note.md"]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("normalizes frontmatter slugs with the same rule as the server", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "obsidian-slug-"));
+  try {
+    const vault = path.join(root, "vault");
+    await mkdir(vault, { recursive: true });
+    await writeFile(path.join(vault, "a.md"), "---\nblog: true\ntitle: A\nslug: 电力电子-第1讲-Introduction-导论-pe1l01\n---\n正文\n");
+    const result = await createSnapshot({
+      vaultPath: vault,
+      snapshotDirectory: path.join(root, "snapshot"),
+      assetDirectory: path.join(root, "assets"),
+      defaultCategory: "随想",
+      write: false,
+    });
+    assert.equal(result.notes[0].slug, "电力电子-第1讲-introduction-导论-pe1l01");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("writeAssets copies attachments without rewriting the snapshot directory", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "obsidian-upload-assets-"));
+  try {
+    const vault = path.join(root, "vault");
+    const snapshot = path.join(root, "snapshot");
+    const assets = path.join(root, "assets");
+    await mkdir(path.join(vault, "attachments"), { recursive: true });
+    await writeFile(path.join(vault, "attachments", "pic.png"), "png-bytes");
+    await writeFile(path.join(vault, "n.md"), "---\nblog: true\ntitle: N\n---\n![[pic.png]]\n");
+    const result = await createSnapshot({ vaultPath: vault, snapshotDirectory: snapshot, assetDirectory: assets, defaultCategory: "随想", write: false, writeAssets: true });
+    assert.equal(result.assets.length, 1);
+    assert.equal(await readFile(path.join(assets, result.assets[0]), "utf8"), "png-bytes");
+    await assert.rejects(readFile(path.join(snapshot, "n.md"), "utf8"));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

@@ -143,7 +143,7 @@ function assertRemoteCurrent() {
   if (behind > 0) throw new Error(`GitHub 上有 ${behind} 个后台更新尚未拉取；请先运行 npm run obsidian:pull`);
 }
 
-async function buildSnapshot(config, args, write) {
+async function buildSnapshot(config, args, write, { writeAssets = write } = {}) {
   if (!existsSync(config.vaultPath)) throw new Error(`找不到 Obsidian Vault：${config.vaultPath}`);
   const result = await createSnapshot({
     vaultPath: config.vaultPath,
@@ -151,6 +151,7 @@ async function buildSnapshot(config, args, write) {
     assetDirectory: config.assetDirectory,
     defaultCategory: config.defaultCategory,
     write,
+    writeAssets,
   });
   if (write) {
     await writeManifest(path.join(projectRoot, "content/obsidian-manifest.json"), result.manifest);
@@ -226,30 +227,42 @@ async function sync(config, args) {
   console.log("Git 内容快照已更新；尚未推送 GitHub，也未修改线上博客。");
 }
 
+function deployStaticAssets() {
+  console.log("检测到新增图片，正在构建并部署静态资源……");
+  run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
+  run(process.platform === "win32" ? "npx.cmd" : "npx", ["wrangler", "deploy"]);
+  console.log("✅ 图片资源已部署上线。");
+}
+
+function hasAssetChanges(changedFiles) {
+  return changedFiles.some((file) => file.replaceAll("\\", "/").startsWith("public/obsidian-assets/"));
+}
+
 async function upload(config, args) {
-  const result = await buildSnapshot(config, args, false);
-  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
+  // 只复制附件、不改写 content/ 快照：新图片必须落进 public/obsidian-assets
+  // 才能被部署，否则线上文章里的图片会 404。
+  const result = await buildSnapshot(config, args, false, { writeAssets: true });
   const scope = args.only ? `（仅 ${args.only}）` : "";
 
-  // 新增了本地图片时：备份到 Git 并重新部署，让 /obsidian-assets/* 真正可访问。
-  const assetChanged = gitChangedFiles().some((file) => file.replaceAll("\\", "/").startsWith("public/obsidian-assets/"));
+  // 新增了本地图片时：先备份到 Git 并部署静态资源，再上传正文，避免文章先上线、图片 404。
+  const assetChanged = hasAssetChanges(gitChangedFiles());
   if (assetChanged) {
     try {
-      run("git", ["add", "--", "content", "public/obsidian-assets"]);
+      run("git", ["add", "--", "public/obsidian-assets"]);
       const staged = run("git", ["diff", "--cached", "--name-only"], { capture: true }).trim();
       if (staged) run("git", ["commit", "-m", `content: sync obsidian assets${args.only ? ` (${args.only})` : ""}`]);
       run("git", ["push", "origin", "HEAD:main"]);
     } catch (error) {
       console.log(`⚠ Git 备份失败（不影响本次上线）：${error.message}`);
     }
-    console.log("检测到新增图片，正在构建并部署静态资源（约 1 分钟）……");
-    run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
-    run(process.platform === "win32" ? "npx.cmd" : "npx", ["wrangler", "deploy"]);
-    console.log("✅ 图片资源已部署上线。");
+    deployStaticAssets();
   }
 
-  await writeSyncState(config.vaultPath, result.notes);
-  console.log(`内容上传完成：${uploaded} 篇笔记${scope}${assetChanged ? "（含图片部署）" : ""}。`);
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
+  // 注意：upload 不更新 GitHub 快照，因此绝不能写 blog-sync-state.json。
+  // 该文件是「Vault 与 GitHub 快照的共同基线」，若在这里写入本地指纹，之后 pull 会把
+  // 本地新改动误判为基线，进而用 GitHub 上的旧版本覆盖本地文件。
+  console.log(`内容上传完成：${uploaded} 篇笔记${scope}${assetChanged ? "（含图片部署）" : ""}。GitHub 快照未更新，需要时请运行发布。`);
 }
 
 async function pull(config, args) {
@@ -281,7 +294,7 @@ async function publish(config, args) {
   const allowedRoots = ["content", "public/obsidian-assets"];
   const changedBeforeCommit = gitChangedFiles();
   assertPublishWorktree(changedBeforeCommit, allowedRoots);
-  const assetChanged = changedBeforeCommit.some((file) => file.replaceAll("\\", "/").startsWith("public/obsidian-assets/"));
+  const assetChanged = hasAssetChanges(changedBeforeCommit);
 
   run("git", ["add", "--", "content", "public/obsidian-assets"]);
   const staged = run("git", ["diff", "--cached", "--name-only"], { capture: true }).trim();
@@ -296,13 +309,11 @@ async function publish(config, args) {
     );
   }
 
-  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
+  // GitHub 快照已推送：此刻 Vault 与快照一致，记录为下次 pull 的共同基线。
   await writeSyncState(config.vaultPath, result.notes);
-  if (assetChanged) {
-    const wrangler = process.platform === "win32" ? "npx.cmd" : "npx";
-    run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"]);
-    run(wrangler, ["wrangler", "deploy"]);
-  }
+  // 先部署图片再上传正文，避免新文章上线时图片尚未部署。
+  if (assetChanged) deployStaticAssets();
+  const uploaded = await uploadNotes(config.siteUrl, selectNotes(result.notes, args.only), args.prune, config.adminPassword);
   console.log(`发布完成：GitHub 与线上博客已同步 ${uploaded} 篇笔记。`);
 }
 

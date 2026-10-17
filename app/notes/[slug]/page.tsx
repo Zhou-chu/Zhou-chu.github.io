@@ -7,6 +7,7 @@ import { getDb } from "../../../db/index";
 import { notes } from "../../../db/schema";
 import { getPublishedNoteBySlug } from "../../../db/notes";
 import { ArticleToc } from "../../components/ArticleToc";
+import { ReadingWidthHandle } from "../../components/ReadingWidthHandle";
 import "./note.css";
 import "./obsidian.css";
 
@@ -233,6 +234,9 @@ export default async function NotePage({ params }: PageProps) {
                 正文改由浏览器端渲染，见 MarkdownClient 组件注释 */}
             <MarkdownClient source={resolvedContent} headingIds />
           </div>
+
+          {/* ── Reader-adjustable column width (desktop only) ── */}
+          <ReadingWidthHandle />
 
           {/* ── Article end marker ── */}
           <div className="note-end-mark" aria-hidden="true">

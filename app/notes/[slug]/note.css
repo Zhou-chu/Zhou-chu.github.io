@@ -586,3 +586,111 @@
     border-radius: 17px;
   }
 }
+
+/* ── Reader-adjustable column width (ReadingWidthHandle) ────────────────── */
+
+.note-page {
+  --reading-width: 860px;
+}
+
+.note-article-wrapper {
+  max-width: calc(var(--reading-width) + 280px);
+}
+
+.note-article {
+  position: relative;
+  max-width: var(--reading-width);
+}
+
+.reading-width-handle {
+  display: none;
+}
+
+@media (min-width: 1024px) and (pointer: fine) {
+  .reading-width-handle {
+    position: absolute;
+    top: 28px;
+    right: -11px;
+    bottom: 28px;
+    z-index: 3;
+    display: block;
+    width: 22px;
+    cursor: col-resize;
+    touch-action: none;
+    outline: none;
+  }
+
+  .reading-width-handle__grip {
+    position: sticky;
+    top: calc(50vh - 28px);
+    display: block;
+    width: 6px;
+    height: 56px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--moss, #2f4d38) 30%, transparent);
+    box-shadow: 0 0 0 1px rgba(255, 252, 244, 0.6);
+    opacity: 0.45;
+    transition: opacity 180ms ease, background-color 180ms ease, transform 180ms ease;
+  }
+
+  .note-article:hover .reading-width-handle__grip {
+    opacity: 0.8;
+  }
+
+  .reading-width-handle:hover .reading-width-handle__grip,
+  .reading-width-handle:focus-visible .reading-width-handle__grip,
+  .reading-width-handle[data-dragging] .reading-width-handle__grip {
+    opacity: 1;
+    background: var(--moss, #2f4d38);
+    transform: scaleY(1.15);
+  }
+
+  .reading-width-handle:focus-visible .reading-width-handle__grip {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss, #2f4d38) 35%, transparent);
+  }
+
+  .reading-width-handle__hint {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--ink, #142019);
+    color: var(--paper, #f7f2e5);
+    font-size: 12px;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  /* while dragging: no text selection, keep the resize cursor everywhere */
+  .is-resizing-reading-width,
+  .is-resizing-reading-width * {
+    cursor: col-resize !important;
+    user-select: none !important;
+  }
+}
+
+/* ── Wide display math scrolls inside its own box instead of widening the
+   page (was a 150px horizontal overflow on phones). ───────────────────── */
+.note-body .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.note-body .katex-display > .katex {
+  max-width: none;
+}
+
+/* Inline formulas wider than the column (marked by MarkdownClient). */
+.note-body .katex.katex-wide {
+  display: block;
+  max-width: 100%;
+  margin: 0.4em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}

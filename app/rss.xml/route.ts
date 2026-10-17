@@ -34,7 +34,7 @@ async function getSiteName(): Promise<string> {
 export async function GET() {
   try {
     const [result, siteName] = await Promise.all([
-      listPublishedNotes(),
+      listPublishedNotes(50),
       getSiteName(),
     ]);
 

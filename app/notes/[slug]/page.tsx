@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { MarkdownClient } from "../../components/MarkdownClient";
 import type { PublicNote } from "../../lib/sample-notes";
@@ -13,6 +13,23 @@ import "./obsidian.css";
 export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+/**
+ * 旧版服务端会给 slug 追加 `-<8 位 base36 时间戳>`（如 `xxx-mtfvh3oh`），且会把大写
+ * 转小写。slug 对齐 Obsidian frontmatter 后，旧链接通过这里 301 到新地址。
+ */
+async function findCanonicalSlug(slug: string): Promise<string | null> {
+  const candidates = new Set<string>();
+  const lower = slug.toLowerCase();
+  if (lower !== slug) candidates.add(lower);
+  const legacy = lower.match(/^(.+)-[0-9a-z]{8}$/);
+  if (legacy) candidates.add(legacy[1]);
+  for (const candidate of candidates) {
+    const match = await getPublishedNoteBySlug(candidate);
+    if (match) return match.slug;
+  }
+  return null;
+}
 
 function noteMinutes(note: PublicNote): number {
   return note.readMinutes || Math.max(1, Math.ceil(note.content.length / 500));
@@ -131,7 +148,11 @@ export default async function NotePage({ params }: PageProps) {
   // for missing slugs.)
   // ═══════════════════════════════════════════════════════════════════
   const note = (await getPublishedNoteBySlug(slug)) as PublicNote | null;
-  if (!note) notFound();
+  if (!note) {
+    const canonical = await findCanonicalSlug(slug);
+    if (canonical) permanentRedirect(`/notes/${encodeURIComponent(canonical)}`);
+    notFound();
+  }
 
   const [backlinks, resolvedContent] = await Promise.all([
     resolveBacklinks(slug),

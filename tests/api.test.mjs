@@ -8,6 +8,11 @@ workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
 const ADMIN_AUTH_HEADER = "oai-authenticated-user-email";
 const ADMIN_EMAIL = "test@example.com";
 
+// The built worker runs with NODE_ENV=production, so admin routes require the
+// email allowlist. Header-based identity is the OpenAI Sites mode (no password).
+process.env.ADMIN_EMAILS = ADMIN_EMAIL;
+delete process.env.ADMIN_PASSWORD;
+
 async function createWorker() {
   const { default: worker } = await import(workerUrl.href);
   return worker;
@@ -93,14 +98,14 @@ test("POST /api/admin/notes with valid body returns 201", async () => {
   assert.ok(body.note.id > 0, "note should have an id");
 });
 
-test("POST /api/admin/notes without auth returns 401", async () => {
+test("POST /api/admin/notes without auth returns 403", async () => {
   const worker = await createWorker();
   const res = await apiFetch(worker, "/api/admin/notes", {
     method: "POST",
     contentType: "application/json",
     body: { title: "Unauth Note", content: "Should fail" },
   });
-  assert.equal(res.status, 401);
+  assert.equal(res.status, 403);
 });
 
 test("POST /api/admin/notes with oversized body returns 413", async () => {
@@ -448,4 +453,148 @@ test("GET /sitemap.xml returns 200 with application/xml", async () => {
   assert.equal(res.status, 200);
   const contentType = res.headers.get("content-type") ?? "";
   assert.match(contentType, /application\/xml/i);
+});
+
+// ─── Security: standalone mode must ignore forgeable identity headers ──
+
+test("standalone mode (ADMIN_PASSWORD set) rejects a forged identity header", async () => {
+  const worker = await createWorker();
+  process.env.ADMIN_PASSWORD = "test-password";
+  try {
+    const res = await apiFetch(worker, "/api/admin/notes", { auth: true });
+    assert.equal(res.status, 403, "forged oai-authenticated-user-email must not grant admin access");
+  } finally {
+    delete process.env.ADMIN_PASSWORD;
+  }
+});
+
+test("standalone mode accepts a session cookie issued by /api/admin/login", async () => {
+  const worker = await createWorker();
+  process.env.ADMIN_PASSWORD = "test-password";
+  try {
+    const wrong = await worker.fetch(new Request("http://localhost/api/admin/login", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ password: "nope" }),
+    }), makeEnv(), makeCtx());
+    assert.equal(wrong.status, 401);
+
+    const login = await worker.fetch(new Request("http://localhost/api/admin/login", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ password: "test-password" }),
+    }), makeEnv(), makeCtx());
+    assert.equal(login.status, 200);
+    const cookie = (login.headers.get("set-cookie") || "").split(";", 1)[0];
+    assert.match(cookie, /^admin_session=/);
+
+    const res = await worker.fetch(new Request("http://localhost/api/admin/notes", { headers: { cookie } }), makeEnv(), makeCtx());
+    assert.equal(res.status, 200);
+  } finally {
+    delete process.env.ADMIN_PASSWORD;
+  }
+});
+
+// ─── Slugs: Obsidian frontmatter slug is kept verbatim ─────────────
+
+test("POST with explicit slug keeps it (cleaned) without a time suffix", async () => {
+  const worker = await createWorker();
+  const res = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "Slug Keep", content: "body", slug: "Slug-Keep-ABC1", status: "published", sourcePath: "blog/slug-keep.md" },
+  });
+  assert.equal(res.status, 201);
+  const body = await res.json();
+  assert.equal(body.note.slug, "slug-keep-abc1");
+});
+
+test("re-uploading with a slug realigns a previously suffixed slug", async () => {
+  const worker = await createWorker();
+  const { testDb } = await import("./support/cloudflare-workers-stub.mjs");
+  const first = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "Slug Realign", content: "v1", slug: "slug-realign", status: "published", sourcePath: "blog/slug-realign.md" },
+  });
+  const created = (await first.json()).note;
+  testDb.prepare("UPDATE notes SET slug = ? WHERE id = ?").run("slug-realign-mtfvh3oh", created.id);
+
+  const again = await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "Slug Realign", content: "v2", slug: "slug-realign", status: "published", sourcePath: "blog/slug-realign.md" },
+  });
+  const updated = (await again.json()).note;
+  assert.equal(updated.id, created.id);
+  assert.equal(updated.slug, "slug-realign");
+});
+
+test("a slug owned by another note gets a suffix instead of failing", async () => {
+  const worker = await createWorker();
+  const post = (title, sourcePath) => apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title, content: "x", slug: "shared-slug", status: "published", sourcePath },
+  });
+  const a = (await (await post("Shared A", "blog/a.md")).json()).note;
+  const b = (await (await post("Shared B", "blog/b.md")).json()).note;
+  assert.equal(a.slug, "shared-slug");
+  assert.notEqual(b.slug, "shared-slug");
+  assert.match(b.slug, /^shared-slug-[0-9a-z]+$/);
+});
+
+// ─── Public pagination never leaks drafts ──────────────────────────
+
+test("GET /api/notes pagination returns only published notes without duplicates", async () => {
+  const worker = await createWorker();
+  for (let i = 0; i < 3; i += 1) {
+    await apiFetch(worker, "/api/admin/notes", {
+      method: "POST",
+      auth: true,
+      contentType: "application/json",
+      body: { title: `Paged Published ${i}`, content: "p", status: "published", publishedAt: `2020-01-0${i + 1}` },
+    });
+  }
+  await apiFetch(worker, "/api/admin/notes", {
+    method: "POST",
+    auth: true,
+    contentType: "application/json",
+    body: { title: "Paged Draft", content: "secret draft", status: "draft" },
+  });
+
+  const all = (await (await apiFetch(worker, "/api/notes?limit=500")).json()).notes;
+  const seen = [];
+  let cursor;
+  do {
+    const res = await apiFetch(worker, `/api/notes?limit=1${cursor ? `&after=${cursor}` : ""}`);
+    const body = await res.json();
+    seen.push(...body.notes);
+    cursor = body.nextCursor;
+  } while (cursor);
+
+  assert.ok(!seen.some((note) => note.title === "Paged Draft"), "drafts must never appear in public pages");
+  assert.equal(new Set(seen.map((note) => note.id)).size, seen.length, "pages must not overlap");
+  assert.deepEqual(new Set(seen.map((note) => note.id)), new Set(all.map((note) => note.id)), "paging must cover every published note");
+});
+
+test("sitemap lists every published note, not just the first 20", async () => {
+  const worker = await createWorker();
+  for (let i = 0; i < 22; i += 1) {
+    await apiFetch(worker, "/api/admin/notes", {
+      method: "POST",
+      auth: true,
+      contentType: "application/json",
+      body: { title: `Sitemap Note ${i}`, content: "s", status: "published" },
+    });
+  }
+  const published = (await (await apiFetch(worker, "/api/notes?limit=500")).json()).notes;
+  const xml = await (await apiFetch(worker, "/sitemap.xml")).text();
+  const locs = (xml.match(/<loc>[^<]*\/notes\//g) || []).length;
+  assert.equal(locs, published.length);
+  assert.ok(locs >= 22);
 });

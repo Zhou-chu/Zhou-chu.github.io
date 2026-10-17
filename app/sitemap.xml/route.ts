@@ -1,4 +1,4 @@
-import { listPublishedNotes } from "../../db/notes";
+import { listPublishedNoteLinks } from "../../db/notes";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,7 @@ function escapeXml(text: string): string {
 
 export async function GET() {
   try {
-    const result = await listPublishedNotes();
+    const result = await listPublishedNoteLinks();
     const notes = result as Array<Record<string, unknown>>;
 
     const noteUrls = notes.map((note) => {

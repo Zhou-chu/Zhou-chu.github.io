@@ -24,8 +24,35 @@ export class TitleConflictError extends Error {
   }
 }
 
-export async function listPublishedNotes(after?: number, limit = 20) {
-  let query = getDb().select({
+/** Newest-first listing (by publish date, without body) — used by RSS. */
+export async function listPublishedNotes(limit = 20) {
+  return getDb().select({
+    id: notes.id,
+    slug: notes.slug,
+    title: notes.title,
+    summary: notes.summary,
+    category: notes.category,
+    featured: notes.featured,
+    publishedAt: notes.publishedAt,
+    createdAt: notes.createdAt,
+    updatedAt: notes.updatedAt,
+  }).from(notes)
+    .where(eq(notes.status, "published"))
+    .orderBy(desc(sql`COALESCE(${notes.publishedAt}, ${notes.createdAt})`), desc(notes.id))
+    .limit(limit)
+    .all();
+}
+
+/**
+ * Keyset page ordered by id — used by /api/notes. The cursor and the sort key
+ * must be the same column, otherwise pages overlap or skip rows. The status
+ * filter and cursor are combined in ONE where(): in drizzle a second .where()
+ * replaces the first, which previously leaked drafts on page 2+.
+ */
+export async function listPublishedNotesPage(after: number | undefined, limit: number) {
+  const conditions = [eq(notes.status, "published")];
+  if (after) conditions.push(lt(notes.id, after));
+  return getDb().select({
     id: notes.id,
     slug: notes.slug,
     title: notes.title,
@@ -37,15 +64,22 @@ export async function listPublishedNotes(after?: number, limit = 20) {
     createdAt: notes.createdAt,
     updatedAt: notes.updatedAt,
   }).from(notes)
-    .where(eq(notes.status, "published"));
-  if (after) {
-    query = query.where(lt(notes.id, after));
-  }
-  const results = await query
-    .orderBy(desc(sql`COALESCE(${notes.publishedAt}, ${notes.createdAt})`), desc(notes.id))
+    .where(and(...conditions))
+    .orderBy(desc(notes.id))
     .limit(limit)
     .all();
-  return results;
+}
+
+/** Lightweight listing (no content) for sitemap-style consumers. */
+export async function listPublishedNoteLinks() {
+  return getDb().select({
+    slug: notes.slug,
+    publishedAt: notes.publishedAt,
+    updatedAt: notes.updatedAt,
+  }).from(notes)
+    .where(eq(notes.status, "published"))
+    .orderBy(desc(sql`COALESCE(${notes.publishedAt}, ${notes.createdAt})`), desc(notes.id))
+    .all();
 }
 
 export async function getPublishedNoteBySlug(slug: string) {
@@ -96,6 +130,20 @@ function cleanSlug(value: string | undefined, title: string) {
   return slug || `note-${Date.now()}`;
 }
 
+async function slugOwner(slug: string) {
+  return getDb().select({ id: notes.id }).from(notes).where(eq(notes.slug, slug)).limit(1).get();
+}
+
+/**
+ * The requested slug is kept verbatim (after cleaning) so Obsidian frontmatter
+ * slugs, wikilink backlinks and URLs stay identical across vault / GitHub / D1.
+ * A time suffix is appended ONLY when another note already owns the slug.
+ */
+async function availableSlug(base: string) {
+  if (!(await slugOwner(base))) return base;
+  return `${base}-${Date.now().toString(36)}`;
+}
+
 /**
  * Upsert semantics: when a note with the same title (case-insensitive)
  * already exists for this author, the old note is OVERWRITTEN in place —
@@ -117,7 +165,7 @@ export async function createNote(input: NoteInput, email: string) {
     return { note, overwritten: true };
   }
 
-  const slug = `${cleanSlug(input.slug, input.title)}-${Date.now().toString(36)}`;
+  const slug = await availableSlug(cleanSlug(input.slug, input.title));
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
   try {
     const note = await getDb().insert(notes).values({
@@ -237,8 +285,18 @@ export async function updateNote(id: number, input: NoteInput, email: string, cl
     .get();
   if (conflict) throw new TitleConflictError(input.title);
 
+  // An explicit slug (Obsidian sync) realigns notes whose slug was suffixed by
+  // older builds. Admin edits send no slug and keep the existing one.
+  let slug: string | undefined;
+  if (input.slug) {
+    const desired = cleanSlug(input.slug, input.title);
+    const owner = await slugOwner(desired);
+    if (!owner || owner.id === id) slug = desired;
+  }
+
   const publishedAt = input.status === "published" ? (input.publishedAt || new Date().toISOString().slice(0, 10)) : null;
   return getDb().update(notes).set({
+    slug,
     title: input.title,
     summary: input.summary || "",
     content: input.content,

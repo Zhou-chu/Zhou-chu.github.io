@@ -1,4 +1,4 @@
-import { signSessionCookie } from "../../../chatgpt-auth";
+import { signSessionCookie, verifyAdminPassword } from "../../../chatgpt-auth";
 
 export async function POST(request: Request) {
   const password = process.env.ADMIN_PASSWORD;
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "请求格式错误" }, { status: 400 });
   }
 
-  if (!body.password || body.password !== password) {
+  if (typeof body.password !== "string" || !(await verifyAdminPassword(body.password))) {
     return Response.json({ error: "密码错误" }, { status: 401 });
   }
 

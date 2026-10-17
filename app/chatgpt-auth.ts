@@ -16,6 +16,7 @@ const SIGN_IN_PATH = "/signin-with-chatgpt";
 const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 const SESSION_COOKIE = "admin_session";
+const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 const LOGIN_PATH = "/admin/login";
 
 // ─── HMAC session token utilities ────────────────────────────────────
@@ -74,6 +75,11 @@ async function getStandaloneSessionUser(): Promise<ChatGPTUser | null> {
   const valid = await hmacVerify(timestamp, signature, password);
   if (!valid) return null;
 
+  // 服务端也校验签发时间：cookie 的 maxAge 只约束浏览器，被盗用的 token 不能永久有效。
+  const issuedAt = Number(timestamp);
+  const ageMs = Date.now() - issuedAt;
+  if (!Number.isFinite(issuedAt) || ageMs < 0 || ageMs > SESSION_MAX_AGE_SECONDS * 1000) return null;
+
   const email = (process.env.ADMIN_EMAILS || "")
     .split(",")
     .map((e) => e.trim())
@@ -94,10 +100,17 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
     };
   }
 
+  // Standalone Workers deploy: ONLY the HMAC-signed session cookie counts.
+  // workers.dev 上没有 OpenAI Sites 网关剥离/注入身份头，oai-authenticated-*
+  // 请求头可被任何访客伪造，因此独立部署模式下绝不能信任它们。
+  if (isStandaloneMode()) {
+    return getStandaloneSessionUser();
+  }
+
   const requestHeaders = await headers();
   const email = requestHeaders.get(USER_EMAIL_HEADER);
 
-  // ChatGPT auth (OpenAI Sites deployment)
+  // ChatGPT auth (OpenAI Sites deployment: dispatch injects identity headers)
   if (email) {
     const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
     const fullName =
@@ -111,11 +124,6 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
       email,
       fullName,
     };
-  }
-
-  // Standalone Workers deploy: HMAC-signed session cookie
-  if (isStandaloneMode()) {
-    return getStandaloneSessionUser();
   }
 
   return null;
@@ -169,6 +177,13 @@ export async function requireAdminUser(returnTo: string): Promise<ChatGPTUser> {
 
 // ─── Session cookie helpers (used by login / logout API routes) ──────
 
+/** Constant-time password check (compares HMAC digests, so length leaks nothing). */
+export async function verifyAdminPassword(candidate: string): Promise<boolean> {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password || !candidate) return false;
+  return hmacVerify(candidate, await hmacHex(password, password), password);
+}
+
 /**
  * Sign a timestamp and set the admin_session cookie.
  * Called by the login API route.
@@ -187,7 +202,7 @@ export async function signSessionCookie(): Promise<void> {
     secure: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: SESSION_MAX_AGE_SECONDS,
   });
 }
 

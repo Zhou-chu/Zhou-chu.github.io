@@ -49,7 +49,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
       <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        <link rel="preload" as="image" href="/images/materials/forest-waterfall.jpg" fetchPriority="high" />
+        <link rel="preload" as="image" href="/images/materials/cedar-forest-1280.webp" media="(max-width: 800px) and (max-resolution: 1.99dppx), (max-width: 480px)" fetchPriority="high" />
+        <link rel="preload" as="image" href="/images/materials/cedar-forest-1920.webp" media="(min-width: 801px) and (max-width: 1600px) and (max-resolution: 1.99dppx), (min-resolution: 2dppx) and (min-width: 481px) and (max-width: 960px)" fetchPriority="high" />
+        <link rel="preload" as="image" href="/images/materials/cedar-forest-2560.webp" media="(min-width: 1601px), (min-resolution: 2dppx) and (min-width: 961px)" fetchPriority="high" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&display=swap" />

@@ -554,3 +554,49 @@ html body .home-page .home-research__count {
   opacity: 1;
   color: var(--ink);
 }
+
+/* --------------------------------------------------------------------------
+   Background photo: Tsukuba cedar forest (Raita Futo, CC BY 2.0, credited in
+   the footer and public/images/ATTRIBUTION.md). Sized per viewport so phones
+   fetch ~130KB and wide/HiDPI screens get a sharp 2560px rendition.
+   -------------------------------------------------------------------------- */
+html {
+  background-color: #3a2e22;
+  background-image: url("/images/materials/cedar-forest-1280.webp");
+  background-position: center 40%;
+}
+
+@media (min-width: 801px) and (max-width: 1600px) and (max-resolution: 1.99dppx), (min-resolution: 2dppx) and (min-width: 481px) and (max-width: 960px) {
+  html { background-image: url("/images/materials/cedar-forest-1920.webp"); }
+}
+
+@media (min-width: 1601px), (min-resolution: 2dppx) and (min-width: 961px) {
+  html { background-image: url("/images/materials/cedar-forest-2560.webp"); }
+}
+
+html body .pub-footer__photo {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: -8px;
+  color: var(--faint, var(--muted));
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+html body .pub-footer__photo:hover {
+  color: var(--moss);
+  text-decoration: underline;
+}
+
+/* Light mode: lift the frosted glass toward kinari/washi so the warm cedar
+   photo reads as light through paper rather than a brown wash. */
+:root:not([data-theme="dark"]) body .home-page .home-hero::after {
+  background: rgba(250, 244, 230, 0.36);
+}
+
+:root:not([data-theme="dark"]) body .home-page .home-content,
+:root:not([data-theme="dark"]) body .home-page .home-research,
+:root:not([data-theme="dark"]) body .pub-main .archive-shell {
+  background: rgba(250, 244, 230, 0.32);
+}

@@ -40,6 +40,16 @@ export function PublicFooter({
           <Link href="/rss.xml">RSS</Link>
           <Link href="/admin">写作后台</Link>
         </div>
+
+        {/* 背景照片署名（CC BY 2.0 要求） */}
+        <a
+          className="pub-footer__photo"
+          href="https://commons.wikimedia.org/wiki/File:Tsukuba%27s_cedar_forest_(53667839474).jpg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          背景照片：筑波的杉林 · Raita Futo · CC BY 2.0
+        </a>
       </div>
     </footer>
   );

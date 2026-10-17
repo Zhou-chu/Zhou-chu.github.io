@@ -1,5 +1,16 @@
 # Image Attribution
 
+## Site Background — Tsukuba's cedar forest
+
+- **Files**: `images/materials/cedar-forest-1280.webp`, `cedar-forest-1920.webp`, `cedar-forest-2560.webp`
+- **Creator**: Raita Futo (from Tokyo, Japan)
+- **Source**: [Wikimedia Commons — File:Tsukuba's cedar forest (53667839474).jpg](https://commons.wikimedia.org/wiki/File:Tsukuba%27s_cedar_forest_(53667839474).jpg)
+- **License**: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
+- **Modifications**: Downscaled from the 6524×4349 original to 1280/1920/2560 px and converted to WebP. Credited in the site footer (`PublicFooter.tsx`).
+- Replaces the earlier low-resolution `forest-waterfall.jpg` (736×981) background (2026-10-18).
+
+---
+
 ## Homepage Hero — Ryōan-ji Kuri Main Building Interior
 
 - **File**: `images/timber/ryoanji-kuri-main-building-interior.jpg`

@@ -6,10 +6,10 @@
 
 ## Hosting model
 
-- GitHub 私有仓库保存源码与版本历史。
+- GitHub 公开仓库 `Zhou-chu/Zhou-chu.github.io` 保存源码、版本历史与已发布文章快照（`content/notes/`）。
 - Cloudflare Workers 运行博客、服务端路由和写作后台。
 - Cloudflare D1 保存文章与站点文案。
-- 生产环境必须设置 `ADMIN_EMAILS`，否则后台默认拒绝所有访问。
+- 生产环境必须设置 `ADMIN_EMAILS` 与 `ADMIN_PASSWORD`；设置密码后身份请求头不再被信任。
 
 ## Prerequisites
 

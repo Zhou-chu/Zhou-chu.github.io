@@ -89,6 +89,21 @@ async function loadConfig(args) {
   return config;
 }
 
+/**
+ * 网络层失败（fetch failed / ECONNRESET 等，本机代理环境下偶发）自动重试；
+ * HTTP 错误状态照常返回给调用方处理。上传是幂等 upsert，重试安全。
+ */
+async function fetchWithRetry(url, init, attempts = 4) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await fetch(url, init);
+    } catch (error) {
+      if (attempt >= attempts) throw new Error(`网络请求失败（已重试 ${attempts - 1} 次）：${url} — ${error.cause?.code || error.message}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
+    }
+  }
+}
+
 async function fetchAllLiveNotes(siteUrl) {
   const notes = [];
   let cursor = null;
@@ -96,7 +111,7 @@ async function fetchAllLiveNotes(siteUrl) {
     const url = new URL("/api/notes", siteUrl);
     url.searchParams.set("limit", "100");
     if (cursor) url.searchParams.set("after", String(cursor));
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
     if (!response.ok) throw new Error(`读取线上博客失败：HTTP ${response.status}`);
     const data = await response.json();
     notes.push(...(data.notes || []));
@@ -162,7 +177,7 @@ async function buildSnapshot(config, args, write, { writeAssets = write } = {}) 
 
 async function adminCookie(siteUrl, password) {
   if (!password) return "";
-  const response = await fetch(new URL("/api/admin/login", siteUrl), {
+  const response = await fetchWithRetry(new URL("/api/admin/login", siteUrl), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ password }),
@@ -178,7 +193,7 @@ async function uploadNotes(siteUrl, notes, prune, password) {
   const cookie = await adminCookie(siteUrl, password);
   let uploaded = 0;
   for (const note of notes) {
-    const response = await fetch(new URL("/api/admin/notes", siteUrl), {
+    const response = await fetchWithRetry(new URL("/api/admin/notes", siteUrl), {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -206,7 +221,7 @@ async function uploadNotes(siteUrl, notes, prune, password) {
     uploaded += 1;
   }
   if (prune) {
-    const response = await fetch(new URL("/api/admin/notes/prune", siteUrl), {
+    const response = await fetchWithRetry(new URL("/api/admin/notes/prune", siteUrl), {
       method: "POST",
       headers: {
         "content-type": "application/json",

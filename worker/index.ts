@@ -89,10 +89,68 @@ async function runMigrations(env: Env) {
   migrationsReady = true;
 }
 
+const NOTE_DOCUMENT_PATH = /^\/notes\/([^/]+)$/;
+
+function isDocumentRequest(request: Request): boolean {
+  if (request.method !== "GET" && request.method !== "HEAD") return false;
+  if (request.headers.get("rsc")) return false;
+  return !(request.headers.get("accept") || "").includes("text/x-component");
+}
+
+async function publishedSlugExists(env: Env, slug: string): Promise<boolean> {
+  const row = await env.DB.prepare("SELECT 1 FROM notes WHERE slug = ? AND status = 'published' LIMIT 1").bind(slug).first();
+  return Boolean(row);
+}
+
+/**
+ * 根 app/loading.tsx 会让页面以流式输出，响应头在查库前就以 200 发出，
+ * 导致不存在的文章是「软 404」、旧 slug 的 permanentRedirect 只能在客户端跳转。
+ * 对整页文档请求在这里先查一次 slug：旧链接（带 -<8 位时间戳> 后缀或含大写）
+ * 直接 308，到不了的文章把状态码改成 404。RSC 导航请求不受影响。
+ */
+async function resolveNoteDocument(request: Request, env: Env, url: URL): Promise<Response | "missing" | null> {
+  const match = url.pathname.match(NOTE_DOCUMENT_PATH);
+  if (!match || !isDocumentRequest(request)) return null;
+  let slug: string;
+  try {
+    slug = decodeURIComponent(match[1]);
+  } catch {
+    return "missing";
+  }
+  if (await publishedSlugExists(env, slug)) return null;
+
+  const candidates = new Set<string>();
+  const lower = slug.toLowerCase();
+  if (lower !== slug) candidates.add(lower);
+  const legacy = lower.match(/^(.+)-[0-9a-z]{8}$/);
+  if (legacy) candidates.add(legacy[1]);
+  for (const candidate of candidates) {
+    if (await publishedSlugExists(env, candidate)) {
+      const target = new URL(`/notes/${encodeURIComponent(candidate)}${url.search}`, url);
+      return Response.redirect(target.toString(), 308);
+    }
+  }
+  return "missing";
+}
+
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     await runMigrations(env);
     const url = new URL(request.url);
+
+    let noteMissing = false;
+    try {
+      const resolved = await resolveNoteDocument(request, env, url);
+      if (resolved instanceof Response) return resolved;
+      noteMissing = resolved === "missing";
+    } catch (error) {
+      // Pre-check is best-effort; the page itself still handles lookups.
+      console.error("Note pre-check failed (non-fatal):", error);
+    }
+    if (noteMissing) {
+      const response = await handler.fetch(request, env, ctx);
+      return new Response(response.body, { status: 404, statusText: "Not Found", headers: response.headers });
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];

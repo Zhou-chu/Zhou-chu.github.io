@@ -46,7 +46,9 @@ async function resolveBacklinks(
       .where(
         and(
           eq(notes.status, "published"),
-          sql`${notes.linksJson} LIKE '%"' || ${targetSlug} || '"%'`,
+          // instr 而非 LIKE：D1 限制 LIKE 模式长度（约 50 字节），长中文 slug
+          // 会报 "LIKE or GLOB pattern too complex"，反向链接被静默吞掉。
+          sql`instr(${notes.linksJson}, '"' || ${targetSlug} || '"') > 0`,
         ),
       )
       .limit(10)

@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type MouseEvent } from "react";
+import { runWithCircularReveal } from "../lib/view-transition";
 
 type SiteStyle = "nature" | "mono";
 
@@ -34,18 +35,16 @@ export function StyleControl() {
     applyStyle(stored);
   }, []);
 
-  const toggle = useCallback(() => {
-    setStyle((current) => {
-      const next: SiteStyle = current === "nature" ? "mono" : "nature";
-      applyStyle(next);
-      try {
-        localStorage.setItem(STORAGE_KEY, next);
-      } catch {
-        // storage unavailable: the choice lasts for this page only
-      }
-      return next;
-    });
-  }, []);
+  const toggle = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    const next: SiteStyle = style === "nature" ? "mono" : "nature";
+    runWithCircularReveal(event.currentTarget, () => applyStyle(next));
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // storage unavailable: the choice lasts for this page only
+    }
+    setStyle(next);
+  }, [style]);
 
   const label = style === "nature" ? "切换到黑白风格" : "切换到自然风格";
 

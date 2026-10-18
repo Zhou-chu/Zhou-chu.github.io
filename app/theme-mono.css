@@ -786,3 +786,99 @@ html[data-style="mono"] .pub-main .archive-shell::before {
 html[data-style="mono"] .pub-footer__photo--mono {
   display: inline !important;
 }
+
+/* ==========================================================================
+   Soft-tone revision: near-white / near-black greys instead of pure values,
+   and a background of draped light — irregular vertical folds (like a
+   curtain) under a wide soft light from the top left.
+   ========================================================================== */
+html[data-style="mono"] {
+  --mono-paper: #eeeeeb;
+  --mono-surface: #f9f9f7;
+  --mono-ink: #151515;
+  --mono-ink-2: #5a5a55;
+  --mono-ink-3: #8e8e88;
+  --mono-line: rgba(21, 21, 21, 0.13);
+  --mono-line-strong: #1a1a1a;
+  --mono-invert-bg: #161616;
+  --mono-invert-fg: #efefec;
+  /* fold tones: hollow (shadow) ↔ crest (light) */
+  --fold-a: #e6e6e3;
+  --fold-b: #f6f6f4;
+  --fold-c: #ebebe8;
+  --fold-d: #fbfbf9;
+  --fold-light: rgba(255, 255, 255, 0.75);
+  --fold-shade: rgba(0, 0, 0, 0.05);
+}
+
+html[data-style="mono"][data-theme="dark"] {
+  --mono-paper: #121212;
+  --mono-surface: #191919;
+  --mono-ink: #e8e8e4;
+  --mono-ink-2: #a3a39d;
+  --mono-ink-3: #6f6f6a;
+  --mono-line: rgba(232, 232, 228, 0.14);
+  --mono-line-strong: #dcdcd8;
+  --mono-invert-bg: #e6e6e2;
+  --mono-invert-fg: #131313;
+  --fold-a: #0e0e0e;
+  --fold-b: #1a1a1a;
+  --fold-c: #121212;
+  --fold-d: #1f1f1f;
+  --fold-light: rgba(255, 255, 255, 0.07);
+  --fold-shade: rgba(0, 0, 0, 0.35);
+}
+
+/* let the draped background show through the page */
+html[data-style="mono"] body {
+  background: transparent !important;
+}
+
+html[data-style="mono"] .pub-shell::before,
+html[data-style="mono"] .pub-shell::after {
+  content: "";
+  position: fixed;
+  inset: -4% -6%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* the folds: uneven widths so it reads as fabric, not stripes */
+html[data-style="mono"] .pub-shell::before {
+  background:
+    linear-gradient(180deg, transparent 55%, var(--fold-shade)),
+    linear-gradient(90deg,
+      var(--fold-a) 0%, var(--fold-b) 5%, var(--fold-c) 11%, var(--fold-d) 17%,
+      var(--fold-a) 24%, var(--fold-b) 29%, var(--fold-c) 33%, var(--fold-d) 41%,
+      var(--fold-a) 50%, var(--fold-b) 56%, var(--fold-c) 61%, var(--fold-d) 66%,
+      var(--fold-a) 74%, var(--fold-b) 80%, var(--fold-c) 85%, var(--fold-d) 92%,
+      var(--fold-a) 100%);
+  filter: blur(6px);
+}
+
+/* the light: a wide soft glow falling from the upper left */
+html[data-style="mono"] .pub-shell::after {
+  background:
+    radial-gradient(70% 60% at 18% -8%, var(--fold-light), transparent 70%),
+    radial-gradient(50% 45% at 92% 110%, var(--fold-shade), transparent 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-style="mono"] .pub-shell::before {
+    animation: mono-drape 38s ease-in-out infinite alternate;
+  }
+
+  html[data-style="mono"] .pub-shell::after {
+    animation: mono-light 24s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes mono-drape {
+  from { transform: translate3d(-1.5%, 0, 0) scaleX(1.02); }
+  to { transform: translate3d(1.5%, 0, 0) scaleX(1); }
+}
+
+@keyframes mono-light {
+  from { opacity: 0.85; transform: translate3d(0, 0, 0); }
+  to { opacity: 1; transform: translate3d(3%, 2%, 0); }
+}

@@ -1,0 +1,289 @@
+/* ==========================================================================
+   Motion — interaction details for both styles (nature / mono).
+   Loaded last (layout.tsx). Only transform / opacity / clip / background-size
+   are animated; every rule below is disabled under prefers-reduced-motion.
+
+   Vocabulary
+   - hover:   fast ease-out, small distances (2–6px), 160–220ms
+   - press:   sink to 0.96 in 80ms, release with a light spring (380ms)
+   - state:   theme / style switch = circle reveal from the clicked control
+   - reveal:  cards and rows rise 16px into place as they scroll into view
+   ========================================================================== */
+
+:root {
+  --m-fast: 160ms;
+  --m-base: 220ms;
+  --m-slow: 380ms;
+  --m-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --m-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ── Theme / style switch: circular reveal (see lib/view-transition.ts) ── */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  html.vt-reveal::view-transition-new(root) {
+    animation: m-reveal 620ms var(--m-in-out) both;
+  }
+
+  @keyframes m-reveal {
+    from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0)); }
+    to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 0)); }
+  }
+
+  /* ── Pressable controls: sink on press, spring back on release ─────────── */
+  .home-primary-link,
+  .home-text-link,
+  .pub-header .theme-toggle,
+  .pub-header .style-toggle,
+  .archive-material-pill,
+  .archive-clear-btn,
+  .route-404__link,
+  .route-404__alt,
+  .toc-trigger {
+    transition-property: transform, background-color, color, border-color, box-shadow;
+    transition-duration: var(--m-slow), var(--m-base), var(--m-base), var(--m-base), var(--m-base);
+    transition-timing-function: var(--m-spring), var(--m-ease), var(--m-ease), var(--m-ease), var(--m-ease);
+  }
+
+  html body .home-primary-link:active,
+  html body .home-text-link:active,
+  html body .pub-header .theme-toggle:active,
+  html body .pub-header .style-toggle:active,
+  html body .archive-material-pill:active,
+  html body .archive-clear-btn:active,
+  html body .route-404__link:active,
+  html body .route-404__alt:active,
+  html body .toc-trigger:active {
+    transform: scale(0.96) !important;
+    transition-duration: 80ms;
+    transition-timing-function: var(--m-ease);
+  }
+
+  html body .home-primary-link:hover,
+  html body .route-404__link:hover,
+  html body .route-404__alt:hover {
+    transform: translateY(-2px);
+  }
+
+  /* arrows lean toward where they point */
+  .home-primary-link span[aria-hidden="true"],
+  .home-ledger__more span[aria-hidden="true"],
+  .home-ledger__arrow,
+  .note-ledger__arrow {
+    display: inline-block;
+    transition: transform var(--m-base) var(--m-ease);
+  }
+
+  .home-primary-link:hover span[aria-hidden="true"],
+  .home-ledger__link:hover .home-ledger__arrow {
+    transform: translate(3px, -3px);
+  }
+
+  .home-ledger__more:hover span[aria-hidden="true"],
+  .note-ledger__row:hover .note-ledger__arrow {
+    transform: translateX(4px);
+  }
+
+  /* ── Theme icon spins in; style mark turns over ────────────────────────── */
+  .theme-toggle__icon svg {
+    animation: m-icon-in 460ms var(--m-spring) both;
+  }
+
+  @keyframes m-icon-in {
+    from { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .style-toggle__mark {
+    transition: transform 520ms var(--m-spring);
+  }
+
+  .style-toggle[aria-pressed="true"] .style-toggle__mark {
+    transform: rotate(180deg);
+  }
+
+  .pub-header .theme-toggle:hover .theme-toggle__icon svg {
+    transform: rotate(-18deg);
+    transition: transform var(--m-base) var(--m-ease);
+  }
+
+  /* ── Links: underline sweeps in from the left ──────────────────────────── */
+  .home-text-link,
+  .home-ledger__more,
+  .pub-footer__meta a,
+  .note-body a {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 280ms var(--m-ease), color var(--m-base) var(--m-ease), transform var(--m-slow) var(--m-spring);
+  }
+
+  .home-text-link:hover,
+  .home-ledger__more:hover,
+  .pub-footer__meta a:hover,
+  .note-body a:hover {
+    background-size: 100% 1px;
+  }
+
+  /* nav: underline already grows from the centre; add a gentle colour ease */
+  .pub-nav__link {
+    transition: color var(--m-base) var(--m-ease), background-color var(--m-base) var(--m-ease);
+  }
+
+  .pub-nav__link::after {
+    transition: transform 260ms var(--m-ease);
+  }
+
+  /* ── Inputs: focus ring breathes in ───────────────────────────────────── */
+  html body .archive-search {
+    transition: border-color var(--m-base) var(--m-ease), box-shadow var(--m-base) var(--m-ease), background-color var(--m-base) var(--m-ease);
+  }
+
+  /* ── Nature style: cards lift with a soft shadow ──────────────────────── */
+  html:not([data-style="mono"]) body .home-page .home-ledger__link,
+  html:not([data-style="mono"]) body .archive-log-row {
+    transition: transform 320ms var(--m-ease), box-shadow 320ms var(--m-ease);
+  }
+
+  html:not([data-style="mono"]) body .home-page .home-ledger__link:hover,
+  html:not([data-style="mono"]) body .archive-log-row:hover {
+    box-shadow: 0 18px 30px -12px rgba(30, 40, 24, 0.35), inset 0 0 0 1px rgba(255, 250, 238, 0.4);
+  }
+
+  html:not([data-style="mono"]) body .archive-log-row:hover {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+
+  html:not([data-style="mono"]) body .home-page .home-research__tile {
+    transition: background-color var(--m-base) var(--m-ease);
+  }
+
+  html:not([data-style="mono"]) body .home-page .home-research__tile:hover .home-research__label {
+    transform: translateX(4px);
+  }
+
+  html:not([data-style="mono"]) body .home-page .home-research__label {
+    transition: transform var(--m-base) var(--m-ease);
+  }
+
+  /* ── Mono style: ink wipes in instead of an instant flip ──────────────── */
+  html[data-style="mono"] body .home-page .home-ledger__row .home-ledger__link,
+  html[data-style="mono"] body .home-page .home-ledger__row:nth-child(n) .home-ledger__link,
+  html[data-style="mono"] body .archive-log-row,
+  html[data-style="mono"] body .archive-log-row:nth-child(n) {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 50% 100% / 100% 0% no-repeat, var(--mono-surface) !important;
+    transition: background-size 360ms var(--m-in-out), color 120ms var(--m-ease) !important;
+  }
+
+  html[data-style="mono"] body .home-page .home-ledger__row .home-ledger__link:hover,
+  html[data-style="mono"] body .home-page .home-ledger__row:nth-child(n) .home-ledger__link:hover,
+  html[data-style="mono"] body .archive-log-row:hover,
+  html[data-style="mono"] body .archive-log-row:nth-child(n):hover {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 50% 100% / 100% 100% no-repeat, var(--mono-surface) !important;
+  }
+
+  /* text follows the ink: flips once the black has covered it, returns at once */
+  html[data-style="mono"] body .home-page .home-ledger__link *,
+  html[data-style="mono"] body .archive-log-row * {
+    transition: color 120ms var(--m-ease), border-color 120ms var(--m-ease);
+  }
+
+  html[data-style="mono"] body .home-page .home-ledger__row .home-ledger__link:hover,
+  html[data-style="mono"] body .home-page .home-ledger__row:nth-child(n) .home-ledger__link:hover,
+  html[data-style="mono"] body .archive-log-row:hover,
+  html[data-style="mono"] body .archive-log-row:nth-child(n):hover {
+    transition: background-size 360ms var(--m-in-out), color 140ms var(--m-ease) 200ms !important;
+  }
+
+  html[data-style="mono"] body .home-page .home-ledger__link:hover *,
+  html[data-style="mono"] body .archive-log-row:hover * {
+    transition: color 140ms var(--m-ease) 200ms, border-color 140ms var(--m-ease) 200ms;
+  }
+
+  html[data-style="mono"] body .home-page .home-research__tile {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 0 0 / 0% 100% no-repeat, transparent !important;
+    transition: background-size 420ms var(--m-in-out) !important;
+  }
+
+  html[data-style="mono"] body .home-page .home-research__tile:hover {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 0 0 / 100% 100% no-repeat, transparent !important;
+  }
+
+  html[data-style="mono"] body .home-page .home-research__tile * {
+    transition: color 120ms var(--m-ease);
+  }
+
+  html[data-style="mono"] body .home-page .home-research__tile:hover * {
+    transition: color 140ms var(--m-ease) 120ms;
+  }
+
+  html[data-style="mono"] body .archive-material-pill {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 50% 100% / 100% 0% no-repeat, var(--mono-surface) !important;
+    transition: background-size 260ms var(--m-in-out), color 160ms var(--m-ease) 40ms, transform var(--m-slow) var(--m-spring) !important;
+  }
+
+  html[data-style="mono"] body .archive-material-pill:hover,
+  html[data-style="mono"] body .archive-material-pill[data-active="true"] {
+    background: linear-gradient(var(--mono-invert-bg), var(--mono-invert-bg)) 50% 100% / 100% 100% no-repeat, var(--mono-surface) !important;
+  }
+
+  html[data-style="mono"] body .home-page .home-cabinet-card::before {
+    transition: transform 900ms var(--m-ease);
+  }
+
+  /* ── Table of contents: items lean in, the active rule slides ─────────── */
+  .toc-item a {
+    transition: color var(--m-base) var(--m-ease), border-color var(--m-base) var(--m-ease), transform var(--m-base) var(--m-ease) !important;
+  }
+
+  .toc-item a:hover {
+    transform: translateX(3px);
+  }
+
+  /* ── Reading-width grip ───────────────────────────────────────────────── */
+  .reading-width-handle__grip {
+    transition: opacity var(--m-base) var(--m-ease), transform var(--m-slow) var(--m-spring), background-color var(--m-base) var(--m-ease) !important;
+  }
+
+  /* ── Scroll reveal: rise into place (individual `translate`, so hover
+     transforms keep working) ─────────────────────────────────────────── */
+  @supports (animation-timeline: view()) {
+    .home-page .home-ledger__row,
+    .archive-log-row,
+    .home-page .home-research__tile,
+    .note-related .note-ledger__row,
+    .note-backlinks .note-ledger__row {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+
+  @keyframes m-rise {
+    from { opacity: 0; translate: 0 18px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+
+  /* ── First paint: hero copy settles in once ───────────────────────────── */
+  .home-page .home-hero__copy > * {
+    animation: m-settle 640ms var(--m-ease) both;
+  }
+
+  .home-page .home-hero__copy > *:nth-child(2) { animation-delay: 60ms; }
+  .home-page .home-hero__copy > *:nth-child(3) { animation-delay: 120ms; }
+  .home-page .home-hero__copy > *:nth-child(4) { animation-delay: 180ms; }
+  .home-page .home-hero__copy > *:nth-child(5) { animation-delay: 240ms; }
+
+  @keyframes m-settle {
+    from { opacity: 0.001; translate: 0 10px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+}

@@ -7,6 +7,7 @@ import { defaultSiteCopy } from "./lib/site-copy";
 import "./globals.css";
 import "./forest-timber.css";
 import "./theme-mono.css";
+import "./motion.css";
 
 // ─── Resolve site copy for shared shell ───────────────────────────────
 // Falls back to compiled defaults when DB is unavailable.

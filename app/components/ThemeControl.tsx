@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type MouseEvent } from "react";
+import { runWithCircularReveal } from "../lib/view-transition";
 
 type Theme = "light" | "dark";
 
@@ -92,6 +93,7 @@ export function ThemeControl() {
   useEffect(() => {
     const stored = readStoredTheme();
     const resolved = stored ?? resolveSystemTheme();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time sync from localStorage / system preference on mount
     setTheme(resolved);
     // Re-apply in case pre-hydration script didn't catch it
     applyTheme(resolved);
@@ -111,14 +113,12 @@ export function ThemeControl() {
     return () => mql.removeEventListener("change", handler);
   }, []);
 
-  const toggle = useCallback(() => {
-    setTheme((current) => {
-      const next: Theme = current === "light" ? "dark" : "light";
-      applyTheme(next);
-      persistTheme(next);
-      return next;
-    });
-  }, []);
+  const toggle = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    const next: Theme = theme === "light" ? "dark" : "light";
+    runWithCircularReveal(event.currentTarget, () => applyTheme(next));
+    persistTheme(next);
+    setTheme(next);
+  }, [theme]);
 
   const label = theme === "light" ? "切换到深色模式" : "切换到浅色模式";
 

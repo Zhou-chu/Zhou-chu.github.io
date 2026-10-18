@@ -8,6 +8,10 @@ import rehypeHighlight from "rehype-highlight";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark-dimmed.css";
 import { slugifyHeading } from "../lib/heading-slugger";
+import { WidgetFrame } from "./WidgetFrame";
+
+/** Embedded interactive widgets are published as /obsidian-assets/<hash>.html. */
+const WIDGET_SRC = /^\/obsidian-assets\/[a-z0-9]+\.html?$/i;
 
 function normalizeObsidianMath(source: string) {
   const indentationWidth = (prefix: string) => {
@@ -139,6 +143,12 @@ export function MarkdownBody({ source, headingIds = false }: MarkdownBodyProps) 
         return <a href={href} target={internal ? undefined : "_blank"} rel={internal ? undefined : "noreferrer"} {...props}>{children}</a>;
       },
       img({ title, alt, node: _node, ...props }) {
+        const src = typeof props.src === "string" ? props.src : "";
+        if (WIDGET_SRC.test(src)) {
+          // alt is "widget" or "widget|600" (initial height from ![[x.html|600]])
+          const initialHeight = Number(alt?.match(/^widget\|(\d+)/)?.[1]) || undefined;
+          return <WidgetFrame src={src} initialHeight={initialHeight} title={title || "交互演示"} />;
+        }
         const width = title?.match(/^width:(\d+)$/)?.[1];
         return <img {...props} alt={alt || ""} title={width ? undefined : title} style={width ? { maxWidth: `${width}px` } : undefined} loading="lazy" />;
       },

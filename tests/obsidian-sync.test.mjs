@@ -138,3 +138,26 @@ test("writeAssets copies attachments without rewriting the snapshot directory", 
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("embeds an interactive HTML widget and injects the height reporter once", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "obsidian-widget-"));
+  try {
+    const vault = path.join(root, "vault");
+    const assets = path.join(root, "assets");
+    await mkdir(path.join(vault, "attachments", "widgets"), { recursive: true });
+    await writeFile(path.join(vault, "attachments", "widgets", "demo.html"), "<!doctype html><html><body><h1>hi</h1></body></html>");
+    await writeFile(path.join(vault, "n.md"), "---\nblog: true\ntitle: W\n---\n前文\n\n![[demo.html|520]]\n\n![[demo.html]]\n");
+    const result = await createSnapshot({ vaultPath: vault, snapshotDirectory: path.join(root, "snapshot"), assetDirectory: assets, defaultCategory: "随想", write: false, writeAssets: true });
+    const [note] = result.notes;
+    assert.equal(result.assets.length, 1);
+    const file = result.assets[0];
+    assert.match(file, /^[a-f0-9]{16}\.html$/);
+    assert.ok(note.content.includes(`![widget|520](/obsidian-assets/${file})`), note.content);
+    assert.ok(note.content.includes(`![widget](/obsidian-assets/${file})`), note.content);
+    const html = await readFile(path.join(assets, file), "utf8");
+    assert.equal(html.match(/data-komorebi-widget/g)?.length, 1);
+    assert.match(html, /komorebi-widget-height[\s\S]*<\/body>/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

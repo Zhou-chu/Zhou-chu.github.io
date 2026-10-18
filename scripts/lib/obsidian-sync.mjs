@@ -4,6 +4,18 @@ import path from "node:path";
 
 const MARKDOWN_EXTENSIONS = new Set([".md", ".markdown"]);
 const IMAGE_EXTENSIONS = new Set([".avif", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"]);
+// 交互式小控件：自包含的 HTML 文件，用 ![[xxx.html]] 嵌入，博客端放进沙箱 iframe 展示。
+const WIDGET_EXTENSIONS = new Set([".html", ".htm"]);
+const isWidget = (file) => WIDGET_EXTENSIONS.has(path.extname(file).toLowerCase());
+const isEmbeddable = (file) => IMAGE_EXTENSIONS.has(path.extname(file).toLowerCase()) || isWidget(file);
+
+/**
+ * 追加到每个小控件末尾的脚本：把内容高度告诉博客页面，让 iframe 自动贴合高度。
+ * iframe 是无同源权限的沙箱，只能通过 postMessage 与外层通信。
+ */
+const WIDGET_HEIGHT_REPORTER = `
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+`;
 // 所有点开头的目录（.git/.obsidian/.trash/.workbuddy-ai 等工具目录）一律不参与同步：
 // 工具在其中留下的临时 md 副本曾被计入发布集，造成重复 slug 阻塞拉取。
 const IGNORED_DIRECTORIES = new Set(["node_modules"]);
@@ -161,7 +173,7 @@ function resolvePublishFlag(attributes) {
 export async function readPublishedNotes(vaultPath, options = {}) {
   const files = await walkFiles(vaultPath);
   const markdownFiles = files.filter((file) => MARKDOWN_EXTENSIONS.has(path.extname(file).toLowerCase()));
-  const assetFiles = files.filter((file) => IMAGE_EXTENSIONS.has(path.extname(file).toLowerCase()));
+  const assetFiles = files.filter(isEmbeddable);
   const assetsByName = new Map();
   for (const file of assetFiles) {
     const key = path.basename(file).toLowerCase();
@@ -222,7 +234,7 @@ async function resolveAsset(note, target) {
   const relativeCandidate = path.resolve(path.dirname(note.absolutePath), decoded);
   try {
     const candidateStats = await stat(relativeCandidate);
-    if (candidateStats.isFile() && IMAGE_EXTENSIONS.has(path.extname(relativeCandidate).toLowerCase())) return relativeCandidate;
+    if (candidateStats.isFile() && isEmbeddable(relativeCandidate)) return relativeCandidate;
   } catch {
     // Fall through to Obsidian's filename-based attachment lookup.
   }
@@ -241,7 +253,13 @@ async function assetFilename(sourcePath) {
 }
 
 async function copyAsset(sourcePath, assetDirectory) {
-  const bytes = await readFile(sourcePath);
+  let bytes = await readFile(sourcePath);
+  if (isWidget(sourcePath)) {
+    const html = bytes.toString("utf8");
+    if (!html.includes("data-komorebi-widget")) {
+      bytes = Buffer.from(/<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, `${WIDGET_HEIGHT_REPORTER}</body>`) : `${html}${WIDGET_HEIGHT_REPORTER}`, "utf8");
+    }
+  }
   const filename = await assetFilename(sourcePath);
   const destination = path.join(assetDirectory, filename);
   await mkdir(assetDirectory, { recursive: true });
@@ -278,13 +296,15 @@ export function decidePullAction(localFingerprint, remoteFingerprint, baselineFi
 export async function transformAssets(note, assetDirectory, writeAssets) {
   let content = note.content;
   const copied = [];
-  const wikiPattern = /!\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g;
+  const wikiPattern = /!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
   for (const match of [...content.matchAll(wikiPattern)]) {
     const source = await resolveAsset(note, match[1]);
     if (!source) continue;
     const filename = writeAssets ? await copyAsset(source, assetDirectory) : await assetFilename(source);
     copied.push(filename);
-    content = content.replace(match[0], `![](/obsidian-assets/${filename})`);
+    // 小控件保留 |高度 参数（写进 alt，博客端据此设置初始高度）
+    const alt = isWidget(source) ? `widget${match[2] ? `|${match[2].trim()}` : ""}` : "";
+    content = content.replace(match[0], `![${alt}](/obsidian-assets/${filename})`);
   }
 
   const markdownPattern = /!\[([^\]]*)\]\(([^)]+)\)/g;

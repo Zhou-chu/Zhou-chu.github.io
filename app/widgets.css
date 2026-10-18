@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Interactive widgets (WidgetFrame) — from ![[xxx.html]] in Obsidian.
+   Global so they render the same in articles and in the admin preview.
+   ========================================================================== */
+.note-widget {
+  display: block;
+  margin: 1.6em 0;
+  overflow: hidden;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.14));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--paper, #fbfaf6) 70%, transparent);
+}
+
+.note-widget__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.14));
+  font: 500 12px/1.4 var(--font-control, system-ui, sans-serif);
+  letter-spacing: 0.06em;
+  color: var(--muted, #66675e);
+}
+
+.note-widget__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-widget__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--moss, #4f5d42);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss, #4f5d42) 22%, transparent);
+}
+
+a.note-widget__open {
+  color: var(--muted, #66675e);
+  font-size: 12px;
+  text-decoration: none;
+  background-image: none;
+}
+
+a.note-widget__open:hover {
+  color: var(--ink, #20211d);
+}
+
+.note-widget__frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color-scheme: normal;
+  transition: height 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+html[data-style="mono"] .note-widget {
+  border-color: var(--mono-line-strong);
+  border-radius: 0;
+  background: var(--mono-surface);
+}
+
+html[data-style="mono"] .note-widget__dot {
+  border-radius: 0;
+  background: var(--mono-ink);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-widget__frame { transition: none; }
+}

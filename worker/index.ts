@@ -45,7 +45,9 @@ async function runMigrations(env: Env) {
   // FALLBACK: create core tables with raw SQL if they don't exist yet.
   // Uses the full current schema so fresh databases start correctly.
   try {
-    await env.DB.exec(`CREATE TABLE IF NOT EXISTS notes (
+    // prepare().run() rather than exec(): exec() splits on newlines, so the
+    // multi-line CREATE TABLE failed on fresh databases (e.g. local dev).
+    await env.DB.prepare(`CREATE TABLE IF NOT EXISTS notes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       slug TEXT NOT NULL UNIQUE,
       title TEXT NOT NULL,
@@ -61,12 +63,12 @@ async function runMigrations(env: Env) {
       tags_json TEXT NOT NULL DEFAULT '[]',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-    )`);
-    await env.DB.exec("CREATE TABLE IF NOT EXISTS site_settings (id INTEGER PRIMARY KEY, copy_json TEXT NOT NULL DEFAULT '{}', updated_by TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)");
-    await env.DB.exec("CREATE UNIQUE INDEX IF NOT EXISTS notes_slug_idx ON notes(slug)");
-    await env.DB.exec("CREATE UNIQUE INDEX IF NOT EXISTS notes_title_author_idx ON notes(title, author_email)");
-    await env.DB.exec("CREATE INDEX IF NOT EXISTS notes_status_published_idx ON notes(status, published_at)");
-    await env.DB.exec("CREATE INDEX IF NOT EXISTS notes_author_idx ON notes(author_email)");
+    )`).run();
+    await env.DB.prepare("CREATE TABLE IF NOT EXISTS site_settings (id INTEGER PRIMARY KEY, copy_json TEXT NOT NULL DEFAULT '{}', updated_by TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
+    await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS notes_slug_idx ON notes(slug)").run();
+    await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS notes_title_author_idx ON notes(title, author_email)").run();
+    await env.DB.prepare("CREATE INDEX IF NOT EXISTS notes_status_published_idx ON notes(status, published_at)").run();
+    await env.DB.prepare("CREATE INDEX IF NOT EXISTS notes_author_idx ON notes(author_email)").run();
   } catch (e2) {
     console.error("Fallback table creation error (non-fatal):", e2);
   }

@@ -1,13 +1,13 @@
 # Image Attribution
 
-## Site Background — Tsukuba's cedar forest
+## Site Background — Giō-ji moss garden, Kyoto
 
-- **Files**: `images/materials/cedar-forest-1280.webp`, `cedar-forest-1920.webp`, `cedar-forest-2560.webp`
-- **Creator**: Raita Futo (from Tokyo, Japan)
-- **Source**: [Wikimedia Commons — File:Tsukuba's cedar forest (53667839474).jpg](https://commons.wikimedia.org/wiki/File:Tsukuba%27s_cedar_forest_(53667839474).jpg)
-- **License**: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
-- **Modifications**: Downscaled from the 6524×4349 original to 1280/1920/2560 px and converted to WebP. Credited in the site footer (`PublicFooter.tsx`).
-- Replaces the earlier low-resolution `forest-waterfall.jpg` (736×981) background (2026-10-18).
+- **Files**: `images/materials/moss-garden-1280.webp`, `moss-garden-1920.webp`, `moss-garden-2560.webp`
+- **Creator**: Daderot
+- **Source**: [Wikimedia Commons — File:Giō-ji - Kyoto - DSC06266.JPG](https://commons.wikimedia.org/wiki/File:Gi%C5%8D-ji_-_Kyoto_-_DSC06266.JPG)
+- **License**: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) — no attribution required; credited in the footer anyway.
+- **Modifications**: Downscaled from 4320×3240 to 1280/1920/2560 px and converted to WebP.
+- History: replaced the Tsukuba cedar-forest photo (felt too dry/brown) on 2026-10-18, which had replaced the low-resolution `forest-waterfall.jpg`.
 
 ---
 

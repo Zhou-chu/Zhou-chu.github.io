@@ -24,20 +24,22 @@
   --ft-hinoki-deep: #b8956a;
   --ft-sumi: #2b2a26;
   --ft-beam: linear-gradient(90deg, transparent, var(--ft-hinoki-deep) 14%, var(--ft-hinoki) 50%, var(--ft-hinoki-deep) 86%, transparent);
-  --ft-frame-wash: linear-gradient(180deg, rgba(246, 232, 205, 0.62), rgba(222, 196, 156, 0.5));
+  --ft-frame-wash: linear-gradient(180deg, rgba(250, 244, 228, 0.72), rgba(232, 218, 190, 0.62));
   --ft-sun: 255, 240, 200;
-  --ft-leaf: #6f8a55;
-  --ft-leaf-2: #a9b77a;
-  --ft-branch: linear-gradient(90deg, #a58260, #c4a57c 60%, #8fa16a);
+  --ft-leaf: #5f8f45;
+  --ft-leaf-2: #93b866;
+  --ft-leaf-3: #b9cf7e;
+  --ft-branch: linear-gradient(90deg, #8a7454, #7f9b5a 45%, #6d9a4a);
   --ft-row-line: rgba(120, 92, 60, 0.2);
 }
 
 :root[data-theme="dark"] {
   --ft-frame-wash: linear-gradient(180deg, rgba(120, 98, 70, 0.35), rgba(60, 46, 32, 0.5));
   --ft-sun: 255, 226, 160;
-  --ft-leaf: #9fbf86;
-  --ft-leaf-2: #c7cf96;
-  --ft-branch: linear-gradient(90deg, #9a7d5c, #bfa27a 60%, #9fbf86);
+  --ft-leaf: #9fcb7e;
+  --ft-leaf-2: #c3dc93;
+  --ft-leaf-3: #d7e6a8;
+  --ft-branch: linear-gradient(90deg, #9a8a6a, #8fb46f 45%, #9fcb7e);
   --ft-row-line: rgba(232, 222, 200, 0.14);
 }
 
@@ -102,7 +104,7 @@ html body .pub-header::after {
    Hero: drop the stale 3:2 aspect ratio, add a timber frame and sunlight.
    -------------------------------------------------------------------------- */
 html body .home-page .home-hero {
-  --ft-frame: 10px;
+  --ft-frame: 6px;
   position: relative;
   aspect-ratio: auto;
   border-width: 0;
@@ -169,7 +171,7 @@ html body .home-page .home-hero__copy::before {
 }
 
 @media (max-width: 767px) {
-  html body .home-page .home-hero { --ft-frame: 7px; border-radius: 22px; }
+  html body .home-page .home-hero { --ft-frame: 5px; border-radius: 22px; }
   html body .home-page .home-hero::after { border-radius: calc(22px - var(--ft-frame)); }
   html body .home-page .home-hero__copy::before { inset: -8% -6% -8% -6%; }
 }
@@ -440,10 +442,10 @@ html body .pub-footer__meta a:hover {
 
 .ft-leaves span:nth-child(1) { --x: 8%;  --size: 13px; --dur: 26s; --delay: -4s;  --tone: var(--ft-leaf); }
 .ft-leaves span:nth-child(2) { --x: 22%; --size: 10px; --dur: 31s; --delay: -17s; --tone: var(--ft-leaf-2); }
-.ft-leaves span:nth-child(3) { --x: 41%; --size: 14px; --dur: 28s; --delay: -9s;  --tone: var(--ft-hinoki); }
+.ft-leaves span:nth-child(3) { --x: 41%; --size: 14px; --dur: 28s; --delay: -9s;  --tone: var(--ft-leaf-3); }
 .ft-leaves span:nth-child(4) { --x: 58%; --size: 9px;  --dur: 34s; --delay: -22s; --tone: var(--ft-leaf); }
 .ft-leaves span:nth-child(5) { --x: 73%; --size: 12px; --dur: 29s; --delay: -13s; --tone: var(--ft-leaf-2); }
-.ft-leaves span:nth-child(6) { --x: 86%; --size: 11px; --dur: 33s; --delay: -2s;  --tone: var(--ft-hinoki-deep); }
+.ft-leaves span:nth-child(6) { --x: 86%; --size: 11px; --dur: 33s; --delay: -2s;  --tone: var(--ft-leaf-2); }
 .ft-leaves span:nth-child(7) { --x: 94%; --size: 13px; --dur: 27s; --delay: -19s; --tone: var(--ft-leaf); }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -556,22 +558,22 @@ html body .home-page .home-research__count {
 }
 
 /* --------------------------------------------------------------------------
-   Background photo: Tsukuba cedar forest (Raita Futo, CC BY 2.0, credited in
-   the footer and public/images/ATTRIBUTION.md). Sized per viewport so phones
-   fetch ~130KB and wide/HiDPI screens get a sharp 2560px rendition.
+   Background photo: Giō-ji moss garden, Kyoto (Daderot, CC0; credited in the
+   footer and public/images/ATTRIBUTION.md). Fresh green with dappled light —
+   木漏れ日 itself. Sized per viewport: phones ~270KB, wide/HiDPI 2560px.
    -------------------------------------------------------------------------- */
 html {
-  background-color: #3a2e22;
-  background-image: url("/images/materials/cedar-forest-1280.webp");
-  background-position: center 40%;
+  background-color: #4b6a3a;
+  background-image: url("/images/materials/moss-garden-1280.webp");
+  background-position: center 55%;
 }
 
 @media (min-width: 801px) and (max-width: 1600px) and (max-resolution: 1.99dppx), (min-resolution: 2dppx) and (min-width: 481px) and (max-width: 960px) {
-  html { background-image: url("/images/materials/cedar-forest-1920.webp"); }
+  html { background-image: url("/images/materials/moss-garden-1920.webp"); }
 }
 
 @media (min-width: 1601px), (min-resolution: 2dppx) and (min-width: 961px) {
-  html { background-image: url("/images/materials/cedar-forest-2560.webp"); }
+  html { background-image: url("/images/materials/moss-garden-2560.webp"); }
 }
 
 html body .pub-footer__photo {
@@ -589,14 +591,128 @@ html body .pub-footer__photo:hover {
   text-decoration: underline;
 }
 
-/* Light mode: lift the frosted glass toward kinari/washi so the warm cedar
-   photo reads as light through paper rather than a brown wash. */
+/* Light mode: clean, faintly green-white glass — like light through fresh
+   leaves — so the moss garden stays green instead of turning into a wash. */
 :root:not([data-theme="dark"]) body .home-page .home-hero::after {
-  background: rgba(250, 244, 230, 0.36);
+  background: rgba(248, 251, 243, 0.42);
 }
 
 :root:not([data-theme="dark"]) body .home-page .home-content,
 :root:not([data-theme="dark"]) body .home-page .home-research,
 :root:not([data-theme="dark"]) body .pub-main .archive-shell {
-  background: rgba(250, 244, 230, 0.32);
+  background: rgba(248, 251, 243, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   404: a small frosted card instead of bare text on the photo.
+   -------------------------------------------------------------------------- */
+html body .route-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(520px, calc(100% - 32px));
+  min-height: 0;
+  margin: clamp(48px, 12vh, 120px) auto;
+  padding: 44px 32px 36px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 24px;
+  background: rgba(248, 251, 243, 0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(0.9);
+  backdrop-filter: blur(22px) saturate(0.9);
+  box-shadow: 0 22px 56px rgba(18, 32, 20, 0.18);
+  text-align: center;
+}
+
+:root[data-theme="dark"] body .route-404 {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(20, 28, 21, 0.6);
+}
+
+html body .route-404__mark {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 18px;
+  border-radius: 0 72% 0 72%;
+  background: var(--ft-leaf);
+  transform: rotate(-12deg);
+}
+
+html body .route-404__heading {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", STSong, serif;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+html body .route-404__body {
+  margin: 0 0 26px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+html body .route-404__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+html body .route-404__link,
+html body .route-404__alt {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--moss);
+  border-radius: 999px;
+  background: var(--moss);
+  color: #f6f8f0;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+html body .route-404__link:hover,
+html body .route-404__alt:hover {
+  transform: translateY(-1px);
+}
+
+html body .route-404__alt {
+  background: transparent;
+  color: var(--moss);
+}
+
+:root[data-theme="dark"] body .route-404__link {
+  color: #142019;
+}
+
+:root[data-theme="dark"] body .route-404__alt {
+  color: var(--moss);
+}
+
+/* Archive shelf: same light hinoki back panel as the homepage shelf. */
+:root:not([data-theme="dark"]) body .archive-year-group {
+  background-image:
+    linear-gradient(rgba(226, 204, 168, 0.62), rgba(196, 164, 122, 0.66)),
+    url("/images/materials/wood-grain.jpg");
+  border-color: var(--ft-hinoki);
+  box-shadow:
+    inset 0 10px 24px rgba(92, 64, 36, 0.2),
+    0 18px 40px rgba(40, 30, 18, 0.14);
+}
+
+/* Archive cards: end long titles on a clean ellipsis instead of cropping a
+   line in half (line-clamp needs display:-webkit-box). */
+html body .archive-log-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  flex: 0 0 auto;
+  height: auto;
+  max-height: calc(3lh + 1px);
 }

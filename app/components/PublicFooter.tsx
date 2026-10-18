@@ -41,14 +41,14 @@ export function PublicFooter({
           <Link href="/admin">写作后台</Link>
         </div>
 
-        {/* 背景照片署名（CC BY 2.0 要求） */}
+        {/* 背景照片署名（CC0 不强制署名，仍注明来源以示尊重） */}
         <a
           className="pub-footer__photo"
-          href="https://commons.wikimedia.org/wiki/File:Tsukuba%27s_cedar_forest_(53667839474).jpg"
+          href="https://commons.wikimedia.org/wiki/File:Gi%C5%8D-ji_-_Kyoto_-_DSC06266.JPG"
           target="_blank"
           rel="noopener noreferrer"
         >
-          背景照片：筑波的杉林 · Raita Futo · CC BY 2.0
+          背景照片：京都祇王寺苔庭 · Daderot · CC0
         </a>
       </div>
     </footer>

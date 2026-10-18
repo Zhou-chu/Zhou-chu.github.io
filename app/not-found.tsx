@@ -11,11 +11,17 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="route-404">
+      <span className="route-404__mark" aria-hidden="true" />
       <h1 className="route-404__heading">页面未找到</h1>
-      <p className="route-404__body">您访问的页面不存在或已被移除。</p>
-      <Link href="/" className="route-404__link">
-        &larr; 返回首页
-      </Link>
+      <p className="route-404__body">您访问的页面不存在或已被移除。也许它换了一条小径。</p>
+      <div className="route-404__actions">
+        <Link href="/" className="route-404__link">
+          &larr; 返回首页
+        </Link>
+        <Link href="/archive" className="route-404__alt">
+          去书架找找
+        </Link>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeControl } from "./ThemeControl";
+import { StyleControl } from "./StyleControl";
 import { NavLink } from "./NavLink";
 
 /**
@@ -42,6 +43,7 @@ export function PublicHeader({ siteName, siteCode }: { readonly siteName: string
 
         {/* Right-side actions */}
         <div className="pub-header__actions">
+          <StyleControl />
           <ThemeControl />
         </div>
       </div>

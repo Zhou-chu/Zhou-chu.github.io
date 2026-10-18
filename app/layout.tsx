@@ -6,6 +6,7 @@ import { PublicFooter } from "./components/PublicFooter";
 import { defaultSiteCopy } from "./lib/site-copy";
 import "./globals.css";
 import "./forest-timber.css";
+import "./theme-mono.css";
 
 // ─── Resolve site copy for shared shell ───────────────────────────────
 // Falls back to compiled defaults when DB is unavailable.
@@ -54,11 +55,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="preload" as="image" href="/images/materials/moss-garden-2560.webp" media="(min-width: 1601px), (min-resolution: 2dppx) and (min-width: 961px)" fetchPriority="high" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" />
         {/* Pre-hydration theme script — prevents flash of wrong theme */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.setAttribute("data-theme","dark")}else if(t!=="light"&&window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})();`,
+            __html: `(function(){try{if(localStorage.getItem("site-style")==="mono"){document.documentElement.setAttribute("data-style","mono")}var t=localStorage.getItem("theme");if(t==="dark"){document.documentElement.setAttribute("data-theme","dark")}else if(t!=="light"&&window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})();`,
           }}
         />
 

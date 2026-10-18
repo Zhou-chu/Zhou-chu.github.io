@@ -1,0 +1,711 @@
+/* ==========================================================================
+   墨白 · Mono style — black & white, sculptural, modern-minimal.
+   Active only when <html data-style="mono"> (StyleControl in the header).
+   Light = black ink on paper white; dark (data-theme="dark") = the inverse.
+
+   Layout: strict grid, 1px hairlines, generous whitespace; no photography,
+   no glass, no wood. Emphasis by inversion (black block / white type) and
+   by scale — the homepage visual is a typographic sculpture: giant 「木漏」
+   cut by a solid circle that inverts whatever it crosses.
+   ========================================================================== */
+
+html[data-style="mono"] {
+  --mono-paper: #f3f3f0;
+  --mono-surface: #ffffff;
+  --mono-ink: #0b0b0b;
+  --mono-ink-2: #55554f;
+  --mono-ink-3: #8b8b84;
+  --mono-line: rgba(11, 11, 11, 0.14);
+  --mono-line-strong: #0b0b0b;
+  --mono-invert-bg: #0b0b0b;
+  --mono-invert-fg: #f3f3f0;
+  --mono-display: "Noto Serif SC", "Songti SC", STSong, serif;
+  --mono-sans: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --mono-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* remap the site's shared tokens so existing rules follow along */
+  --canvas: var(--mono-paper);
+  --paper: var(--mono-surface);
+  --ink: var(--mono-ink);
+  --muted: var(--mono-ink-2);
+  --faint: var(--mono-ink-3);
+  --line: var(--mono-line);
+  --line-strong: var(--mono-line-strong);
+  --moss: var(--mono-ink);
+  --moss-soft: rgba(11, 11, 11, 0.08);
+  --timber: var(--mono-ink-2);
+  --timber-deep: var(--mono-ink);
+  --ft-leaf: var(--mono-ink);
+  --ft-leaf-2: var(--mono-ink);
+  --ft-leaf-3: var(--mono-ink);
+  --ft-branch: var(--mono-ink);
+  --ft-row-line: var(--mono-line);
+  --ft-beam: var(--mono-ink);
+  background: var(--mono-paper) !important;
+  color-scheme: light;
+}
+
+html[data-style="mono"][data-theme="dark"] {
+  --mono-paper: #0c0c0c;
+  --mono-surface: #141414;
+  --mono-ink: #ededea;
+  --mono-ink-2: #a8a8a2;
+  --mono-ink-3: #74746f;
+  --mono-line: rgba(237, 237, 234, 0.16);
+  --mono-line-strong: #ededea;
+  --mono-invert-bg: #ededea;
+  --mono-invert-fg: #0c0c0c;
+  --moss-soft: rgba(237, 237, 234, 0.1);
+  color-scheme: dark;
+}
+
+/* ── Global resets: no photo, no glass, no texture, no glow ─────────────── */
+html[data-style="mono"] body {
+  background: var(--mono-paper) !important;
+  color: var(--mono-ink);
+  font-family: var(--mono-sans);
+}
+
+html[data-style="mono"] body *,
+html[data-style="mono"] body *::before,
+html[data-style="mono"] body *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+html[data-style="mono"] .ft-leaves,
+html[data-style="mono"] .home-hero__copy::before {
+  display: none !important;
+}
+
+html[data-style="mono"] ::selection {
+  background: var(--mono-ink);
+  color: var(--mono-paper);
+}
+
+html[data-style="mono"] a:focus-visible,
+html[data-style="mono"] button:focus-visible,
+html[data-style="mono"] input:focus-visible {
+  outline: 2px solid var(--mono-ink) !important;
+  outline-offset: 3px;
+  box-shadow: none !important;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+html[data-style="mono"] .pub-header {
+  background: color-mix(in srgb, var(--mono-paper) 92%, transparent) !important;
+  border-bottom: 1px solid var(--mono-line-strong);
+  box-shadow: none !important;
+}
+
+html[data-style="mono"] .pub-header::after {
+  display: none;
+}
+
+html[data-style="mono"] .pub-header__brand,
+html[data-style="mono"] .pub-header__brand strong {
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+html[data-style="mono"] .pub-header__brand small {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code);
+  letter-spacing: 0.18em;
+}
+
+html[data-style="mono"] .pub-nav__link {
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-sans);
+  letter-spacing: 0.08em;
+}
+
+html[data-style="mono"] .pub-nav__link:hover,
+html[data-style="mono"] .pub-nav__link[aria-current="page"] {
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .pub-nav__link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+html[data-style="mono"] .pub-header .theme-toggle,
+html[data-style="mono"] .pub-header .style-toggle {
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .pub-header .theme-toggle:hover,
+html[data-style="mono"] .pub-header .style-toggle:hover {
+  background: var(--mono-ink) !important;
+  color: var(--mono-paper) !important;
+}
+
+html[data-style="mono"] .theme-toggle__icon {
+  background: transparent !important;
+}
+
+/* ── Hero: big type on paper, the sculpture on the right ────────────────── */
+html[data-style="mono"] .home-page .home-hero {
+  border: 0 !important;
+  border-top: 1px solid var(--mono-line-strong) !important;
+  border-bottom: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-inline: 0 !important;
+}
+
+html[data-style="mono"] .home-page .home-hero::before,
+html[data-style="mono"] .home-page .home-hero::after {
+  display: none !important;
+}
+
+html[data-style="mono"] .home-kicker {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.24em;
+}
+
+html[data-style="mono"] .home-kicker span {
+  background: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .home-intro__heading {
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.01em;
+  line-height: 1.08 !important;
+}
+
+html[data-style="mono"] .home-intro__body {
+  color: var(--mono-ink-2) !important;
+  font-weight: 400 !important;
+}
+
+html[data-style="mono"] .home-primary-link {
+  border: 1px solid var(--mono-ink) !important;
+  border-radius: 0 !important;
+  background: var(--mono-ink) !important;
+  box-shadow: none !important;
+  color: var(--mono-paper) !important;
+  letter-spacing: 0.08em;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+html[data-style="mono"] .home-primary-link:hover {
+  background: transparent !important;
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .home-text-link {
+  border-color: var(--mono-ink) !important;
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .home-stats {
+  border-top-color: var(--mono-line-strong) !important;
+}
+
+html[data-style="mono"] .home-stats > div {
+  border-color: var(--mono-line) !important;
+}
+
+html[data-style="mono"] .home-stats dt {
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display) !important;
+  font-weight: 900 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-style="mono"] .home-stats dd {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* the sculpture: giant 木漏 with a solid disc that inverts what it crosses */
+html[data-style="mono"] .home-page .home-cabinet-card {
+  position: relative;
+  min-height: 460px;
+  overflow: hidden;
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  box-shadow: none !important;
+  isolation: isolate;
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card::before {
+  content: "";
+  position: absolute;
+  inset: auto;
+  top: 14%;
+  right: -18%;
+  z-index: 2;
+  display: block;
+  width: 78%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  opacity: 1;
+  transform: none;
+  pointer-events: none;
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 9%;
+  z-index: 1;
+  height: 1px;
+  background: var(--mono-ink);
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card .home-hero__seal {
+  position: absolute;
+  inset: auto auto 12% 6% !important;
+  z-index: 1;
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display);
+  font-size: clamp(120px, 14vw, 210px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-style="mono"] .home-page .home-cabinet-card::before {
+    animation: mono-orbit 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes mono-orbit {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-14%, 10%, 0); }
+}
+
+/* ── Section shells ─────────────────────────────────────────────────────── */
+html[data-style="mono"] .home-page .home-content,
+html[data-style="mono"] .home-page .home-research,
+html[data-style="mono"] .pub-main .archive-shell {
+  border: 0 !important;
+  border-top: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-inline: 0 !important;
+}
+
+html[data-style="mono"] .home-section-heading > p,
+html[data-style="mono"] .home-research__intro > p,
+html[data-style="mono"] .archive-subtitle {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.24em !important;
+}
+
+html[data-style="mono"] .home-section-heading h2,
+html[data-style="mono"] .home-research__heading,
+html[data-style="mono"] .archive-title,
+html[data-style="mono"] .archive-year-heading h2 {
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display) !important;
+  font-weight: 900 !important;
+  border-color: var(--mono-line-strong) !important;
+}
+
+html[data-style="mono"] .home-section-heading > span,
+html[data-style="mono"] .home-research__intro > span {
+  color: var(--mono-ink-2) !important;
+  font-weight: 400 !important;
+}
+
+/* ── Recent notes & archive: index cards that invert on hover ───────────── */
+html[data-style="mono"] .home-page .home-ledger,
+html[data-style="mono"] .archive-year-group {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  padding-inline: 0 !important;
+}
+
+html[data-style="mono"] .home-page .home-ledger::before,
+html[data-style="mono"] .home-page .home-ledger::after,
+html[data-style="mono"] .archive-year-group::before,
+html[data-style="mono"] .archive-year-group::after {
+  display: none !important;
+}
+
+html[data-style="mono"] .home-page .home-ledger__list {
+  gap: 0 !important;
+  padding: 0 !important;
+  border-left: 1px solid var(--mono-line-strong);
+}
+
+html[data-style="mono"] .home-page .home-ledger__row .home-ledger__link,
+html[data-style="mono"] .home-page .home-ledger__row:nth-child(n) .home-ledger__link,
+html[data-style="mono"] .archive-log-row,
+html[data-style="mono"] .archive-log-row:nth-child(n) {
+  border: 0 !important;
+  border-right: 1px solid var(--mono-line-strong) !important;
+  border-bottom: 1px solid var(--mono-line-strong) !important;
+  border-top: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: var(--mono-ink) !important;
+  transform: none !important;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+html[data-style="mono"] .home-page .home-ledger__row .home-ledger__link:hover,
+html[data-style="mono"] .home-page .home-ledger__row:nth-child(n) .home-ledger__link:hover,
+html[data-style="mono"] .archive-log-row:hover {
+  background: var(--mono-invert-bg) !important;
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .home-page .home-ledger__link:hover *,
+html[data-style="mono"] .archive-log-row:hover * {
+  color: var(--mono-invert-fg) !important;
+  border-color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .home-ledger__title,
+html[data-style="mono"] .archive-log-title {
+  color: inherit !important;
+  font-family: var(--mono-display) !important;
+  font-weight: 700 !important;
+}
+
+html[data-style="mono"] .home-ledger__category,
+html[data-style="mono"] .archive-material-label {
+  border: 1px solid currentColor !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code);
+  letter-spacing: 0.04em;
+}
+
+html[data-style="mono"] .home-ledger__date,
+html[data-style="mono"] .home-ledger__arrow,
+html[data-style="mono"] .archive-log-id,
+html[data-style="mono"] .archive-log-date {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code) !important;
+}
+
+html[data-style="mono"] .home-ledger__more {
+  color: var(--mono-ink) !important;
+  border-color: var(--mono-ink) !important;
+}
+
+/* ── Topic index: hairline rows, black growth bar ending in a square ────── */
+html[data-style="mono"] .home-page .home-research__grid {
+  border-top-color: var(--mono-line-strong) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__tile {
+  border-bottom-color: var(--mono-line) !important;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+html[data-style="mono"] .home-page .home-research__tile:hover {
+  background: var(--mono-invert-bg) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__tile:hover * {
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__tile:hover .home-research__growth::before,
+html[data-style="mono"] .home-page .home-research__tile:hover .home-research__growth::after {
+  background: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__index,
+html[data-style="mono"] .home-page .home-research__count {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__label {
+  font-family: var(--mono-display) !important;
+  font-weight: 700 !important;
+}
+
+html[data-style="mono"] .home-page .home-research__growth::before {
+  height: 2px;
+  border-radius: 0;
+  background: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .home-page .home-research__growth::after {
+  width: 7px;
+  height: 7px;
+  top: 1.5px;
+  border-radius: 0;
+  background: var(--mono-ink) !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* ── Archive controls ───────────────────────────────────────────────────── */
+html[data-style="mono"] .archive-search,
+html[data-style="mono"] .archive-material-pill {
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  box-shadow: none !important;
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .archive-material-pill:hover,
+html[data-style="mono"] .archive-material-pill[data-active="true"] {
+  background: var(--mono-invert-bg) !important;
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .archive-material-pill[data-active="true"] .archive-material-count,
+html[data-style="mono"] .archive-material-pill:hover .archive-material-count {
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .archive-material-label-heading,
+html[data-style="mono"] .archive-material-count {
+  color: var(--mono-ink-2) !important;
+}
+
+/* ── Article ────────────────────────────────────────────────────────────── */
+html[data-style="mono"] .note-article,
+html[data-style="mono"] .note-page .toc-rail,
+html[data-style="mono"] .note-backlinks,
+html[data-style="mono"] .note-related {
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  box-shadow: none !important;
+}
+
+html[data-style="mono"] .note-title,
+html[data-style="mono"] .note-body h1,
+html[data-style="mono"] .note-body h2,
+html[data-style="mono"] .note-body h3 {
+  color: var(--mono-ink) !important;
+  font-family: var(--mono-display) !important;
+  font-weight: 900 !important;
+}
+
+html[data-style="mono"] .note-summary {
+  color: var(--mono-ink-2) !important;
+}
+
+html[data-style="mono"] .note-body a {
+  color: var(--mono-ink) !important;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+html[data-style="mono"] .note-body blockquote {
+  border-left-color: var(--mono-ink) !important;
+  background: transparent !important;
+}
+
+html[data-style="mono"] .note-ruler,
+html[data-style="mono"] .note-ruler * {
+  color: var(--mono-ink-2) !important;
+  font-family: var(--mono-code);
+}
+
+html[data-style="mono"] .reading-width-handle__grip {
+  background: var(--mono-ink) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-style="mono"] .reading-width-handle__hint {
+  border-radius: 0 !important;
+  background: var(--mono-ink) !important;
+  color: var(--mono-paper) !important;
+}
+
+/* ── 404 ────────────────────────────────────────────────────────────────── */
+html[data-style="mono"] .route-404 {
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  box-shadow: none !important;
+}
+
+html[data-style="mono"] .route-404__mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--mono-ink) !important;
+  transform: none;
+}
+
+html[data-style="mono"] .route-404__heading {
+  font-weight: 900;
+}
+
+html[data-style="mono"] .route-404__link,
+html[data-style="mono"] .route-404__alt {
+  border: 1px solid var(--mono-ink) !important;
+  border-radius: 0 !important;
+}
+
+html[data-style="mono"] .route-404__link {
+  background: var(--mono-ink) !important;
+  color: var(--mono-paper) !important;
+}
+
+html[data-style="mono"] .route-404__alt {
+  background: transparent !important;
+  color: var(--mono-ink) !important;
+}
+
+/* ── Footer: a solid inverted band ──────────────────────────────────────── */
+html[data-style="mono"] .pub-footer {
+  border-top: 0 !important;
+  background: var(--mono-invert-bg) !important;
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .pub-footer::before {
+  display: none;
+}
+
+html[data-style="mono"] .pub-footer *,
+html[data-style="mono"] .pub-footer a {
+  color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .pub-footer__brand > span {
+  border-color: var(--mono-invert-fg) !important;
+}
+
+html[data-style="mono"] .pub-footer__photo {
+  display: none !important;
+}
+
+html[data-style="mono"] .pub-footer__brand strong {
+  font-family: var(--mono-display);
+  font-weight: 900;
+}
+
+/* ── Style switch (visible in both styles) ──────────────────────────────── */
+.pub-header .style-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  margin-left: 6px;
+  padding: 0 12px 0 9px;
+  border: 1px solid rgba(84, 53, 31, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 252, 244, 0.6);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+:root[data-theme="dark"] .pub-header .style-toggle {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff8eb;
+}
+
+.style-toggle__mark {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+@media (max-width: 520px) {
+  .pub-header .style-toggle {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .style-toggle__label { display: none; }
+}
+
+/* ── Fixes found in review ──────────────────────────────────────────────── */
+
+/* recent-note card titles: clean 3-line ellipsis instead of a half-cropped line */
+html[data-style="mono"] .home-page .home-ledger__title {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3 !important;
+  line-clamp: 3;
+  overflow: hidden;
+  flex: 0 0 auto !important;
+  max-height: calc(3lh + 1px);
+}
+
+/* article table of contents (mobile trigger + drawer) */
+html[data-style="mono"] .toc-trigger,
+html[data-style="mono"] .toc-drawer {
+  border: 1px solid var(--mono-line-strong) !important;
+  border-radius: 0 !important;
+  background: var(--mono-surface) !important;
+  box-shadow: none !important;
+  color: var(--mono-ink) !important;
+}
+
+html[data-style="mono"] .toc-item[aria-current],
+html[data-style="mono"] .toc-item a[aria-current] {
+  color: var(--mono-ink) !important;
+  border-color: var(--mono-ink) !important;
+}
+
+@media (max-width: 767px) {
+  html[data-style="mono"] .home-page .home-cabinet-card {
+    min-height: 340px;
+  }
+
+  html[data-style="mono"] .home-page .home-cabinet-card .home-hero__seal {
+    font-size: 116px;
+  }
+}

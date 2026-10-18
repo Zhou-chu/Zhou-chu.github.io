@@ -716,3 +716,9 @@ html body .archive-log-title {
   height: auto;
   max-height: calc(3lh + 1px);
 }
+
+/* Recent-note card titles (nature style): clean 4-line ellipsis. */
+html body .home-page .home-ledger__title {
+  max-height: calc(4lh + 1px);
+  flex: 0 0 auto;
+}

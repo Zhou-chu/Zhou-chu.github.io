@@ -821,12 +821,13 @@ html[data-style="mono"][data-theme="dark"] {
   --mono-line-strong: #dcdcd8;
   --mono-invert-bg: #e6e6e2;
   --mono-invert-fg: #131313;
-  --fold-a: #0e0e0e;
-  --fold-b: #1a1a1a;
-  --fold-c: #121212;
-  --fold-d: #1f1f1f;
-  --fold-light: rgba(255, 255, 255, 0.07);
-  --fold-shade: rgba(0, 0, 0, 0.35);
+  /* dark folds need a wider range than light ones to read on black */
+  --fold-a: #0a0a0a;
+  --fold-b: #222222;
+  --fold-c: #101010;
+  --fold-d: #2b2b2b;
+  --fold-light: rgba(255, 255, 255, 0.14);
+  --fold-shade: rgba(0, 0, 0, 0.55);
 }
 
 /* let the draped background show through the page */
@@ -881,4 +882,12 @@ html[data-style="mono"] .pub-shell::after {
 @keyframes mono-light {
   from { opacity: 0.85; transform: translate3d(0, 0, 0); }
   to { opacity: 1; transform: translate3d(3%, 2%, 0); }
+}
+
+/* dark: a faint sheen along the fold crests so the drape catches light */
+html[data-style="mono"][data-theme="dark"] .pub-shell::after {
+  background:
+    radial-gradient(70% 60% at 18% -8%, var(--fold-light), transparent 70%),
+    radial-gradient(40% 50% at 70% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(50% 45% at 92% 110%, var(--fold-shade), transparent 70%);
 }

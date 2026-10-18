@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 104,
-  "assetCount": 212,
+  "noteCount": 105,
+  "assetCount": 213,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -59,6 +59,13 @@
       "title": "宽禁带功率半导体器件综述 Digest：SiC 与 GaN",
       "publishedAt": "2026-09-27",
       "hash": "d3071b1f2c2236f7737e92514e1338ce701e3d2b35d88206355d88d5236d7bd1"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-标幺制入门-交互演示-pwrdemo1.md",
+      "slug": "电力系统分析-标幺制入门-交互演示-pwrdemo1",
+      "title": "电力系统分析：标幺制入门（交互演示）",
+      "publishedAt": "2026-10-18",
+      "hash": "b7bc86291f872848ddf0faeba77241625944ffe74a2f577805c389f56d454153"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第1讲-电力系统概述-pwr1l01.md",

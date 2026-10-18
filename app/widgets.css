@@ -72,3 +72,10 @@ html[data-style="mono"] .note-widget__dot {
 @media (prefers-reduced-motion: reduce) {
   .note-widget__frame { transition: none; }
 }
+
+/* caption link: no article underline styles in the bar */
+.note-body a.note-widget__open,
+html[data-style="mono"] .note-body a.note-widget__open {
+  text-decoration: none !important;
+  background-image: none !important;
+}

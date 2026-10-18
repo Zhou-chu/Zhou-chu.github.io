@@ -586,6 +586,12 @@ html body .pub-footer__photo {
   text-decoration: none;
 }
 
+/* each style shows only its own photo credit */
+html body .pub-footer__photo--mono,
+html[data-style="mono"] body .pub-footer__photo--nature {
+  display: none;
+}
+
 html body .pub-footer__photo:hover {
   color: var(--moss);
   text-decoration: underline;

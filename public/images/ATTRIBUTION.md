@@ -1,5 +1,23 @@
 # Image Attribution
 
+## Mono style — homepage figure: "Precision"
+
+- **Files**: `images/materials/mono-stairs-900.webp`, `mono-stairs-1400.webp`
+- **Creator**: Rob Oo (from NL)
+- **Source**: [Wikimedia Commons — File:Precision (53831260312).jpg](https://commons.wikimedia.org/wiki/File:Precision_(53831260312).jpg)
+- **License**: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
+- **Modifications**: Cropped to 4:5, converted to grayscale with a contrast curve, resized to 900/1400 px WebP. Credited in the footer while the mono style is active.
+
+## Mono style — section band: Óbidos, Portugal
+
+- **Files**: `images/materials/mono-shadow-1280.webp`, `mono-shadow-2560.webp`
+- **Creator**: Margarida CSilva (marg_cs, via Unsplash)
+- **Source**: [Wikimedia Commons — File:Óbidos, Portugal (Unsplash).jpg](https://commons.wikimedia.org/wiki/File:%C3%93bidos,_Portugal_(Unsplash).jpg)
+- **License**: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
+- **Modifications**: Cropped to 3:1, converted to grayscale with a contrast curve, resized to 1280/2560 px WebP.
+
+---
+
 ## Site Background — Giō-ji moss garden, Kyoto
 
 - **Files**: `images/materials/moss-garden-1280.webp`, `moss-garden-1920.webp`, `moss-garden-2560.webp`

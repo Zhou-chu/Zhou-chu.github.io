@@ -43,12 +43,21 @@ export function PublicFooter({
 
         {/* 背景照片署名（CC0 不强制署名，仍注明来源以示尊重） */}
         <a
-          className="pub-footer__photo"
+          className="pub-footer__photo pub-footer__photo--nature"
           href="https://commons.wikimedia.org/wiki/File:Gi%C5%8D-ji_-_Kyoto_-_DSC06266.JPG"
           target="_blank"
           rel="noopener noreferrer"
         >
           背景照片：京都祇王寺苔庭 · Daderot · CC0
+        </a>
+        {/* 黑白风格的照片署名（CC BY 2.0 要求注明作者） */}
+        <a
+          className="pub-footer__photo pub-footer__photo--mono"
+          href="https://commons.wikimedia.org/wiki/File:Precision_(53831260312).jpg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          照片：Precision · Rob Oo · CC BY 2.0 ／ Óbidos · Margarida CSilva · CC0
         </a>
       </div>
     </footer>

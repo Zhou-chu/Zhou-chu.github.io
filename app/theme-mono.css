@@ -619,9 +619,6 @@ html[data-style="mono"] .pub-footer__brand > span {
   border-color: var(--mono-invert-fg) !important;
 }
 
-html[data-style="mono"] .pub-footer__photo {
-  display: none !important;
-}
 
 html[data-style="mono"] .pub-footer__brand strong {
   font-family: var(--mono-display);
@@ -708,4 +705,84 @@ html[data-style="mono"] .toc-item a[aria-current] {
   html[data-style="mono"] .home-page .home-cabinet-card .home-hero__seal {
     font-size: 116px;
   }
+}
+
+/* ==========================================================================
+   Mono imagery — graded black-and-white architecture photography.
+   Hero: "Precision" by Rob Oo (CC BY 2.0), concrete stair, 4:5 crop.
+   Band: Óbidos, Portugal by Margarida CSilva (CC0), shadow bars, 3:1 crop.
+   Both converted to grayscale with a gentle S-curve (see ATTRIBUTION.md).
+   ========================================================================== */
+html[data-style="mono"] {
+  --mono-photo-hero: url("/images/materials/mono-stairs-900.webp");
+  --mono-photo-band: url("/images/materials/mono-shadow-1280.webp");
+  --mono-photo-dim: linear-gradient(transparent, transparent);
+}
+
+@media (min-resolution: 2dppx), (min-width: 1600px) {
+  html[data-style="mono"] {
+    --mono-photo-hero: url("/images/materials/mono-stairs-1400.webp");
+    --mono-photo-band: url("/images/materials/mono-shadow-2560.webp");
+  }
+}
+
+html[data-style="mono"][data-theme="dark"] {
+  --mono-photo-dim: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28));
+}
+
+/* hero visual: photograph + inverting disc + figure caption */
+html[data-style="mono"] .home-page .home-cabinet-card {
+  background: var(--mono-photo-dim), var(--mono-photo-hero) center / cover no-repeat, var(--mono-surface) !important;
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card::before {
+  top: -12%;
+  right: -16%;
+  width: 54%;
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card::after {
+  content: "FIG. 01 — 光与混凝土";
+  left: 0;
+  right: auto;
+  bottom: 0;
+  height: auto;
+  padding: 8px 12px;
+  background: var(--mono-invert-bg);
+  color: var(--mono-invert-fg);
+  font: 400 11px/1.4 var(--mono-code);
+  letter-spacing: 0.12em;
+}
+
+html[data-style="mono"] .home-page .home-cabinet-card .home-hero__seal {
+  display: none !important;
+}
+
+/* full-bleed shadow band above the topic index and the archive title */
+html[data-style="mono"] .home-page .home-research::before,
+html[data-style="mono"] .pub-main .archive-shell::before {
+  content: "";
+  display: block;
+  height: clamp(150px, 20vw, 280px);
+  margin: 0 0 clamp(28px, 4vw, 48px);
+  background: var(--mono-photo-dim), var(--mono-photo-band) center 45% / cover no-repeat;
+  border-bottom: 1px solid var(--mono-line-strong);
+}
+
+html[data-style="mono"] .pub-main .archive-shell::before {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  html[data-style="mono"] .home-page .home-cabinet-card {
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+  }
+}
+
+/* photo credit (CC BY requires it) */
+html[data-style="mono"] .pub-footer__photo--mono {
+  display: inline !important;
 }

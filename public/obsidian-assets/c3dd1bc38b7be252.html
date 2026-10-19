@@ -1,0 +1,97 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>长线判据</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>什么时候必须用分布参数</h2>
+<p class="sub">波长 λ = v/f。线长 l 与 λ 可比（l/λ ≳ 0.1）时，线上各点电压电流相位不同，集总参数电路不再适用。</p>
+<div class="grid">
+<div class="card">
+<div class="btns" id="pre"></div>
+<label><span>频率 f</span><b id="vf"></b></label><input id="f" type="range" min="0" max="10" step="0.05" value="1.7">
+<label><span>线路长度 l</span><b id="vl"></b></label><input id="l" type="range" min="-3" max="7" step="0.05" value="5">
+<div class="btns" id="vb"></div>
+<div class="kv"><span>波长 λ</span><b id="oλ"></b></div>
+<div class="kv"><span>l / λ</span><b id="or"></b></div>
+<div class="kv"><span>判定</span><b id="oj"></b></div>
+</div>
+<div class="card"><canvas id="cv" style="height:200px"></canvas><div class="hint" id="hint"></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const media=[["空气 / 架空线",3e8],["同轴电缆 (εr≈2.25)",2e8]];let vi=0,T=0;
+const fmt=(x,u)=>{const a=Math.abs(x);const s=[[1e9,"G"],[1e6,"M"],[1e3,"k"],[1,""],[1e-3,"m"]];for(const [k,p] of s)if(a>=k)return (x/k).toPrecision(3)+" "+p+u;return x.toExponential(1)+" "+u};
+[["工频 50 Hz，100 km",1.699,5],["工频 50 Hz，1000 km",1.699,6],["100 MHz，1 m",8,0],["1 kHz，10 cm",3,-1]].forEach(([n,lf,ll])=>{const b=document.createElement("button");b.textContent=n;b.onclick=()=>{$("f").value=lf;$("l").value=ll;vi=0;upd()};$("pre").appendChild(b)});
+media.forEach(([n,v],i)=>{const b=document.createElement("button");b.textContent=n;b.onclick=()=>{vi=i;upd()};$("vb").appendChild(b)});
+let st={};
+function upd(){const f=10**+$("f").value,l=10**+$("l").value,v=media[vi][1],lam=v/f,r=l/lam;st={f,l,lam,r};
+ $("vf").textContent=fmt(f,"Hz");$("vl").textContent=fmt(l,"m");[...$("vb").children].forEach((b,i)=>b.classList.toggle("on",i==vi));
+ $("oλ").textContent=fmt(lam,"m");$("or").textContent=r>=100?r.toExponential(1):r.toPrecision(3);
+ const j=r>=0.1?"长线：分布参数":(r>=0.01?"过渡区":"短线：集总参数");$("oj").textContent=j;
+ $("hint").textContent=r>=0.1?"线上同一时刻各点电压的幅值与相位都不同，须用传输线方程":(r<0.01?"线上各点几乎同相，可当作一个节点处理":"按精度要求选择模型")}
+function draw(){const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const r=st.r,n=Math.min(r,6),pl=14,pr=14,pw=w-pl-pr,y0=h*0.5,A=h*0.3;
+ g.strokeStyle=K.line;g.lineWidth=1;g.beginPath();g.moveTo(pl,y0);g.lineTo(w-pr,y0);g.stroke();
+ g.strokeStyle=K.ink;g.lineWidth=2;g.beginPath();for(let i=0;i<=240;i++){const x=i/240,y=Math.cos(2*Math.PI*n*x-T*3);const px=pl+pw*x;i?g.lineTo(px,y0-A*y):g.moveTo(px,y0-A*y)}g.stroke();
+ g.strokeStyle=K.mid;g.lineWidth=1;[0,1].forEach(e=>{g.beginPath();g.moveTo(pl+pw*e,y0-A-8);g.lineTo(pl+pw*e,y0+A+8);g.stroke()});
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("首端",pl,h-8);g.textAlign="right";g.fillText("末端",w-pr,h-8);g.textAlign="center";
+ g.fillText(r>6?"线上共 "+(r>=100?r.toExponential(1):r.toFixed(1))+" 个波长（仅画出 6 个）":"线上 "+(r<0.01?r.toExponential(1):r.toFixed(2))+" 个波长",w/2,h-8);
+}
+["f","l"].forEach(i=>$(i).addEventListener("input",upd));upd();loop(dt=>{T+=dt;draw()});
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

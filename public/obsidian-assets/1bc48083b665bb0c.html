@@ -1,0 +1,99 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>二次上下界</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>L-光滑与 σ-强凸：夹在两条抛物线之间</h2>
+<p class="sub">f(x)=log(1+eˣ)+c·x²。在 x₀ 处：f(x₀)+f′(x₀)(x−x₀)+σ/2·(x−x₀)² ≤ f(x) ≤ f(x₀)+f′(x₀)(x−x₀)+L/2·(x−x₀)²，其中 σ=2c，L=1/4+2c。</p>
+<div class="grid">
+<div class="card">
+<label><span>二次项系数 c</span><b id="vc"></b></label><input id="c" type="range" min="0" max="1" step="0.05" value="0.1">
+<label><span>展开点 x₀</span><b id="vx"></b></label><input id="x" type="range" min="-4" max="4" step="0.05" value="-1.5">
+<div class="kv"><span>σ（强凸）/ L（光滑）</span><b id="osl"></b></div>
+<div class="kv"><span>f(x₀) / f′(x₀)</span><b id="of"></b></div>
+<div class="kv"><span>梯度步 x⁺ = x₀ − f′/L</span><b id="ox"></b></div>
+<div class="kv"><span>f(x⁺) ≤ f(x₀) − f′²/(2L)</span><b id="ob"></b></div>
+<div class="btns" style="margin-top:8px"><button id="st">走一步梯度下降</button><button id="rs">重置到 −3</button></div>
+<div class="legend"><span><i></i>f</span><span><i class="m d"></i>上界（L）</span><span><i class="m t"></i>下界（σ）</span></div>
+</div>
+<div class="card"><canvas id="cv" style="height:260px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const sg=x=>1/(1+Math.exp(-x));
+function P(){const c=+$("c").value;return {c,f:x=>Math.log1p(Math.exp(x))+c*x*x,d:x=>sg(x)+2*c*x,s:2*c,L:0.25+2*c}}
+function draw(){const p=P(),x0=+$("x").value,f0=p.f(x0),d0=p.d(x0);
+ $("vc").textContent=p.c.toFixed(2);$("vx").textContent=x0.toFixed(2);$("osl").textContent=p.s.toFixed(2)+" / "+p.L.toFixed(2);
+ $("of").textContent=f0.toFixed(3)+" / "+d0.toFixed(3);const xp=x0-d0/p.L;$("ox").textContent=xp.toFixed(3);
+ $("ob").textContent=p.f(xp).toFixed(3)+" ≤ "+(f0-d0*d0/(2*p.L)).toFixed(3);
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=28,pr=10,pt=10,pb=22,pw=w-pl-pr,ph=h-pt-pb,xa=-4,xb=4,ya=-1,yb=8;
+ const X=v=>pl+pw*(v-xa)/(xb-xa),Y=v=>pt+ph*(1-(v-ya)/(yb-ya));
+ g.strokeStyle=K.line;g.fillStyle=K.muted;g.textAlign="center";[-4,-2,0,2,4].forEach(v=>{g.beginPath();g.moveTo(X(v),pt);g.lineTo(X(v),pt+ph);g.stroke();g.fillText(v,X(v),h-6)});
+ g.textAlign="right";[0,2,4,6,8].forEach(v=>{g.beginPath();g.moveTo(pl,Y(v));g.lineTo(w-pr,Y(v));g.stroke();g.fillText(v,pl-4,Y(v)+4)});
+ g.save();g.beginPath();g.rect(pl,pt,pw,ph);g.clip();
+ const cv=(fn,col,lw,dash)=>{g.strokeStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);g.beginPath();for(let i=0;i<=200;i++){const t=xa+(xb-xa)*i/200;i?g.lineTo(X(t),Y(fn(t))):g.moveTo(X(t),Y(fn(t)))}g.stroke();g.setLineDash([])};
+ cv(t=>f0+d0*(t-x0)+p.L/2*(t-x0)**2,K.mid,1.5,DASH);cv(t=>f0+d0*(t-x0)+p.s/2*(t-x0)**2,K.mid,1.5,DOT);cv(p.f,K.ink,2.4);
+ g.fillStyle=K.ink;g.beginPath();g.arc(X(x0),Y(f0),4.5,0,7);g.fill();
+ g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.arc(X(xp),Y(p.f(xp)),4.5,0,7);g.stroke();
+ g.restore();
+}
+$("st").onclick=()=>{const p=P(),x0=+$("x").value;$("x").value=clamp(x0-p.d(x0)/p.L,-4,4);draw()};$("rs").onclick=()=>{$("x").value=-3;draw()};
+["c","x"].forEach(i=>$(i).addEventListener("input",draw));addEventListener("resize",draw);draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

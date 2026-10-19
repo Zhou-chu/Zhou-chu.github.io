@@ -1,0 +1,103 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>晶闸管整流</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>触发角 α：整流、逆变与功率因数</h2>
+<p class="sub">单相全控桥，大电感负载（电流连续、近似恒定 I<sub>d</sub>，忽略换相重叠）。V<sub>d</sub> = (2V<sub>m</sub>/π)·cosα，拖动 α 观察。</p>
+<div class="grid">
+<div class="card">
+<label><span>触发角 α</span><b id="va"></b></label><input id="a" type="range" min="0" max="180" step="1" value="45">
+<div class="kv"><span>V<sub>d</sub> / V<sub>d0</sub> = cosα</span><b id="oV"></b></div>
+<div class="kv"><span>工作状态</span><b id="oM"></b></div>
+<div class="kv"><span>位移因数 cosα</span><b id="oD"></b></div>
+<div class="kv"><span>功率因数 PF = 0.9·cosα</span><b id="oPF"></b></div>
+<div class="legend"><span><i class="l"></i>v<sub>s</sub></span><span><i></i>v<sub>d</sub></span><span><i></i>i<sub>s</sub></span></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:270px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+let T=0;
+function draw(){
+ const A=+$("a").value,a=A*Math.PI/180,c=Math.cos(a);
+ $("va").textContent=A+"°";$("oV").textContent=c.toFixed(3);
+ $("oM").textContent=A<89.5?"整流（能量 交流→直流）":(A>90.5?"有源逆变（直流→交流）":"Vd≈0");
+ $("oD").textContent=c.toFixed(3);$("oPF").textContent=(0.9*c).toFixed(3);
+ $("hint").textContent=A>90.5?"需要直流侧有反电势（如电机再生制动）才能逆变，α 通常限制在 150° 以内以防换相失败":"α 越大，输入电流越滞后，PF 越低";
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=10,pr=10,pw=w-pl-pr,n=240;
+ const X=th=>pl+pw*th/(4*Math.PI);
+ const p1t=20,p1h=h*0.46,y1=p1t+p1h/2+4,sc1=p1h/2/1.1;
+ const p2t=p1t+p1h+22,p2h=h-p2t-10,y2=p2t+p2h/2,sc2=p2h/2/1.3;
+ g.strokeStyle=K.line;g.lineWidth=1;[y1,y2].forEach(y=>{g.beginPath();g.moveTo(pl,y);g.lineTo(w-pr,y);g.stroke()});
+ const wrap=th=>((th%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+ const vd=th=>{const u=wrap(th-a);const s=Math.sin(th);return u<Math.PI?s:-s}; // conducting pair
+ const isf=th=>{const u=wrap(th-a);return u<Math.PI?1:-1};
+ const pl_=(fn,Y0,sc,col,lw,step)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();let prev=null;for(let i=0;i<=n*4;i++){const th=4*Math.PI*i/(n*4),v=fn(th);if(step&&prev!==null&&v!==prev){g.lineTo(X(th),Y0-prev*sc)}g.lineTo(X(th),Y0-v*sc);if(!i)g.moveTo(X(th),Y0-v*sc);prev=v}g.stroke()};
+ pl_(th=>Math.sin(th),y1,sc1,K.light,1.2);pl_(vd,y1,sc1,K.ink,2);
+ pl_(isf,y2,sc2,K.ink,2,true);
+ // alpha markers
+ [a,a+Math.PI,a+2*Math.PI,a+3*Math.PI].forEach(th=>{if(th<=4*Math.PI){g.strokeStyle=K.light;g.setLineDash([3,3]);g.beginPath();g.moveTo(X(th),p1t);g.lineTo(X(th),h-8);g.stroke();g.setLineDash([])}});
+ const th=(T*1.3)%(4*Math.PI);g.fillStyle=K.ink;g.beginPath();g.arc(X(th),y1-vd(th)*sc1,4,0,7);g.fill();g.fillStyle=K.ink;g.beginPath();g.arc(X(th),y2-isf(th)*sc2,3.5,0,7);g.fill();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("电压（桃红虚线 = 触发时刻 α）",pl+2,12);g.fillText("输入电流 i_s（方波，基波滞后 α）",pl+2,p2t-6);
+}
+$("a").addEventListener("input",()=>draw());loop(dt=>{T+=dt;draw()});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

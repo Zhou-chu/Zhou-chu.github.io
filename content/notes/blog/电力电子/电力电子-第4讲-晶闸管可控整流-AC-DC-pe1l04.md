@@ -105,6 +105,8 @@ Vd = (1/π) ∫_α^{π+α} Vs(max)·sinθ dθ = (2/π)·Vs(max)·cosα
 
 > 课堂提示：说明"**线换相变换器（line-commutated converter）** + **可控直流电压**"，并追问"电压与电流方向？"→ **两象限（Two-quadrant）**。
 
+![widget|520](/obsidian-assets/e712f2330e08f388.html)
+
 ### 4-3 输入电流谐波与功率因数（P7）
 
 ![单相桥输入电流谐波与功率](/obsidian-assets/1ed869ac3edd02ee.png)

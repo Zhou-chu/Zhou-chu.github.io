@@ -1,0 +1,99 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>开关损耗</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>开关频率越高，损耗越大</h2>
+<p class="sub">导通损耗 P<sub>cond</sub> = D·I²R<sub>on</sub> 与频率无关；开关损耗 P<sub>sw</sub> = ½VI(t<sub>on</sub>+t<sub>off</sub>)·f<sub>s</sub> 随频率线性上升。拖动工作频率，看交叉点。</p>
+<div class="grid">
+<div class="card">
+<label><span>母线电压 V</span><b id="vV"></b></label><input id="V" type="range" min="50" max="800" step="10" value="400">
+<label><span>开关电流 I</span><b id="vI"></b></label><input id="I" type="range" min="1" max="60" step="1" value="20">
+<label><span>开通/关断时间 t<sub>on</sub>=t<sub>off</sub></span><b id="vt"></b></label><input id="t" type="range" min="5" max="200" step="5" value="50">
+<label><span>导通电阻 R<sub>on</sub></span><b id="vR"></b></label><input id="R" type="range" min="10" max="300" step="5" value="80">
+<label><span>工作频率 f<sub>s</sub>（对数）</span><b id="vf"></b></label><input id="f" type="range" min="3" max="6.7" step="0.02" value="4.7">
+<div class="kv"><span>导通损耗 / 开关损耗</span><b id="oP"></b></div>
+<div class="kv"><span>交叉频率 f*</span><b id="oX"></b></div>
+</div>
+<div class="card"><canvas id="cv" style="height:250px"></canvas>
+<div class="legend"><span><i class="m"></i>P<sub>cond</sub></span><span><i class="m d"></i>P<sub>sw</sub></span><span><i></i>合计</span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const fmtF=f=>f>=1e6?(f/1e6).toFixed(2)+" MHz":(f>=1e3?(f/1e3).toFixed(f>=1e5?0:1)+" kHz":f.toFixed(0)+" Hz");
+function draw(){
+ const V=+$("V").value,I=+$("I").value,t=+$("t").value*1e-9,R=+$("R").value*1e-3,fs=Math.pow(10,+$("f").value),D=0.5;
+ $("vV").textContent=V+" V";$("vI").textContent=I+" A";$("vt").textContent=$("t").value+" ns";$("vR").textContent=$("R").value+" mΩ";$("vf").textContent=fmtF(fs);
+ const Pc=D*I*I*R,Psw=f=>V*I*t*f,fx=Pc/(V*I*t); // ½VI(2t)f
+ $("oP").textContent=Pc.toFixed(1)+" W / "+Psw(fs).toFixed(1)+" W";$("oX").textContent=fmtF(fx);
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=56,pr=10,pt=12,pb=28,pw=w-pl-pr,ph=h-pt-pb;
+ const f0=3,f1=6.7,lo=-1,hi=4;
+ const X=lf=>pl+pw*(lf-f0)/(f1-f0),Y=p=>pt+ph*(1-(clamp(Math.log10(Math.max(p,1e-9)),lo,hi)-lo)/(hi-lo));
+ g.strokeStyle=K.line;g.fillStyle=K.muted;g.textAlign="right";
+ for(let e=lo;e<=hi;e++){g.beginPath();g.moveTo(pl,Y(10**e));g.lineTo(w-pr,Y(10**e));g.stroke();g.fillText(10**e+" W",pl-4,Y(10**e)+4)}
+ g.textAlign="center";[3,4,5,6].forEach(e=>{g.fillText(fmtF(10**e),X(e),h-10)});
+ const line=(fn,col,lw)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();for(let i=0;i<=80;i++){const lf=f0+(f1-f0)*i/80;const x=X(lf),y=Y(fn(10**lf));i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke()};
+ line(f=>Pc,K.mid,1.6);g.setLineDash(DASH);line(Psw,K.mid,1.6);g.setLineDash([]);line(f=>Pc+Psw(f),K.ink,2.8);
+ const lx=Math.log10(fx);if(lx>f0&&lx<f1){g.fillStyle=K.muted;g.beginPath();g.arc(X(lx),Y(Pc),4.5,0,7);g.fill();g.textAlign="left";g.fillText("f*",X(lx)+6,Y(Pc)-6)}
+ const lf=Math.log10(fs);g.strokeStyle=K.light;g.lineWidth=1;g.beginPath();g.moveTo(X(lf),pt);g.lineTo(X(lf),pt+ph);g.stroke();
+ g.fillStyle=K.ink;g.beginPath();g.arc(X(lf),Y(Pc+Psw(fs)),5,0,7);g.fill();
+}
+draw();addEventListener("resize",draw);["V","I","t","R","f"].forEach(k=>$(k).addEventListener("input",draw));
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

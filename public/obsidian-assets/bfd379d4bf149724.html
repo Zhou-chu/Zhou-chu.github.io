@@ -1,0 +1,108 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>树与基本矩阵</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>选一棵树，看 A、Q、B 怎么来</h2>
+<p class="sub">点击支路把它加入/移出树。树支需恰好 3 条、连通且无回路（等价于 det A<sub>T</sub> = ±1）。节点 0 为参考点。</p>
+<div class="grid">
+<div class="card"><canvas id="cv" style="height:230px;cursor:pointer"></canvas>
+<div class="btns" style="margin:8px 0 0"><button id="rnd">随机一棵树</button><button id="clr">清空</button></div><div class="hint" id="hint"></div></div>
+<div class="card"><pre class="mat" id="mat"></pre></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const N=3,nodes=[[0,0],[0,-1],[0.9,0.7],[-0.9,0.7]]; // 0 centre
+const br=[[1,0],[2,0],[3,0],[1,2],[2,3],[3,1]]; // from->to
+const sel=new Set([0,1,2]);let boxes=[];
+function A(){return [1,2,3].map(n=>br.map(([a,b])=>a==n?1:b==n?-1:0))}
+function det3(m){return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0])}
+function inv3(m){const d=det3(m),c=(i,j)=>{const r=[0,1,2].filter(x=>x!=i),s=[0,1,2].filter(x=>x!=j);return (((i+j)%2)?-1:1)*(m[r[0]][s[0]]*m[r[1]][s[1]]-m[r[0]][s[1]]*m[r[1]][s[0]])};
+ return [0,1,2].map(i=>[0,1,2].map(j=>c(j,i)/d))}
+const f=(x)=>{const r=Math.round(x);return (Math.abs(x-r)<1e-9?(r===0?0:r):x.toFixed(1))}
+const row=(r,w)=>r.map(x=>String(f(x)).padStart(w)).join("");
+function upd(){const a=A();const tree=[...sel].sort(),link=[0,1,2,3,4,5].filter(i=>!sel.has(i));
+ let t="A（节点×支路）\n      "+br.map((_,i)=>("b"+(i+1)).padStart(3)).join("")+"\n"+a.map((r,i)=>" 节点"+(i+1)+" "+row(r,3)).join("\n")+"\n";
+ if(sel.size!=3){$("hint").textContent="已选 "+sel.size+" 条，树需要 3 条支路";$("mat").textContent=t;return}
+ const AT=a.map(r=>tree.map(i=>r[i])),dt=det3(AT);
+ if(Math.abs(dt)!=1){$("hint").textContent="所选支路含回路或不连通，det A_T = "+dt;$("mat").textContent=t;return}
+ $("hint").textContent="树支 "+tree.map(i=>"b"+(i+1)).join(", ")+"；连支 "+link.map(i=>"b"+(i+1)).join(", ")+"；det A_T = "+dt;
+ const Ti=inv3(AT),AL=a.map(r=>link.map(i=>r[i])),QL=Ti.map(r=>link.map((_,j)=>r.reduce((s,v,k)=>s+v*AL[k][j],0)));
+ t+="\nQ = A_T⁻¹·A，列序：树支 | 连支\n      "+[...tree,...link].map(i=>("b"+(i+1)).padStart(3)).join("")+"\n";
+ t+=QL.map((r,i)=>"  b"+(tree[i]+1)+"  "+row([...[0,1,2].map(j=>+(i==j)),...r],3)).join("\n")+"\n";
+ const B=link.map((l,i)=>br.map((_,c)=>c==l?1:(tree.includes(c)?-QL[tree.indexOf(c)][i]:0)));
+ t+="\nB（基本回路×支路），B_T = −Q_Lᵀ\n      "+br.map((_,i)=>("b"+(i+1)).padStart(3)).join("")+"\n"+B.map((r,i)=>"  回路"+(i+1)+" "+row(r,3)).join("\n")+"\n";
+ const prod=a.map(r=>B.map(bb=>r.reduce((s,v,k)=>s+v*bb[k],0)));
+ t+="\nA·Bᵀ = "+(prod.every(r=>r.every(v=>Math.abs(v)<1e-9))?"0 ✓":"≠0");
+ $("mat").textContent=t}
+function pos(i,w,h){const s=Math.min(w,h)*0.33;return [w/2+nodes[i][0]*s,h/2+nodes[i][1]*s+8]}
+function draw(){const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);boxes=[];
+ br.forEach(([a,b],i)=>{const [x1,y1]=pos(a,w,h),[x2,y2]=pos(b,w,h);const bend=(i>=3)?0.0:0;const mx=(x1+x2)/2,my=(y1+y2)/2;
+  const on=sel.has(i);g.strokeStyle=on?K.ink:K.mid;g.lineWidth=on?3:1.3;g.setLineDash(on?[]:DASH);g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();g.setLineDash([]);
+  const ang=Math.atan2(y2-y1,x2-x1);g.fillStyle=on?K.ink:K.mid;g.beginPath();g.moveTo(mx+7*Math.cos(ang),my+7*Math.sin(ang));g.lineTo(mx-5*Math.cos(ang)+5*Math.sin(ang),my-5*Math.sin(ang)-5*Math.cos(ang));g.lineTo(mx-5*Math.cos(ang)-5*Math.sin(ang),my-5*Math.sin(ang)+5*Math.cos(ang));g.fill();
+  const lx=mx-Math.sin(ang)*13,ly=my+Math.cos(ang)*13;g.fillStyle=on?K.ink:K.muted;g.textAlign="center";g.fillText("b"+(i+1),lx,ly+4);boxes.push([i,x1,y1,x2,y2])});
+ for(let i=0;i<4;i++){const [x,y]=pos(i,w,h);g.fillStyle=K.bg;g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.arc(x,y,11,0,7);g.fill();g.stroke();g.fillStyle=K.ink;g.textAlign="center";g.fillText(i,x,y+4)}}
+function dist(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,t=clamp(((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy),0,1);return Math.hypot(px-x1-t*dx,py-y1-t*dy)}
+$("cv").addEventListener("click",e=>{const r=$("cv").getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;let best=-1,bd=14;boxes.forEach(([i,x1,y1,x2,y2])=>{const d=dist(px,py,x1,y1,x2,y2);if(d<bd){bd=d;best=i}});
+ if(best>=0){sel.has(best)?sel.delete(best):sel.add(best);draw();upd()}});
+$("clr").onclick=()=>{sel.clear();draw();upd()};
+$("rnd").onclick=()=>{const ok=[];for(let a=0;a<6;a++)for(let b=a+1;b<6;b++)for(let c=b+1;c<6;c++){const m=A().map(r=>[r[a],r[b],r[c]]);if(Math.abs(det3(m))==1)ok.push([a,b,c])}
+ const p=ok[Math.floor(Math.random()*ok.length)];sel.clear();p.forEach(i=>sel.add(i));draw();upd()};
+addEventListener("resize",draw);draw();upd();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

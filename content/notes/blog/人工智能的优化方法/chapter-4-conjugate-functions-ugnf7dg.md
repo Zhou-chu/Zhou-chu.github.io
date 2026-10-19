@@ -33,6 +33,8 @@ tags:
 
 **一个值得记住的细节**：定义里 $f$ 可取 $-\infty$，但 $f^*$ 几乎不出现 $-\infty$——Thm 4.5 会精确说明。
 
+![widget|520](/obsidian-assets/67a37b4560b21e9d.html)
+
 ## Example 4.2 · 示性函数的共轭 = 支撑函数
 
 > **Example 4.2** (conjugate of indicator functions). Let $f = \delta_C$, where $C \subseteq \mathbb{E}$ is nonempty. Then for any $\mathbf{y} \in \mathbb{E}^*$,

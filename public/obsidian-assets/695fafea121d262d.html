@@ -1,0 +1,98 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>瞬时功率</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>瞬时功率 p(t) 的分解</h2>
+<p class="sub">u = √2U sin ωt，i = √2I sin(ωt−φ)。p = p<sub>R</sub> + p<sub>X</sub>：p<sub>R</sub> ≥ 0 平均值为 P，p<sub>X</sub> 平均为 0、幅值为 Q。拖动功率因数角 φ。</p>
+<div class="grid">
+<div class="card">
+<label>功率因数角 φ<b id="vphi"></b></label><input id="phi" type="range" min="-90" max="90" step="1" value="36">
+<div class="kv"><span>有功 P = UI cosφ</span><b id="oP"></b></div>
+<div class="kv"><span>无功 Q = UI sinφ</span><b id="oQ"></b></div>
+<div class="kv"><span>功率因数 cosφ</span><b id="oPF"></b></div>
+<div class="legend"><span><i></i>p(t)</span><span><i class="m"></i>p<sub>R</sub>（电阻分量）</span><span><i class="m d"></i>p<sub>X</sub>（电抗分量）</span><span><i class="l"></i>平均值 P</span></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:250px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+let ph=0;
+function draw(t){
+ const phi=+$("phi").value*Math.PI/180;$("vphi").textContent=$("phi").value+"°";
+ const P=Math.cos(phi),Q=Math.sin(phi);
+ $("oP").textContent=P.toFixed(3)+" UI";$("oQ").textContent=Q.toFixed(3)+" UI";$("oPF").textContent=Math.abs(P).toFixed(3)+(Q>0.001?"（滞后）":Q<-0.001?"（超前）":"");
+ $("hint").textContent=Math.abs($("phi").value)==90?"纯电抗：平均功率为 0，能量在电源与电抗间来回交换":($("phi").value==0?"纯电阻：p ≥ 0，没有无功":"");
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=10,pr=10,pt=14,pb=14,pw=w-pl-pr,hh=h-pt-pb,y0=pt+hh*2.05/3.1,sc=hh/3.1;
+ g.strokeStyle=K.line;g.beginPath();g.moveTo(pl,y0);g.lineTo(w-pr,y0);g.stroke();
+ const f=(fn,col,lw,dash)=>{g.strokeStyle=col;g.setLineDash(dash||[]);g.lineWidth=lw||1.8;g.beginPath();for(let i=0;i<=200;i++){const a=i/200*4*Math.PI;const x=pl+pw*i/200,y=y0-fn(a)*sc;i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();g.setLineDash([])};
+ const s=Math.sin;
+ f(a=>P,K.light,1.2);
+ f(a=>P*(1-Math.cos(2*a)),K.mid,1.4);f(a=>-Q*s(2*a),K.mid,1.4,DASH);
+ f(a=>2*s(a)*s(a-phi),K.ink,2.4);
+ // moving cursor
+ const a=(t/1000*1.2)%(4*Math.PI);const x=pl+pw*a/(4*Math.PI);
+ g.strokeStyle=K.light;g.lineWidth=1;g.beginPath();g.moveTo(x,pt);g.lineTo(x,pt+hh);g.stroke();
+ const v=2*s(a)*s(a-phi);g.fillStyle=K.ink;g.beginPath();g.arc(x,y0-v*sc,4,0,7);g.fill();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("p>0：电源→负荷    p<0：负荷→电源",pl+4,pt+10);
+}
+let T=0;loop(dt=>{T+=dt*1000;draw(T)});draw(0);
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

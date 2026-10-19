@@ -1,0 +1,119 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ISTA 与 FISTA</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>二维 LASSO：ISTA 与 FISTA 的迭代轨迹</h2>
+<p class="sub">F(x) = ½(x−x̂)ᵀM(x−x̂) + λ‖x‖₁，M 的条件数为 100，步长 1/L=1/4。FISTA 在 ISTA 基础上加入动量，收敛阶从 O(1/k) 提高到 O(1/k²)。</p>
+<div class="grid">
+<div class="card">
+<label><span>λ</span><b id="vl"></b></label><input id="l" type="range" min="0" max="1.5" step="0.05" value="0.4">
+<div class="btns"><button id="play">暂停</button><button id="rep">重播</button><button id="stp">单步</button></div>
+<div class="kv"><span>迭代次数 k</span><b id="ok"></b></div>
+<div class="kv"><span>F(x<sub>k</sub>) − F*  ISTA</span><b id="o1"></b></div>
+<div class="kv"><span>F(x<sub>k</sub>) − F*  FISTA</span><b id="o2"></b></div>
+<div class="legend"><span><i class="m d"></i>ISTA</span><span><i></i>FISTA</span></div>
+<canvas id="cv2" style="height:140px;margin-top:8px"></canvas>
+</div>
+<div class="card"><canvas id="cv" style="height:300px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const th=35*Math.PI/180,cs=Math.cos(th),sn=Math.sin(th),xh=[1.8,1.2],x0=[-2.4,2.2],KMAX=50,L=4;
+const Mx=(d)=>{const a=cs*d[0]+sn*d[1],b=-sn*d[0]+cs*d[1];const A=4*a,B=0.04*b;return [cs*A-sn*B,sn*A+cs*B]};
+let lam=0.4,Fs=0,ista=[],fista=[],img=null,k=0,playing=true,acc=0;
+const Fv=(x,l)=>{const d=[x[0]-xh[0],x[1]-xh[1]],m=Mx(d);return 0.5*(d[0]*m[0]+d[1]*m[1])+l*(Math.abs(x[0])+Math.abs(x[1]))};
+const soft=(v,t)=>Math.sign(v)*Math.max(Math.abs(v)-t,0);
+function pg(y,l){const m=Mx([y[0]-xh[0],y[1]-xh[1]]);return [soft(y[0]-m[0]/L,l/L),soft(y[1]-m[1]/L,l/L)]}
+function hex(c){const m=/^#([0-9a-f]{6})$/i.exec(c);if(!m)return [128,128,128];const n=parseInt(m[1],16);return [n>>16,(n>>8)&255,n&255]}
+function setup(){lam=+$("l").value;$("vl").textContent=lam.toFixed(2);
+ let x=x0.slice();for(let i=0;i<30000;i++)x=pg(x,lam);Fs=Fv(x,lam);const xs=x;
+ ista=[x0.slice()];fista=[x0.slice()];let a=x0.slice(),b=x0.slice(),y=x0.slice(),t=1;
+ for(let i=0;i<KMAX;i++){a=pg(a,lam);ista.push(a);const xn=pg(y,lam),tn=(1+Math.sqrt(1+4*t*t))/2;y=[xn[0]+(t-1)/tn*(xn[0]-b[0]),xn[1]+(t-1)/tn*(xn[1]-b[1])];b=xn;t=tn;fista.push(b)}
+ setup.xs=xs;img=null;k=0}
+function heat(){const N=150,oc=document.createElement("canvas");oc.width=oc.height=N;const c=oc.getContext("2d"),id=c.createImageData(N,N);
+ const lc=hex(K.light),bc=hex(K.bg);
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-3+6*i/(N-1),y=3-6*j/(N-1),s=Math.log2(Fv([x,y],lam)-Fs+0.05)/1.4,fr=s-Math.floor(s),on=fr<0.07?1:0,p=(j*N+i)*4;
+  const col=on?lc:bc;id.data[p]=col[0];id.data[p+1]=col[1];id.data[p+2]=col[2];id.data[p+3]=255}
+ c.putImageData(id,0,0);img=oc}
+function draw(){
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);if(!img)heat();
+ const s=Math.min(w,h)-6,ox=(w-s)/2,oy=3,X=v=>ox+s*(v+3)/6,Y=v=>oy+s*(3-v)/6;
+ g.imageSmoothingEnabled=true;g.drawImage(img,ox,oy,s,s);g.strokeStyle=K.line;g.lineWidth=1;g.strokeRect(ox,oy,s,s);
+ g.beginPath();g.moveTo(X(-3),Y(0));g.lineTo(X(3),Y(0));g.moveTo(X(0),Y(3));g.lineTo(X(0),Y(-3));g.stroke();
+ const path=(P,col,lw,dash,r)=>{g.strokeStyle=col;g.fillStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);g.beginPath();for(let i=0;i<=k;i++){const p=P[i];i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1]))}g.stroke();g.setLineDash([]);for(let i=0;i<=k;i++){g.beginPath();g.arc(X(P[i][0]),Y(P[i][1]),i==k?3.5:1.8,0,7);g.fill()}};
+ path(ista,K.mid,1.3,DASH);path(fista,K.ink,1.6);
+ const xs=setup.xs;g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.arc(X(xs[0]),Y(xs[1]),6,0,7);g.stroke();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("环：最优解 x*；等高线按 F−F* 的对数取值",ox+6,oy+s-8);
+ // convergence
+ const c2=fit($("cv2")),G=c2.g,W=c2.w,H=c2.h,pl=34,pr=6,pt=6,pb=18,pw=W-pl-pr,ph=H-pt-pb,lo=-6,hi=1;
+ const XX=i=>pl+pw*i/KMAX,YY=v=>pt+ph*(1-(clamp(Math.log10(Math.max(v,1e-12)),lo,hi)-lo)/(hi-lo));
+ G.strokeStyle=K.line;G.fillStyle=K.muted;G.textAlign="right";[-6,-4,-2,0].forEach(e=>{G.beginPath();G.moveTo(pl,YY(10**e));G.lineTo(W-pr,YY(10**e));G.stroke();G.fillText("1e"+e,pl-3,YY(10**e)+4)});
+ G.textAlign="center";[0,25,50].forEach(i=>G.fillText(i,XX(i),H-4));
+ const line=(P,col,lw,dash)=>{G.strokeStyle=col;G.lineWidth=lw;G.setLineDash(dash||[]);G.beginPath();for(let i=0;i<=k;i++){const v=Fv(P[i],lam)-Fs;i?G.lineTo(XX(i),YY(v)):G.moveTo(XX(i),YY(v))}G.stroke();G.setLineDash([])};
+ line(ista,K.mid,1.4,DASH);line(fista,K.ink,1.8);
+ $("ok").textContent=k;$("o1").textContent=(Fv(ista[k],lam)-Fs).toExponential(1);$("o2").textContent=(Fv(fista[k],lam)-Fs).toExponential(1);
+}
+$("l").addEventListener("input",()=>{setup();draw()});
+$("play").onclick=()=>{playing=!playing;$("play").textContent=playing?"暂停":"播放"};
+$("rep").onclick=()=>{k=0;playing=true;$("play").textContent="暂停"};
+$("stp").onclick=()=>{playing=false;$("play").textContent="播放";k=Math.min(KMAX,k+1);draw()};
+addEventListener("resize",()=>{draw()});setup();
+loop(dt=>{if(playing){acc+=dt;while(acc>0.18){acc-=0.18;if(k<KMAX)k++;else if(acc>0.0){k=KMAX}}}draw()});
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

@@ -2,7 +2,7 @@
   "version": 1,
   "source": "Obsidian",
   "noteCount": 105,
-  "assetCount": 213,
+  "assetCount": 235,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -30,28 +30,28 @@
       "slug": "电力电子-第1讲-introduction-导论-pe1l01",
       "title": "电力电子：第 1 讲 Introduction（导论）学习笔记",
       "publishedAt": "2026-09-15",
-      "hash": "eedd467979e19144040cc53a7883c6fab853cf1e0ee999a93cd55d41638d5e69"
+      "hash": "ba5d9d8e5a461d2610314fe75d864be66d197880683c1bca810c99b46f8c56df"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第2讲-功率器件-Power-Devices-pe1l02.md",
       "slug": "电力电子-第2讲-功率器件-power-devices-pe1l02",
       "title": "电力电子：第 2 讲 功率器件（Power Devices）学习笔记",
       "publishedAt": "2026-09-29",
-      "hash": "302be4b2e6b777e11eab69c21d714d5f22050a121a33e09962a257725a441c01"
+      "hash": "71f4403338594a52a8b692dbdfcb11f76fc4ebdb9cc352fef91fda68e4d4ba83"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第2章-二极管整流器-AC-DC学习笔记.md",
       "slug": "电力电子-第2章-二极管整流器-ac-dc-acdc02",
       "title": "电力电子：第 2 章 二极管整流器（Diode Rectifiers）学习笔记",
       "publishedAt": "2026-09-22",
-      "hash": "4ac7141387c6cc47191e1c82faa681100083fa8be2453a5e347fc24253a34e2a"
+      "hash": "b6bc0e4bab91771726d7ffa84bd5cb689ab04f453f3eb902592fd96050b0f180"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第4讲-晶闸管可控整流-AC-DC-pe1l04.md",
       "slug": "电力电子-第4讲-晶闸管可控整流-ac-dc-pe1l04",
       "title": "电力电子：第 4 讲 晶闸管 AC-DC 变换器（Thyristor AC-DC Converters）学习笔记",
       "publishedAt": "2026-09-29",
-      "hash": "20bdac7cf8e7bf9abb3b5f4eb0b077a65a82d20f890a7e39a48e996f2ea70678"
+      "hash": "725b730dc4829b5fcc1cf3a0c957af688d3e5407269b5dbde00a95bfbab003a8"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-宽禁带功率半导体器件综述-SiC与GaN-wbg01.md",
@@ -79,21 +79,21 @@
       "slug": "电力系统分析-第1章-第2讲-电力系统概述-pwr1l02",
       "title": "电力系统分析：第1章 第2讲：电力系统概述（Lecture 2）",
       "publishedAt": "2026-09-14",
-      "hash": "13dc98f4417d46002d8d4770c15a755560e8935a9faf3f5b3fca20ef429f1c3a"
+      "hash": "a5aa3fd71500608d22b3a0554947338a6a95ad9d5b184941a7a3315f7d1d932c"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03.md",
       "slug": "电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03",
       "title": "电力系统分析：第2章 第3讲：电力线路参数与等值电路",
       "publishedAt": "2026-09-28",
-      "hash": "11835b4702d5d570152b14c89b1c51ca5b4145b90620bc8eb5d7bbafa1cce901"
+      "hash": "a629cfbc3860c264ac569cef1c32a2f1f17a046fbe2dea239abd75a364e03699"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04.md",
       "slug": "电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04",
       "title": "电力系统分析：第2章 第4讲：变压器参数与等值电路",
       "publishedAt": "2026-09-28",
-      "hash": "32553eaa0e811b8b0b1537287ea0e235e92eb432749e5187fd8bf2bb918d888e"
+      "hash": "50a0727f1c3a586d08715f9db43a7f39a81d306c75c4c289b59f342cb2366f8c"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第5讲-标幺制与等值电路-pwr2l05.md",
@@ -107,7 +107,7 @@
       "slug": "电力系统分析-第3章-第6讲-简单电力系统潮流计算-pwr3l06",
       "title": "电力系统分析：第3章 第6讲：简单电力系统潮流计算",
       "publishedAt": "2026-10-12",
-      "hash": "a89617321bbc5e1860aa792c81d9ae4c36e5b64aa6a49528ab67118e54dd2367"
+      "hash": "53dd4911439ae758289147c8d5e232ef0e7936a13f92f896559a1fa324379ee5"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",
@@ -121,14 +121,14 @@
       "slug": "高等电路网络分析-形成网络方程的系统化方法-hcna01",
       "title": "高等电路网络分析：形成网络方程的系统化方法",
       "publishedAt": "2026-09-15",
-      "hash": "5318f20a3a293ed06db4dbaa92453189d2c82abff3e1d70c0bed8e2a96fc09fc"
+      "hash": "a69808fe3d8e7c33aa6858bd772bdef03cdcb2674766042b41776166748eb221"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
       "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
       "title": "均匀传输线：A-1：均匀传输线及其方程",
       "publishedAt": "2026-07-24",
-      "hash": "95fcdc7138c2dc1187b5fce07d820aa5b1bd1e645c87ba3319d053f97d57989f"
+      "hash": "6ed3c8bc58f6f1563b8798b64cfd39edcfc2a141f35d60a7ed806d894043a05e"
     },
     {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-2-均匀传输线的正弦稳态解-mryrh4qv.md",
@@ -142,7 +142,7 @@
       "slug": "均匀传输线-a-3-均匀传输线的行波-mryrh50a",
       "title": "均匀传输线：A-3：均匀传输线的行波",
       "publishedAt": "2026-07-24",
-      "hash": "5de1133104c5093d916cbd32af96e13d6ae781ba1ff4a817965aa84c631f328b"
+      "hash": "39f2cbf9a69b6c099d17bc96344810f5faa4aa570fcc94db650f4a7dd5cc3ae6"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/核心知识库.md",
@@ -163,7 +163,7 @@
       "slug": "chapter-10-the-proximal-gradient-method-aifd8bf",
       "title": "Chapter 10-The Proximal Gradient Method",
       "publishedAt": "2026-09-03",
-      "hash": "7cf11908f8e5c0caa75829d7e3e2a23dadc0a737bccbf81d434656f71bd5979b"
+      "hash": "57a0c92e0c9f68b380be189ee5fd531dd4686e587939e1a58024fedea30bc67b"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-11-the-block-proximal-gradient-method-3yshuan.md",
@@ -212,28 +212,28 @@
       "slug": "chapter-3-subgradients-stgsfkvt",
       "title": "Chapter 3-Subgradients",
       "publishedAt": "2026-08-30",
-      "hash": "2fb9705136e2442e40bdbf030a893e64e1febc359be78ed23ae14228df6c07f6"
+      "hash": "c8f7cc7093c459c580881266ddcebdc53931c02f5b70521c7ada6a50f1da6633"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-4-conjugate-functions-ugnf7dg.md",
       "slug": "chapter-4-conjugate-functions-ugnf7dg",
       "title": "Chapter 4-Conjugate Functions",
       "publishedAt": "2026-09-03",
-      "hash": "6e77a8897ed210854e466b75247720f3317dae513ded352eb943142fff0d1a1f"
+      "hash": "f6edbc59d84071572136b9d94723a1fefdcc73f6c772a1d0338e3f69a135bbb1"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-5-smoothness-and-strong-convexity-66gf4lq.md",
       "slug": "chapter-5-smoothness-and-strong-convexity-66gf4lq",
       "title": "Chapter 5-Smoothness and Strong Convexity",
       "publishedAt": "2026-09-03",
-      "hash": "799b4dbbbe469b2d94163457682a6c19660c5ca7c9af92227963b8e81d7e54ab"
+      "hash": "3394288af6bce24612ea36f68419a2483215bb491f6a9f26b8a89ac3641d1c60"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-6-the-proximal-operator-6knzu5o.md",
       "slug": "chapter-6-the-proximal-operator-6knzu5o",
       "title": "Chapter 6-The Proximal Operator",
       "publishedAt": "2026-09-03",
-      "hash": "dc7864ecc811789b34fdd22573d0df2932e131e3ad1c3221e04e862301319d79"
+      "hash": "81c003d98249dd0110ceee5dd320054762cfa36b1e0f4f5316bd6e5c2be41fa0"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-7-spectral-functions-31gqg57.md",
@@ -261,14 +261,14 @@
       "slug": "深度学习-多层感知机-mt9utq9b",
       "title": "深度学习：多层感知机（MLP）",
       "publishedAt": "2026-08-26",
-      "hash": "b2918d8c14e5234856a38802f654d2ca5cd7fae169a26fbbad7f640fe0741512"
+      "hash": "bce15a18b6667947281dcc9ea469dd3d8882253330359b875b2006206a20df8c"
     },
     {
       "sourcePath": "blog/深度学习/深度学习-CNN.md",
       "slug": "深度学习-cnn-mt9utq9b",
       "title": "深度学习：卷积神经网络（CNN）",
       "publishedAt": "2026-08-26",
-      "hash": "4efeca4069a41c4c8365bd5be461698c544cd1b1a120adfd97230b5b305ee6cd"
+      "hash": "65b05e7abe89e23c5e76e3d2daa3289c314313fcebf72412a37733251fa1da6a"
     },
     {
       "sourcePath": "blog/随想/随想-让Harness像git管理一样管理agent的上下文.md",
@@ -303,7 +303,7 @@
       "slug": "自动控制原理-第1讲-绪论与系统的数学模型-acs01",
       "title": "自动控制原理：第 1 讲 绪论与系统的数学模型",
       "publishedAt": "2026-09-24",
-      "hash": "39b098ead7ad15c7ab0098f8383047ff4c94f290d81b9cebac762ea2602a0503"
+      "hash": "496a3528ee66df447708c285de2000edceb7b5a8eb52889afac3bd1a42d275f1"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第2讲-方框图信号流图与状态空间-acs02.md",

@@ -91,6 +91,8 @@ Paverage = (Wstatic + Wswitch) / T
 >
 > 由此引出整门课一条暗线：**要提高开关频率（从而缩小无源元件体积），就必须压低开关损耗——这就逼着器件往"快"的方向演进**（BJT → MOSFET → IGBT → 宽禁带）。
 
+![widget|520](/obsidian-assets/023daf54405d3424.html)
+
 ---
 
 ## 三、研究重点与器件三分类（P5）

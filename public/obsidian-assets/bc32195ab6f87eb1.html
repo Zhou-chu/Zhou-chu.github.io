@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>质量弹簧阻尼</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>质量-弹簧-阻尼系统的阶跃响应</h2>
+<p class="sub">m·ÿ + b·ẏ + k·y = r（r 为单位阶跃力）。改变 m、b、k，观察 ω<sub>n</sub>、ζ 与响应形状的对应关系。</p>
+<div class="grid">
+<div class="card">
+<label><span>质量 m</span><b id="vm"></b></label><input id="m" type="range" min="0.5" max="5" step="0.1" value="1">
+<label><span>阻尼 b</span><b id="vb"></b></label><input id="b" type="range" min="0" max="12" step="0.1" value="1.2">
+<label><span>刚度 k</span><b id="vk"></b></label><input id="k" type="range" min="1" max="20" step="0.5" value="4">
+<div class="kv"><span>固有频率 ω<sub>n</sub> = √(k/m)</span><b id="own"></b></div>
+<div class="kv"><span>阻尼比 ζ = b/(2√(km))</span><b id="oz"></b></div>
+<div class="kv"><span>稳态值 y<sub>ss</sub> = 1/k</span><b id="oss"></b></div>
+<div class="kv"><span>最大超调</span><b id="oos"></b></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:260px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const TT=10,DT=0.005;let traj=[],pk=1,yss=1,T=0;
+function recompute(){const m=+$("m").value,b=+$("b").value,k=+$("k").value;
+ $("vm").textContent=m.toFixed(1);$("vb").textContent=b.toFixed(1);$("vk").textContent=k.toFixed(1);
+ const wn=Math.sqrt(k/m),z=b/(2*Math.sqrt(k*m));yss=1/k;
+ $("own").textContent=wn.toFixed(2)+" rad/s";$("oz").textContent=z.toFixed(2);$("oss").textContent=yss.toFixed(3);
+ const os=z<1?Math.exp(-Math.PI*z/Math.sqrt(1-z*z))*100:0;$("oos").textContent=z<1?os.toFixed(1)+"%":"0";
+ $("hint").textContent=z==0?"无阻尼：等幅振荡，永不衰减":z<1?"欠阻尼：振荡衰减":(Math.abs(z-1)<0.03?"临界阻尼":"过阻尼：无超调，但响应慢");
+ let y=0,v=0;traj=[];pk=yss;for(let i=0;i<=TT/DT;i++){traj.push(y);pk=Math.max(pk,y);const a=(1-b*v-k*y)/m;v+=a*DT;y+=v*DT}
+ T=0}
+function draw(){const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const ms=Math.min(w*0.3,100),pl=ms+36,pr=16,pt=10,pb=22,pw=w-pl-pr,ph=h-pt-pb,ymax=pk*1.15;
+ const Y=v=>pt+ph*(1-v/ymax),X=t=>pl+pw*t/TT;
+ g.textAlign="right";g.fillStyle=K.muted;g.strokeStyle=K.line;g.lineWidth=1;
+ const nice=ymax>0.5?0.5:ymax>0.2?0.1:0.05;for(let v=0;v<=ymax;v+=nice){g.beginPath();g.moveTo(pl,Y(v));g.lineTo(w-pr,Y(v));g.stroke();g.fillText(v.toFixed(nice<0.1?2:1),pl-4,Y(v)+4)}
+ g.textAlign="center";[0,2,4,6,8,10].forEach(t=>g.fillText(t+" s",X(t),h-6));
+ g.strokeStyle=K.mid;g.setLineDash(DASH);g.beginPath();g.moveTo(pl,Y(yss));g.lineTo(w-pr,Y(yss));g.stroke();g.setLineDash([]);
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("y_ss",pl+4,Y(yss)-4);
+ const n=Math.min(traj.length-1,Math.floor(T/DT));
+ g.strokeStyle=K.ink;g.lineWidth=2;g.beginPath();for(let i=0;i<=n;i+=4){const x=X(i*DT),y=Y(traj[i]);i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();
+ const yc=traj[n]||0;g.fillStyle=K.ink;g.beginPath();g.arc(X(n*DT),Y(yc),3.5,0,7);g.fill();
+ // spring-mass at left
+ const cx=ms/2+8,wall=pt+4,top=pt+ph*0.1,bot=pt+ph-4;const ypos=top+(bot-top-30)*clamp(yc/ymax,0,1);
+ g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.moveTo(cx-24,wall);g.lineTo(cx+24,wall);g.stroke();
+ g.beginPath();g.moveTo(cx,wall);for(let i=0;i<12;i++){g.lineTo(cx+(i%2?-9:9),wall+(ypos-wall)*(i+1)/13)}g.lineTo(cx,ypos);g.stroke();
+ g.fillStyle=K.fill;g.fillRect(cx-18,ypos,36,28);g.strokeRect(cx-18,ypos,36,28);g.fillStyle=K.ink;g.textAlign="center";g.fillText("m",cx,ypos+18);
+}
+["m","b","k"].forEach(i=>$(i).addEventListener("input",recompute));recompute();
+loop(dt=>{T+=dt;if(T>TT+1.2)T=0;draw()});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

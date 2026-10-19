@@ -1,0 +1,101 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>综合负荷</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>综合负荷的电压静特性（ZIP 模型）</h2>
+<p class="sub">P/P<sub>N</sub> = a·(U/U<sub>N</sub>)² + b·(U/U<sub>N</sub>) + c，a+b+c=1：恒阻抗、恒电流、恒功率三种成分的混合。</p>
+<div class="grid">
+<div class="card">
+<div class="btns" id="pre"></div>
+<label>恒阻抗比例 a<b id="va"></b></label><input id="a" type="range" min="0" max="1" step="0.05" value="0.3">
+<label>恒电流比例 b<b id="vb"></b></label><input id="b" type="range" min="0" max="1" step="0.05" value="0.4">
+<label><span>母线电压 U/U<sub>N</sub></span><b id="vu"></b></label><input id="u" type="range" min="0.7" max="1.2" step="0.01" value="0.9">
+<div class="kv"><span>恒功率比例 c = 1−a−b</span><b id="oc"></b></div>
+<div class="kv"><span>此时 P/P<sub>N</sub></span><b id="op"></b></div>
+<div class="kv"><span>额定点斜率 dP/dU = 2a+b</span><b id="os"></b></div>
+</div>
+<div class="card"><canvas id="cv" style="height:230px"></canvas>
+<div class="legend"><span><i></i>综合 P(U)</span><span><i class="m d"></i>恒功率</span><span><i class="m t"></i>恒电流</span><span><i class="l"></i>恒阻抗</span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const pre=[["恒阻抗",1,0],["恒电流",0,1],["恒功率",0,0],["综合示例",0.3,0.4]];
+pre.forEach(p=>{const b=document.createElement("button");b.textContent=p[0];b.onclick=()=>{$("a").value=p[1];$("b").value=p[2];draw()};$("pre").appendChild(b)});
+function draw(){
+ let a=+$("a").value,b=+$("b").value;if(a+b>1){b=1-a;$("b").value=b}
+ const c=1-a-b,u=+$("u").value;
+ $("va").textContent=a.toFixed(2);$("vb").textContent=b.toFixed(2);$("vu").textContent=u.toFixed(2);$("oc").textContent=c.toFixed(2);
+ const f=v=>a*v*v+b*v+c;$("op").textContent=f(u).toFixed(3);$("os").textContent=(2*a+b).toFixed(2);
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=34,pr=10,pt=10,pb=26,pw=w-pl-pr,ph=h-pt-pb,v0=0.7,v1=1.2,p0=0.4,p1=1.5;
+ const X=v=>pl+pw*(v-v0)/(v1-v0),Y=p=>pt+ph*(1-(p-p0)/(p1-p0));
+ g.strokeStyle=K.line;g.fillStyle=K.muted;g.textAlign="right";
+ [0.5,1,1.5].forEach(p=>{g.beginPath();g.moveTo(pl,Y(p));g.lineTo(w-pr,Y(p));g.stroke();g.fillText(p,pl-4,Y(p)+4)});
+ g.textAlign="center";[0.7,0.8,0.9,1,1.1,1.2].forEach(v=>g.fillText(v,X(v),h-8));
+ const line=(fn,col,lw,dash)=>{g.strokeStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);g.beginPath();for(let i=0;i<=60;i++){const v=v0+(v1-v0)*i/60,x=X(v),y=Y(fn(v));i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();g.setLineDash([])};
+ line(v=>1,K.mid,1.2,DASH);line(v=>v,K.mid,1.2,DOT);line(v=>v*v,K.light,1.6);
+ line(f,K.ink,2.8);
+ // tangent at 1
+ const k=2*a+b;g.strokeStyle=K.light;g.lineWidth=1;g.beginPath();g.moveTo(X(0.9),Y(1-0.1*k));g.lineTo(X(1.1),Y(1+0.1*k));g.stroke();
+ g.fillStyle=K.ink;g.beginPath();g.arc(X(u),Y(f(u)),5,0,7);g.fill();g.strokeStyle=K.light;g.beginPath();g.moveTo(X(u),Y(f(u)));g.lineTo(X(u),pt+ph);g.stroke();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("P/P_N",pl+6,pt+14);
+}
+draw();addEventListener("resize",draw);["a","b","u"].forEach(k=>$(k).addEventListener("input",draw));
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

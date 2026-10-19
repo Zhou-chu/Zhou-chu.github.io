@@ -1,0 +1,102 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>电压降落</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>电压降落：ΔU 与 δU</h2>
+<p class="sub">以末端电压 U₂ 为参考（取 1 p.u.）。ΔU = (PR+QX)/U₂ 决定幅值，δU = (PX−QR)/U₂ 决定相角。拖动 P、Q 看看谁在管谁。</p>
+<div class="grid">
+<div class="card">
+<label>末端有功 P<b id="vP"></b></label><input id="P" type="range" min="0" max="1.2" step="0.05" value="0.8">
+<label>末端无功 Q<b id="vQ"></b></label><input id="Q" type="range" min="-0.6" max="0.8" step="0.05" value="0.3">
+<label>线路电阻 R<b id="vR"></b></label><input id="R" type="range" min="0.01" max="0.3" step="0.01" value="0.05">
+<label>线路电抗 X<b id="vX"></b></label><input id="X" type="range" min="0.05" max="0.6" step="0.01" value="0.25">
+<div class="kv"><span>纵分量 ΔU</span><b id="oD"></b></div>
+<div class="kv"><span>横分量 δU</span><b id="oδ"></b></div>
+<div class="kv"><span>首端 U₁ / 相角差 δ</span><b id="oU"></b></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:230px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+function draw(){
+ const P=+$("P").value,Q=+$("Q").value,R=+$("R").value,X=+$("X").value;
+ $("vP").textContent=P.toFixed(2)+" p.u.";$("vQ").textContent=Q.toFixed(2)+" p.u.";$("vR").textContent=R.toFixed(2);$("vX").textContent=X.toFixed(2);
+ const dU=P*R+Q*X,dd=P*X-Q*R,U1=Math.hypot(1+dU,dd),del=Math.atan2(dd,1+dU)*180/Math.PI;
+ $("oD").textContent=dU.toFixed(4)+"（"+(dU*100).toFixed(1)+"%）";$("oδ").textContent=dd.toFixed(4);
+ $("oU").textContent=U1.toFixed(3)+" p.u. / "+del.toFixed(2)+"°";
+ $("hint").textContent=X>3*R?(Math.abs(Q*X)>Math.abs(P*R)?"X≫R：ΔU 主要由无功 Q 决定；δU 主要由有功 P 决定":"X≫R 时 P·R 项相对很小"):"R 与 X 相当：P、Q 对 ΔU、δU 都有贡献";
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const ox=w*0.1,oy=h*0.62,L=w*0.18;  // U2 stub
+ const m=Math.max(Math.abs(dU),Math.abs(dd),0.05),k=Math.min((w*0.62)/Math.max(dU,0.05)/1.2,(h*0.42)/m)*1; const s=Math.min((w*0.62)/Math.max(Math.abs(dU),0.05),(h*0.4)/Math.max(Math.abs(dd),0.05));
+ const sx=Math.min(s,w*0.62/Math.max(Math.abs(dU),0.05)),x1=ox+L,x2=x1+dU*sx,y2=oy-dd*s;
+ const arrow=(ax,ay,bx,by,col,lab,lx,ly)=>{g.strokeStyle=col;g.fillStyle=col;g.lineWidth=2.2;g.beginPath();g.moveTo(ax,ay);g.lineTo(bx,by);g.stroke();
+  const a=Math.atan2(by-ay,bx-ax);if(Math.hypot(bx-ax,by-ay)>6){g.beginPath();g.moveTo(bx,by);g.lineTo(bx-8*Math.cos(a-0.4),by-8*Math.sin(a-0.4));g.lineTo(bx-8*Math.cos(a+0.4),by-8*Math.sin(a+0.4));g.fill()}
+  g.fillStyle=col;g.textAlign="center";g.fillText(lab,lx,ly)};
+ arrow(ox,oy,x1,oy,K.ink,"U₂",(ox+x1)/2,oy+16);
+ g.setLineDash([3,4]);g.strokeStyle=K.muted;g.lineWidth=1;g.beginPath();g.moveTo(ox,oy);g.lineTo(x2,y2);g.stroke();g.setLineDash([]);
+ arrow(x1,oy,x2,oy,K.mid,"ΔU",(x1+x2)/2,oy+16);
+ arrow(x2,oy,x2,y2,K.mid,"δU",x2+(dd>=0?16:16),(oy+y2)/2);
+ arrow(ox,oy,x2,y2,K.ink,"U₁",(ox+x2)/2-6,(oy+y2)/2-8);
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("ΔU、δU 同比例；U₂ 仅示意（未按比例）",8,16);
+ const a0=Math.atan2(oy-y2,x2-ox);g.strokeStyle=K.muted;g.lineWidth=1.5;g.beginPath();g.arc(ox,oy,26,0,-a0,a0>0);g.stroke();g.fillStyle=K.muted;g.fillText("δ",ox+30,oy-6);
+}
+draw();addEventListener("resize",draw);["P","Q","R","X"].forEach(k=>$(k).addEventListener("input",draw));
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>高压输电损耗</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>为什么要高压输电</h2>
+<p class="sub">同样的输送功率 S、同样的线路电阻，电压越高，电流越小，损耗 ΔP = S²R/U² 按电压平方下降。拖动滑块试试。</p>
+<div class="grid">
+<div class="card">
+<label>输送容量 S<b id="vS"></b></label><input id="S" type="range" min="50" max="3000" step="50" value="500">
+<label>线路长度 l<b id="vL"></b></label><input id="L" type="range" min="50" max="1000" step="10" value="300">
+<label>单位电阻 r<b id="vR"></b></label><input id="r" type="range" min="0.02" max="0.2" step="0.01" value="0.08">
+<div class="kv"><span>线路总电阻 R = r·l</span><b id="oR"></b></div>
+<div class="kv"><span>选中电压等级下电流 I</span><b id="oI"></b></div>
+<div class="kv"><span>选中电压等级下损耗 ΔP</span><b id="oP"></b></div>
+<div class="btns" id="btns" style="margin-top:10px"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:250px"></canvas><div class="hint" id="hint"></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const Us=[35,110,220,500,1000]; let sel=3;
+const btns=$("btns");
+Us.forEach((u,i)=>{const b=document.createElement("button");b.textContent=u+" kV";b.onclick=()=>{sel=i;draw()};btns.appendChild(b)});
+function calc(){const S=+$("S").value,l=+$("L").value,r=+$("r").value,R=r*l;
+ return {S,l,r,R,loss:Us.map(u=>S*S*R/(u*u))}}  // MVA, Ω, kV -> MW
+function draw(){
+ const d=calc();$("vS").textContent=d.S+" MVA";$("vL").textContent=d.l+" km";$("vR").textContent=d.r.toFixed(2)+" Ω/km";
+ $("oR").textContent=d.R.toFixed(1)+" Ω";
+ const u=Us[sel],I=d.S/(Math.sqrt(3)*u)*1000;
+ $("oI").textContent=I.toFixed(0)+" A";
+ $("oP").textContent=d.loss[sel].toFixed(2)+" MW（"+(d.loss[sel]/d.S*100).toFixed(2)+"%）";
+ [...btns.children].forEach((b,i)=>b.classList.toggle("on",i==sel));
+ $("hint").textContent=d.loss[sel]>=d.S?"损耗已超过输送功率，该电压等级根本送不出去":"";
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=44,pr=10,pt=38,pb=28,pw=w-pl-pr,ph=h-pt-pb;
+ const lo=-3,hi=2; // log10 of percent
+ const Y=v=>pt+ph*(1-(clamp(Math.log10(Math.max(v,1e-9)),lo,hi)-lo)/(hi-lo));
+ g.fillStyle=K.muted;g.textAlign="right";g.strokeStyle=K.line;
+ for(let e=lo;e<=hi;e++){const y=Y(Math.pow(10,e));g.beginPath();g.moveTo(pl,y);g.lineTo(w-pr,y);g.stroke();g.fillText((e<0?Math.pow(10,e):Math.pow(10,e))+"%",pl-5,y+4)}
+ g.textAlign="left";g.fillText("线路损耗占输送功率的比例（对数坐标）",pl,14);
+ const bw=pw/Us.length;
+ d.loss.forEach((p,i)=>{const pc=p/d.S*100,x=pl+i*bw+bw*0.18,ww=bw*0.64,y=Y(pc);
+  g.fillStyle=i==sel?K.ink:K.light;
+  g.fillRect(x,y,ww,pt+ph-y);
+  g.fillStyle=K.ink;g.textAlign="center";g.fillText(pc>=100?"≥100%":(pc<0.01?pc.toExponential(1):pc.toFixed(2))+"%",x+ww/2,y-5);
+  g.fillStyle=K.muted;g.fillText(Us[i]+" kV",x+ww/2,h-pb+16)});
+}
+draw();addEventListener("resize",draw);["S","L","r"].forEach(k=>$(k).addEventListener("input",draw));
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

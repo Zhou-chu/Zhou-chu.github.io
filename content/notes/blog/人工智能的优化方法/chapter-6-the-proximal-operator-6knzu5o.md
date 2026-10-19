@@ -199,6 +199,8 @@ $$\mathrm{prox}_{g}(\mathbf{x})=H_{\sqrt{2\lambda}}(x_1)\times\cdots\times H_{\s
 
 **为什么重要**：$\ell_0$ 不是凸的，所以近端可能多点（$|x_i|=\sqrt{2\lambda}$ 时返回 $\{0,x_i\}$）——这就是“硬阈值”和软阈值的本质区别，也是 §6.8.3 投影到稀疏集的伏笔。
 
+![widget|520](/obsidian-assets/aa5ff89e6df784de.html)
+
 ## Theorem 6.11 · 缩放与平移
 
 > **Theorem 6.11** (scaling and translation). Let $g:\mathbb{E}\to(-\infty,\infty]$ be proper, $\lambda\neq 0$, $\mathbf{a}\in\mathbb{E}$. Define $f(\mathbf{x})=g(\lambda\mathbf{x}+\mathbf{a})$. Then

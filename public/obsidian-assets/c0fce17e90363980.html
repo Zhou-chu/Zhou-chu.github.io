@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLA</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>感知机学习算法（PLA）</h2>
+<p class="sub">遇到被误分的点就更新 w ← w + y·x。数据线性可分且间隔为 γ、半径为 R 时，更新次数 k ≤ (R/γ)²。</p>
+<div class="grid">
+<div class="card">
+<label><span>数据间隔 γ（真实分隔线两侧的空带）</span><b id="vg"></b></label><input id="g" type="range" min="0.05" max="0.4" step="0.01" value="0.15">
+<div class="btns"><button id="stp">单步更新</button><button id="auto">自动</button><button id="new">重新生成</button></div>
+<div class="kv"><span>已更新次数 k</span><b id="ok"></b></div>
+<div class="kv"><span>仍被误分的点</span><b id="om"></b></div>
+<div class="kv"><span>R / γ / 理论上界 (R/γ)²</span><b id="ob"></b></div>
+<div class="legend"><span><i class="m d"></i>真实分隔 w*</span><span><i></i>当前 w</span></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:290px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+let seed=7;const rnd=()=>{seed=(seed*1664525+1013904223)%4294967296;return seed/4294967296};
+const ts=0.95,ws=[Math.cos(ts),Math.sin(ts)];let pts=[],w=[0,0],k=0,ptr=0,auto=false,acc=0,last=-1;
+function gen(){seed=Math.floor(Math.random()*1e6)+1;const gm=+$("g").value;$("vg").textContent=gm.toFixed(2);pts=[];
+ while(pts.length<26){const x=[rnd()*2-1,rnd()*2-1],s=ws[0]*x[0]+ws[1]*x[1];if(Math.abs(s)<gm)continue;pts.push({x,y:s>0?1:-1})}
+ w=[0,0];k=0;ptr=0;last=-1;auto=false;$("auto").textContent="自动"}
+const mis=p=>p.y*(w[0]*p.x[0]+w[1]*p.x[1])<=0;
+function step(){for(let i=0;i<pts.length;i++){const j=(ptr+i)%pts.length;if(mis(pts[j])){w=[w[0]+pts[j].y*pts[j].x[0],w[1]+pts[j].y*pts[j].x[1]];k++;ptr=(j+1)%pts.length;last=j;return true}}auto=false;$("auto").textContent="自动";return false}
+function draw(){const {g,w:W,h:H}=fit($("cv"));g.clearRect(0,0,W,H);
+ const s=Math.min(W,H)-8,ox=(W-s)/2,oy=4,X=v=>ox+s*(v+1.2)/2.4,Y=v=>oy+s*(1.2-v)/2.4;
+ g.strokeStyle=K.line;g.lineWidth=1;g.strokeRect(ox,oy,s,s);g.beginPath();g.moveTo(X(-1.2),Y(0));g.lineTo(X(1.2),Y(0));g.moveTo(X(0),Y(1.2));g.lineTo(X(0),Y(-1.2));g.stroke();
+ const gm=+$("g").value;
+ const ln=(n,col,lw,dash)=>{g.strokeStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);const d=[-n[1],n[0]],m=Math.hypot(d[0],d[1])||1;g.beginPath();g.moveTo(X(-2*d[0]/m),Y(-2*d[1]/m));g.lineTo(X(2*d[0]/m),Y(2*d[1]/m));g.stroke();g.setLineDash([])};
+ g.save();g.beginPath();g.rect(ox,oy,s,s);g.clip();
+ ln(ws,K.mid,1.3,DASH);if(w[0]||w[1]){ln(w,K.ink,2.2);const m=Math.hypot(w[0],w[1]);g.strokeStyle=K.ink;g.lineWidth=1.2;g.beginPath();g.moveTo(X(0),Y(0));g.lineTo(X(0.35*w[0]/m),Y(0.35*w[1]/m));g.stroke()}
+ g.restore();
+ pts.forEach((p,i)=>{const x=X(p.x[0]),y=Y(p.x[1]),bad=(w[0]||w[1])?mis(p):false;g.beginPath();g.arc(x,y,4.2,0,7);if(p.y>0){g.fillStyle=K.ink;g.fill()}else{g.fillStyle=K.bg;g.fill();g.strokeStyle=K.ink;g.lineWidth=1.5;g.stroke()}
+  if(bad){g.strokeStyle=K.mid;g.lineWidth=1;g.beginPath();g.arc(x,y,8,0,7);g.stroke()} if(i==last){g.strokeStyle=K.ink;g.lineWidth=2;g.beginPath();g.arc(x,y,10,0,7);g.stroke()}});
+ const nm=pts.filter(mis).length,R=Math.max(...pts.map(p=>Math.hypot(...p.x))),gam=Math.min(...pts.map(p=>p.y*(ws[0]*p.x[0]+ws[1]*p.x[1])));
+ $("ok").textContent=k;$("om").textContent=nm+" / "+pts.length;$("ob").textContent=R.toFixed(2)+" / "+gam.toFixed(2)+" / "+Math.ceil((R/gam)**2);
+ $("hint").textContent=nm==0&&k>0?"全部分类正确：PLA 收敛，k="+k:"实心点 y=+1，空心点 y=−1；灰圈为当前误分点，粗圈为刚被用于更新的点";
+}
+$("g").addEventListener("input",()=>{gen();draw()});$("new").onclick=()=>{gen();draw()};
+$("stp").onclick=()=>{auto=false;$("auto").textContent="自动";step();draw()};
+$("auto").onclick=()=>{auto=!auto;$("auto").textContent=auto?"暂停":"自动"};
+addEventListener("resize",draw);gen();draw();
+loop(dt=>{if(auto){acc+=dt;if(acc>0.45){acc=0;step()}}draw()});
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

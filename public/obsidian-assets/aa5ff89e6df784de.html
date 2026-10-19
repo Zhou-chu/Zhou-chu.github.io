@@ -1,0 +1,104 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>近端算子</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>近端算子：软阈值与硬阈值</h2>
+<p class="sub">prox<sub>h</sub>(v) = argmin<sub>x</sub> ½(x−v)² + h(x)。h = λ|x| 得软阈值；h = λ·1[x≠0]（ℓ₀）得硬阈值，阈值为 √(2λ)。</p>
+<div class="grid">
+<div class="card">
+<label><span>输入 v</span><b id="vv"></b></label><input id="v" type="range" min="-3" max="3" step="0.02" value="1.2">
+<label><span>λ</span><b id="vl"></b></label><input id="l" type="range" min="0.1" max="2" step="0.05" value="0.8">
+<div class="kv"><span>软阈值 sign(v)·max(|v|−λ, 0)</span><b id="os"></b></div>
+<div class="kv"><span>硬阈值（阈值 √(2λ)）</span><b id="oh"></b></div>
+<div class="legend"><span><i></i>ℓ₁（软）</span><span><i class="m d"></i>ℓ₀（硬）</span></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:250px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+let T=0;
+const soft=(v,l)=>Math.sign(v)*Math.max(Math.abs(v)-l,0),hard=(v,l)=>Math.abs(v)>Math.sqrt(2*l)?v:0;
+function draw(){const v=+$("v").value,l=+$("l").value;$("vv").textContent=v.toFixed(2);$("vl").textContent=l.toFixed(2);
+ const s=soft(v,l),hd=hard(v,l);$("os").textContent=s.toFixed(3);$("oh").textContent=hd.toFixed(3);
+ $("hint").textContent=Math.abs(v)<=l?"|v| ≤ λ：软阈值置零":(Math.abs(v)<=Math.sqrt(2*l)?"λ < |v| ≤ √(2λ)：软阈值收缩，硬阈值置零":"|v| > √(2λ)：硬阈值保持 v，软阈值仍收缩 λ");
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const half=w/2-6,pt=26,pb=22,ph=h-pt-pb;
+ // left: objective
+ const A={x0:8,w:half-12,xa:-3,xb:3,ya:0,yb:6};const XA=t=>A.x0+A.w*(t-A.xa)/(A.xb-A.xa),YA=t=>pt+ph*(1-(clamp(t,A.ya,A.yb)-A.ya)/(A.yb-A.ya));
+ g.strokeStyle=K.line;g.fillStyle=K.muted;g.textAlign="center";[-2,0,2].forEach(t=>{g.beginPath();g.moveTo(XA(t),pt);g.lineTo(XA(t),pt+ph);g.stroke();g.fillText(t,XA(t),h-6)});
+ const o1=x=>0.5*(x-v)**2+l*Math.abs(x),o0=x=>0.5*(x-v)**2+(Math.abs(x)<1e-9?0:l);
+ g.save();g.beginPath();g.rect(A.x0,pt,A.w,ph);g.clip();
+ g.strokeStyle=K.ink;g.lineWidth=2;g.beginPath();for(let i=0;i<=240;i++){const t=A.xa+(A.xb-A.xa)*i/240;i?g.lineTo(XA(t),YA(o1(t))):g.moveTo(XA(t),YA(o1(t)))}g.stroke();
+ g.strokeStyle=K.mid;g.lineWidth=1.6;g.setLineDash(DASH);g.beginPath();for(let i=0;i<=240;i++){const t=A.xa+(A.xb-A.xa)*i/240;const y=YA(0.5*(t-v)**2+l);i?g.lineTo(XA(t),y):g.moveTo(XA(t),y)}g.stroke();g.setLineDash([]);
+ g.fillStyle=K.bg;g.strokeStyle=K.mid;g.lineWidth=1.5;g.beginPath();g.arc(XA(0),YA(0.5*v*v),3,0,7);g.fill();g.stroke();
+ g.fillStyle=K.ink;g.beginPath();g.arc(XA(s),YA(o1(s)),4.5,0,7);g.fill();g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.arc(XA(hd),YA(o0(hd)),5.5,0,7);g.stroke();g.restore();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("目标函数（ℓ₀ 在 x=0 处取孤立值）",A.x0+2,14);
+ // right: maps
+ const B={x0:half+22,w:half-20,a:-3,b:3};const XB=t=>B.x0+B.w*(t-B.a)/(B.b-B.a),YB=t=>pt+ph*(1-(t-B.a)/(B.b-B.a));
+ g.strokeStyle=K.line;[-2,0,2].forEach(t=>{g.beginPath();g.moveTo(XB(t),pt);g.lineTo(XB(t),pt+ph);g.stroke();g.beginPath();g.moveTo(B.x0,YB(t));g.lineTo(B.x0+B.w,YB(t));g.stroke();g.fillStyle=K.muted;g.textAlign="center";g.fillText(t,XB(t),h-6)});
+ g.strokeStyle=K.light;g.beginPath();g.moveTo(XB(-3),YB(-3));g.lineTo(XB(3),YB(3));g.stroke();
+ g.strokeStyle=K.ink;g.lineWidth=2;g.beginPath();for(let i=0;i<=240;i++){const t=B.a+6*i/240;i?g.lineTo(XB(t),YB(soft(t,l))):g.moveTo(XB(t),YB(soft(t,l)))}g.stroke();
+ g.strokeStyle=K.mid;g.lineWidth=1.6;g.setLineDash(DASH);const th=Math.sqrt(2*l);[[-3,-th],[th,3]].forEach(([a,b])=>{g.beginPath();g.moveTo(XB(a),YB(a));g.lineTo(XB(b),YB(b));g.stroke()});g.beginPath();g.moveTo(XB(-th),YB(0));g.lineTo(XB(th),YB(0));g.stroke();g.setLineDash([]);
+ g.fillStyle=K.ink;g.beginPath();g.arc(XB(v),YB(s),4.5,0,7);g.fill();g.strokeStyle=K.ink;g.beginPath();g.arc(XB(v),YB(hd),5.5,0,7);g.stroke();
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("prox(v) 与 v 的关系",B.x0+4,14);
+}
+["v","l"].forEach(i=>$(i).addEventListener("input",draw));addEventListener("resize",draw);draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

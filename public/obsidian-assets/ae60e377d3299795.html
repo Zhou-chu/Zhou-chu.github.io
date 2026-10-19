@@ -1,0 +1,101 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>水箱液位</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>水箱液位：开环与闭环</h2>
+<p class="sub">τ·ḣ = u − (1+d)·h。开环 u = r；闭环 u = K(r − h)。调大泄漏 d，比较两种控制的稳态液位。</p>
+<div class="grid">
+<div class="card">
+<label><span>目标液位 r</span><b id="vr"></b></label><input id="r" type="range" min="0.2" max="1" step="0.05" value="0.8">
+<label><span>泄漏（干扰）d</span><b id="vd"></b></label><input id="d" type="range" min="0" max="1.5" step="0.05" value="0">
+<label><span>闭环增益 K</span><b id="vK"></b></label><input id="K" type="range" min="1" max="20" step="1" value="8">
+<div class="kv"><span>开环稳态 r/(1+d)</span><b id="o1"></b></div>
+<div class="kv"><span>闭环稳态 Kr/(1+d+K)</span><b id="o2"></b></div>
+<div class="legend"><span><i></i>闭环</span><span><i class="m d"></i>开环</span><span><i class="l"></i>目标 r</span></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:260px"></canvas></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const W=14,hist=[];let ho=0,hc=0,T=0,acc=0;const DT=0.02;
+function params(){const r=+$("r").value,d=+$("d").value,k=+$("K").value;$("vr").textContent=r.toFixed(2);$("vd").textContent=d.toFixed(2);$("vK").textContent=k;
+ $("o1").textContent=(r/(1+d)).toFixed(3);$("o2").textContent=(k*r/(1+d+k)).toFixed(3);
+ const e1=r-r/(1+d),e2=r-k*r/(1+d+k);$("hint").textContent="稳态误差：开环 "+e1.toFixed(3)+"，闭环 "+e2.toFixed(3)+(e2<e1?"（反馈把干扰的影响压下去了）":"");return {r,d,k}}
+let P=params();["r","d","K"].forEach(i=>$(i).addEventListener("input",()=>{P=params()}));
+function step(){ho+=DT*(P.r-(1+P.d)*ho);hc+=DT*(P.k*(P.r-hc)-(1+P.d)*hc);T+=DT;hist.push([T,ho,hc]);while(hist.length&&hist[0][0]<T-W)hist.shift()}
+function draw(){const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const tw=Math.min(w*0.34,110),pl=tw+34,pr=8,pt=10,pb=20,pw=w-pl-pr,ph=h-pt-pb;
+ const Y=v=>pt+ph*(1-v/1.2);
+ // tanks
+ const tank=(x,lab,v)=>{const bw=44,top=pt+4,bot=pt+ph;g.strokeStyle=K.ink;g.lineWidth=1.5;g.beginPath();g.moveTo(x,top);g.lineTo(x,bot);g.lineTo(x+bw,bot);g.lineTo(x+bw,top);g.stroke();
+  g.fillStyle=K.light;const y=bot-(bot-top)*clamp(v,0,1.2)/1.2;g.fillRect(x+1,y,bw-2,bot-y-1);
+  g.strokeStyle=K.ink;g.lineWidth=1;g.setLineDash([3,3]);const ry=bot-(bot-top)*P.r/1.2;g.beginPath();g.moveTo(x-6,ry);g.lineTo(x+bw+6,ry);g.stroke();g.setLineDash([]);
+  g.fillStyle=K.muted;g.textAlign="center";g.fillText(lab,x+bw/2,h-4);g.fillStyle=K.ink;g.fillText(v.toFixed(2),x+bw/2,y-4)};
+ tank(4,"开环",ho);tank(4+tw/2+14,"闭环",hc);
+ g.textAlign="right";g.fillStyle=K.muted;g.strokeStyle=K.line;[0,0.5,1].forEach(v=>{g.beginPath();g.moveTo(pl,Y(v));g.lineTo(w-pr,Y(v));g.stroke();g.fillText(v,pl-4,Y(v)+4)});
+ const t0=T-W;const X=t=>pl+pw*(t-t0)/W;
+ g.strokeStyle=K.light;g.lineWidth=1.2;g.beginPath();g.moveTo(pl,Y(P.r));g.lineTo(w-pr,Y(P.r));g.stroke();
+ const tr=(i,col,lw,dash)=>{g.strokeStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);g.beginPath();hist.forEach((p,k)=>{k?g.lineTo(X(p[0]),Y(p[i])):g.moveTo(X(p[0]),Y(p[i]))});g.stroke();g.setLineDash([])};
+ tr(1,K.mid,1.6,DASH);tr(2,K.ink,2);
+}
+for(let i=0;i<5/DT;i++)step();
+loop(dt=>{acc+=dt;while(acc>=DT){step();acc-=DT}draw()});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

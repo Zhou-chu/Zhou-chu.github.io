@@ -220,6 +220,8 @@ $V_s = 120\,\text{V @ } 60\,\text{Hz},\quad L_s = 1\,\text{mH},\quad R_s = 1\,\t
 - $v_d$：在 |v_s| 峰值附近充电、随后经 R_load 放电的**锯齿状纹波**（远高于无电容时的 |sin| 平均值）；
 - $i_s$：仅在峰值附近的窄区间导通 → **很窄的尖峰脉冲电流**（基波 $i_{s1}$ 超前关系见图中 φ₁）。
 
+![widget|520](/obsidian-assets/e81c2d594e161faa.html)
+
 ### 4.2 网侧电压畸变（Line-Voltage Distortion）（P11）
 
 ![网侧电压畸变](/obsidian-assets/de22aa5c6b9f697a.png)

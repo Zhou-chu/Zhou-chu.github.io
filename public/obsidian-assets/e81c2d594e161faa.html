@@ -1,0 +1,113 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>电容滤波整流</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>电容滤波整流器：电流为什么是"尖峰"</h2>
+<p class="sub">单相二极管桥 + 滤波电容 + 电阻负载的数值仿真（V<sub>s</sub>=120 V rms、60 Hz、R<sub>s</sub>=1 mΩ）。改 C<sub>d</sub>、L<sub>s</sub>、R<sub>load</sub>，观察电流波形与功率因数。</p>
+<div class="grid">
+<div class="card">
+<label><span>滤波电容 C<sub>d</sub></span><b id="vC"></b></label><input id="C" type="range" min="20" max="1000" step="10" value="100">
+<label><span>电源电感 L<sub>s</sub></span><b id="vL"></b></label><input id="L" type="range" min="0.1" max="5" step="0.1" value="1">
+<label><span>负载电阻 R<sub>load</sub></span><b id="vR"></b></label><input id="R" type="range" min="5" max="100" step="1" value="20">
+<div class="kv"><span>直流平均 V<sub>d</sub> / 纹波</span><b id="oV"></b></div>
+<div class="kv"><span>输入电流 有效值 / 峰值</span><b id="oI"></b></div>
+<div class="kv"><span>功率因数 PF</span><b id="oPF"></b></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:270px"></canvas>
+<div class="legend"><span><i class="l"></i>v<sub>s</sub></span><span><i></i>v<sub>d</sub></span><span><i></i>i<sub>s</sub></span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+const f0=60,Vm=120*Math.SQRT2,Rs=1e-3,dt=2e-6;let S=null;
+function sim(){
+ const Cd=+$("C").value*1e-6,Ls=+$("L").value*1e-3,RL=+$("R").value;
+ let vc=Vm*0.9,j=0,dir=1;const Tp=1/f0,N=Math.round(Tp/dt),cycles=14;
+ const ts=[],vs=[],vd=[],is=[];
+ for(let n=0;n<cycles*N;n++){const t=n*dt,v=Vm*Math.sin(2*Math.PI*f0*t);
+  if(j<=0){j=0;if(Math.abs(v)>vc){dir=v>0?1:-1}else dir=0}
+  if(dir!==0){const u=dir*v;j+=dt*(u-Rs*j-vc)/Ls;if(j<=0){j=0;dir=0}}
+  vc+=dt*(j-vc/RL)/Cd;
+  if(n>=(cycles-1)*N&&(n%20==0)){ts.push((n-(cycles-1)*N)*dt);vs.push(v);vd.push(vc);is.push(dir*j)}}
+ let sI=0,sV=0,sP=0,mx=-1e9,mn=1e9,pk=0;
+ for(let k=0;k<vs.length;k++){sI+=is[k]*is[k];sV+=vd[k];sP+=vs[k]*is[k];mx=Math.max(mx,vd[k]);mn=Math.min(mn,vd[k]);pk=Math.max(pk,Math.abs(is[k]))}
+ const n=vs.length,Irms=Math.sqrt(sI/n),Vd=sV/n,P=sP/n,PF=P/(Vm/Math.SQRT2*Irms||1);
+ S={ts,vs,vd,is,Irms,Vd,rip:mx-mn,pk,PF}}
+function upd(){$("vC").textContent=$("C").value+" µF";$("vL").textContent=$("L").value+" mH";$("vR").textContent=$("R").value+" Ω";
+ sim();$("oV").textContent=S.Vd.toFixed(0)+" V / "+S.rip.toFixed(0)+" V p-p";$("oI").textContent=S.Irms.toFixed(1)+" A / "+S.pk.toFixed(0)+" A";$("oPF").textContent=S.PF.toFixed(3);
+ $("hint").textContent=S.PF<0.65?"电流只在电压峰值附近很短的时间导通，PF 很低、谐波大":(S.PF>0.85?"电感/负载较大时导通角变宽，电流更平滑，PF 升高":"")}
+let T=0;
+function draw(){if(!S)return;const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const pl=10,pr=10,pw=w-pl-pr,n=S.ts.length;
+ const p1t=8,p1h=h*0.46,p2t=h*0.46+22,p2h=h-p2t-8;
+ const X=i=>pl+pw*i/(n-1);
+ const vmax=Vm*1.1,Y1=v=>p1t+p1h*(1-(v+0)/(vmax*2)*1)-0;
+ const Y1b=v=>p1t+p1h/2*(1-v/vmax); // vs symmetric
+ g.strokeStyle=K.line;g.beginPath();g.moveTo(pl,Y1b(0));g.lineTo(w-pr,Y1b(0));g.stroke();
+ const draw1=(arr,col,Y,lw)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();arr.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.stroke()};
+ draw1(S.vs,K.light,Y1b,1.3);draw1(S.vd,K.ink,Y1b,2);
+ const im=Math.max(S.pk*1.1,1),Y2=v=>p2t+p2h/2*(1-v/im);
+ g.strokeStyle=K.line;g.lineWidth=1;g.beginPath();g.moveTo(pl,Y2(0));g.lineTo(w-pr,Y2(0));g.stroke();
+ draw1(S.is,K.ink,Y2,2);
+ g.fillStyle=K.muted;g.textAlign="left";g.fillText("电压 (V)",pl+2,p1t+10);g.fillText("输入电流 (A)，峰值 "+S.pk.toFixed(0)+" A",pl+2,p2t+10);
+ const k=Math.floor(((T*0.25)%1)*(n-1));g.strokeStyle=K.light;g.beginPath();g.moveTo(X(k),p1t);g.lineTo(X(k),h-8);g.stroke();
+ g.fillStyle=K.ink;g.beginPath();g.arc(X(k),Y2(S.is[k]),3.5,0,7);g.fill();g.fillStyle=K.ink;g.beginPath();g.arc(X(k),Y1b(S.vd[k]),4,0,7);g.fill()}
+["C","L","R"].forEach(k=>$(k).addEventListener("input",()=>{upd();draw()}));upd();loop(dt=>{T+=dt;draw()});
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

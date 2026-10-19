@@ -188,6 +188,9 @@ $$
 \boldsymbol{Q}_L = (\boldsymbol{A}_L^T(\boldsymbol{A}_T^T)^{-1})^T = \boldsymbol{A}_T^{-1}\boldsymbol{A}_L \tag{1-14}
 $$
 (1-14)式给出了 $\boldsymbol{Q}$ 和 $\boldsymbol{A}$ 之间的变换。
+
+![widget|560](/obsidian-assets/bfd379d4bf149724.html)
+
 ### 1.2.4 网络拓扑约束——基尔霍夫定律的表达
 对于有 $N+1$ 个节点 $b$ 条支路的连通图 G，它有：
 独立节点数 = 树支数 = 基本割集数 = $N$；

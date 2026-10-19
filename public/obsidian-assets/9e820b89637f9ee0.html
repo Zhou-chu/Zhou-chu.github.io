@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>线路参数</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>分裂导线：电抗变小、电纳变大</h2>
+<p class="sub">x₁ = 0.1445·lg(D<sub>eq</sub>/D<sub>s</sub>′)，b₁ = 7.58×10⁻⁶ / lg(D<sub>eq</sub>/r<sub>eq</sub>)。分裂数增加等于等效半径变大。</p>
+<div class="grid">
+<div class="card">
+<div class="btns" id="nb"></div>
+<label>子导线半径 r<b id="vr"></b></label><input id="r" type="range" min="6" max="25" step="0.5" value="13.6">
+<label>分裂间距 d<b id="vd"></b></label><input id="d" type="range" min="200" max="600" step="25" value="450">
+<label><span>相间距离 D（水平排列，D<sub>eq</sub>=1.26D）</span><b id="vD"></b></label><input id="D" type="range" min="4" max="14" step="0.5" value="12">
+<div class="kv"><span>单位电抗 x₁</span><b id="ox"></b></div>
+<div class="kv"><span>单位电纳 b₁</span><b id="ob"></b></div>
+<div class="kv"><span>相比不分裂（n=1）</span><b id="cmp"></b></div>
+</div>
+<div class="card"><canvas id="cv" style="height:170px"></canvas><div class="formula" id="fm"></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+
+let n=4;const nb=$("nb");
+[1,2,3,4].forEach(k=>{const b=document.createElement("button");b.textContent=k==1?"单导线":k+" 分裂";b.onclick=()=>{n=k;draw()};nb.appendChild(b)});
+function params(n,r,d,D){ // r,d in mm, D in m
+ const Deq=1.26*D, rp=0.779*r/1000, rr=r/1000;
+ let Ds,req; if(n==1){Ds=rp;req=rr}else{const R=d/1000/(2*Math.sin(Math.PI/n));Ds=Math.pow(n*rp*Math.pow(R,n-1),1/n);req=Math.pow(n*rr*Math.pow(R,n-1),1/n)}
+ return {x:0.1445*Math.log10(Deq/Ds),b:7.58e-6/Math.log10(Deq/req),Ds,req,Deq}}
+function draw(){
+ const r=+$("r").value,d=+$("d").value,D=+$("D").value;
+ $("vr").textContent=r+" mm";$("vd").textContent=d+" mm";$("vD").textContent=D+" m";
+ [...nb.children].forEach((b,i)=>b.classList.toggle("on",i+1==n));
+ const p=params(n,r,d,D),p1=params(1,r,d,D);
+ $("ox").textContent=p.x.toFixed(4)+" Ω/km";$("ob").textContent=(p.b*1e6).toFixed(3)+" ×10⁻⁶ S/km";
+ $("cmp").textContent="x "+((p.x/p1.x-1)*100).toFixed(0)+"%，b +"+((p.b/p1.b-1)*100).toFixed(0)+"%";
+ $("fm").textContent="Deq="+p.Deq.toFixed(2)+" m   Ds′="+(p.Ds*1000).toFixed(0)+" mm   req="+(p.req*1000).toFixed(0)+" mm";
+ const {g,w,h}=fit($("cv"));g.clearRect(0,0,w,h);
+ const cx=[w*0.2,w*0.5,w*0.8],cy=h*0.45,Dpx=w*0.3;
+ const Rmm=n==1?r:d/(2*Math.sin(Math.PI/n)); const mm=1;
+ g.strokeStyle=K.line;g.setLineDash([4,4]);g.beginPath();g.moveTo(cx[0],cy+58);g.lineTo(cx[2],cy+58);g.stroke();g.setLineDash([]);
+ g.fillStyle=K.muted;g.textAlign="center";g.fillText("相间距离 D = "+D+" m（示意，导线尺寸已放大）",w/2,cy+74);
+ const mag=Math.min(w*0.1,46)/Math.max(Rmm,r*2);
+ cx.forEach((x,k)=>{
+  const R=n==1?0:d/(2*Math.sin(Math.PI/n))*mm*mag, rr=Math.max(2.5,r*mm*mag);
+  g.strokeStyle=K.light;g.beginPath();if(n>1)g.arc(x,cy,R,0,7);g.stroke();
+  for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n+(n==2?Math.PI/2:0);const px=x+(n>1?R*Math.cos(a):0),py=cy+(n>1?R*Math.sin(a):0);
+   g.fillStyle=K.ink;g.beginPath();g.arc(px,py,rr,0,7);g.fill()}
+  g.fillStyle=K.ink;g.fillText("ABC"[k],x,cy-52);});
+}
+draw();addEventListener("resize",draw);["r","d","D"].forEach(k=>$(k).addEventListener("input",draw));
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

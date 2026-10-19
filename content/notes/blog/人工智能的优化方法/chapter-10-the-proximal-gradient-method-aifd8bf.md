@@ -319,6 +319,8 @@ $$F(t_k^{-1}x^*+(1-t_k^{-1})x_k)-F(x_{k+1})\ge \frac{L_k}{2t_k^2}\|t_k x_{k+1}-(
 
 **Figure 10.1/10.2.** 书上 `m=100,n=110` 实例 200 次迭代的函数值距离与解向量对比，FISTA 远超 ISTA——`1/k²` 对 `1/k` 的直观体现。
 
+![widget|560](/obsidian-assets/0c8f73b3e0fb3546.html)
+
 ## 10.7.4 MFISTA
 
 ### Remark 10.39

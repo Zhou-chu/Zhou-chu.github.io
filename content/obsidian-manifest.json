@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 105,
-  "assetCount": 235,
+  "noteCount": 106,
+  "assetCount": 264,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -52,6 +52,13 @@
       "title": "电力电子：第 4 讲 晶闸管 AC-DC 变换器（Thyristor AC-DC Converters）学习笔记",
       "publishedAt": "2026-09-29",
       "hash": "725b730dc4829b5fcc1cf3a0c957af688d3e5407269b5dbde00a95bfbab003a8"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第5讲-直流斩波器-DC-DC-pe1l05.md",
+      "slug": "电力电子-第5讲-直流斩波器-dc-dc-pe1l05",
+      "title": "电力电子：第 5 讲 DC-DC 变换器（直流斩波器）学习笔记",
+      "publishedAt": "2026-10-20",
+      "hash": "9a172228669bfb4342a4bcddf3bb7a5f3ce796bcef753ad0ad2017ffd941c3dd"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-宽禁带功率半导体器件综述-SiC与GaN-wbg01.md",

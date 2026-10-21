@@ -1,0 +1,280 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>S平面极点与时域响应</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 2px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ink); margin-right: 4px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-style: dashed; }
+.legend i.l { border-top-color: var(--light); border-top-style: dotted; }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+</style>
+</head>
+<body>
+<h2>S 平面极点与时域冲激/模态响应</h2>
+<p class="sub">极点 $s = \sigma \pm j\omega$：实部 $\sigma$ 决定指数包络（衰减/等幅/发散），虚部 $\omega$ 决定振荡频率。</p>
+
+<div class="btns">
+  <button id="p1" class="on">欠阻尼衰减 (-1.0±j3.0)</button>
+  <button id="p2">无阻尼虚轴 (0.0±j3.0)</button>
+  <button id="p3">右半面发散 (+0.5±j2.5)</button>
+  <button id="p4">实轴单调衰减 (-1.8)</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <label><span>极点实部 $\sigma$（衰减系数）</span><b id="v_sigma"></b></label>
+    <input id="in_sigma" type="range" min="-3.0" max="1.0" step="0.05" value="-1.0">
+    <label><span>极点虚部 $\omega$（振荡角频率）</span><b id="v_omega"></b></label>
+    <input id="in_omega" type="range" min="0.0" max="6.0" step="0.1" value="3.0">
+    
+    <div class="kv"><span>稳定性判定</span><b id="stat"></b></div>
+    <div class="kv"><span>时域模态形式</span><b id="mode_str"></b></div>
+    <div class="kv"><span>包络时间常数 $\tau = 1/|\sigma|$</span><b id="tau_val"></b></div>
+    <div class="kv"><span>振荡周期 $T = 2\pi/\omega$</span><b id="t_period"></b></div>
+
+    <div style="margin-top: 8px;">
+      <canvas id="cv_s" style="height: 140px; border: 1px solid var(--line);"></canvas>
+    </div>
+    <div class="legend">
+      <span><i></i>时域响应 $y(t)$</span>
+      <span><i class="m"></i>指数包络 $\pm e^{\sigma t}$</span>
+      <span><i class="l"></i>零参考基线</span>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">时域响应曲线 $y(t) = e^{\sigma t}\cos(\omega t)$</div>
+    <canvas id="cv_t" style="height: 270px;"></canvas>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K[n] = C(n); }); }
+refreshK();
+
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+let sigma = -1.0, omega = 3.0;
+
+function updateParams() {
+  sigma = parseFloat($("in_sigma").value);
+  omega = parseFloat($("in_omega").value);
+  $("v_sigma").textContent = sigma.toFixed(2);
+  $("v_omega").textContent = omega.toFixed(1);
+
+  if (sigma < -1e-4) {
+    $("stat").textContent = "渐近稳定（左半平面，衰减收敛）";
+    $("hint").textContent = "所有极点具有负实部，瞬态模态随时间衰减至零。";
+  } else if (Math.abs(sigma) <= 1e-4) {
+    $("stat").textContent = omega > 0 ? "临界稳定（虚轴单根，等幅振荡）" : "零极点积分";
+    $("hint").textContent = "极点位于虚轴上，系统存在持续等幅振荡，非渐近稳定。";
+  } else {
+    $("stat").textContent = "不稳定（右半平面，发散）";
+    $("hint").textContent = "实部为正，时域响应包含增幅指数项，振幅迅速发散。";
+  }
+
+  if (omega === 0) {
+    $("mode_str").textContent = `e^{(${sigma.toFixed(2)})t}`;
+    $("t_period").textContent = "无振荡 (单调)";
+  } else {
+    $("mode_str").textContent = `e^{(${sigma.toFixed(2)})t}·cos(${omega.toFixed(1)}t)`;
+    $("t_period").textContent = (2 * Math.PI / omega).toFixed(2) + " s";
+  }
+
+  $("tau_val").textContent = Math.abs(sigma) > 1e-3 ? (1 / Math.abs(sigma)).toFixed(2) + " s" : "∞";
+
+  drawSPlane();
+  drawTime();
+}
+
+function drawSPlane() {
+  const { g, w, h } = fit($("cv_s"));
+  g.clearRect(0, 0, w, h);
+
+  const cx = w * 0.72; // s=0 slightly to the right
+  const cy = h * 0.5;
+  const scale = Math.min(w, h) / 7.5;
+
+  // LHP background
+  g.fillStyle = K.fill;
+  g.fillRect(0, 0, cx, h);
+
+  // Axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, cy); g.lineTo(w, cy); // sigma axis
+  g.moveTo(cx, 0); g.lineTo(cx, h); // jw axis
+  g.stroke();
+
+  // Axis Labels
+  g.fillStyle = K.muted;
+  g.fillText("σ", w - 14, cy - 6);
+  g.fillText("jω", cx + 6, 12);
+  g.fillText("左半平面 (稳定)", 8, 14);
+
+  // Poles (draw cross ×)
+  function drawPole(x, y) {
+    const px = cx + x * scale;
+    const py = cy - y * scale;
+    g.strokeStyle = K.ink;
+    g.lineWidth = 2;
+    const s = 4.5;
+    g.beginPath();
+    g.moveTo(px - s, py - s); g.lineTo(px + s, py + s);
+    g.moveTo(px - s, py + s); g.lineTo(px + s, py - s);
+    g.stroke();
+  }
+
+  drawPole(sigma, omega);
+  if (omega > 0.05) {
+    drawPole(sigma, -omega);
+  }
+}
+
+function drawTime() {
+  const { g, w, h } = fit($("cv_t"));
+  g.clearRect(0, 0, w, h);
+
+  const padL = 36, padR = 14, padT = 16, padB = 24;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const cy = padT + ph * 0.5;
+
+  // Axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(padL, padT); g.lineTo(padL, padT + ph);
+  g.moveTo(padL, cy); g.lineTo(padL + pw, cy);
+  g.stroke();
+
+  // Time grid & labels
+  const tMax = 6.0;
+  g.fillStyle = K.muted;
+  for (let t = 1; t <= tMax; t += 1) {
+    const x = padL + (t / tMax) * pw;
+    g.beginPath();
+    g.moveTo(x, cy - 2); g.lineTo(x, cy + 2);
+    g.stroke();
+    g.fillText(t + "s", x - 6, padT + ph + 14);
+  }
+
+  // Calculate curve & adaptive amplitude limit
+  const N = 250;
+  let maxAbs = 1.2;
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * tMax;
+    const env = Math.exp(sigma * t);
+    const y = env * (omega > 0 ? Math.cos(omega * t) : 1);
+    pts.push({ t, y, env });
+    if (Math.abs(y) > maxAbs && t <= 4.0) maxAbs = Math.abs(y);
+  }
+  maxAbs = Math.min(Math.max(maxAbs * 1.15, 1.2), 6.0);
+
+  // Y-axis ticks
+  g.fillText("0", padL - 14, cy + 4);
+  g.fillText((maxAbs * 0.8).toFixed(1), padL - 26, cy - ph * 0.4 + 4);
+  g.fillText((-maxAbs * 0.8).toFixed(1), padL - 30, cy + ph * 0.4 + 4);
+
+  // Envelope lines (dashed)
+  if (omega > 0.05 && sigma < 0.8) {
+    g.strokeStyle = K.mid;
+    g.setLineDash([4, 4]);
+    g.lineWidth = 1;
+
+    // +env
+    g.beginPath();
+    pts.forEach((p, idx) => {
+      const x = padL + (p.t / tMax) * pw;
+      const y = cy - (p.env / maxAbs) * (ph * 0.48);
+      if (idx === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    });
+    g.stroke();
+
+    // -env
+    g.beginPath();
+    pts.forEach((p, idx) => {
+      const x = padL + (p.t / tMax) * pw;
+      const y = cy - (-p.env / maxAbs) * (ph * 0.48);
+      if (idx === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    });
+    g.stroke();
+    g.setLineDash([]);
+  }
+
+  // Response curve y(t)
+  g.strokeStyle = K.ink;
+  g.lineWidth = 1.8;
+  g.beginPath();
+  pts.forEach((p, idx) => {
+    const x = padL + (p.t / tMax) * pw;
+    const y = cy - (p.y / maxAbs) * (ph * 0.48);
+    const clampedY = Math.max(padT, Math.min(padT + ph, y));
+    if (idx === 0) g.moveTo(x, clampedY); else g.lineTo(x, clampedY);
+  });
+  g.stroke();
+}
+
+function setPreset(s, w, btnId) {
+  $("in_sigma").value = s;
+  $("in_omega").value = w;
+  document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on"));
+  if ($(btnId)) $(btnId).classList.add("on");
+  updateParams();
+}
+
+$("p1").onclick = () => setPreset(-1.0, 3.0, "p1");
+$("p2").onclick = () => setPreset(0.0, 3.0, "p2");
+$("p3").onclick = () => setPreset(0.4, 2.5, "p3");
+$("p4").onclick = () => setPreset(-1.8, 0.0, "p4");
+
+$("in_sigma").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); updateParams(); };
+$("in_omega").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); updateParams(); };
+
+window.addEventListener("resize", () => { drawSPlane(); drawTime(); });
+updateParams();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

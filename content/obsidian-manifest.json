@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 106,
-  "assetCount": 264,
+  "noteCount": 108,
+  "assetCount": 285,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -318,6 +318,20 @@
       "title": "自动控制原理：第 2 讲 系统的数学模型（方框图、信号流图与状态空间）",
       "publishedAt": "2026-09-24",
       "hash": "ffacc459c437a52981e4750a3fb9aeabec0960e7e16524e561ca2c46ceded301"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03.md",
+      "slug": "自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03",
+      "title": "自动控制原理：第 3 讲 传递函数与状态空间转换及稳定性",
+      "publishedAt": "2026-10-21",
+      "hash": "d5e94f318f34c9371aa31d1e65b69e781550b5386214badaf4de45d8215d5d09"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04.md",
+      "slug": "自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04",
+      "title": "自动控制原理：第 4 讲 代数稳定性判据、稳态误差与瞬态响应",
+      "publishedAt": "2026-10-21",
+      "hash": "fb70b185a713558462c01c5486d74c3d14f431467838cb4eb15963f48462a254"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

@@ -1,0 +1,345 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>二阶系统阶跃响应与阻尼比</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 2px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ink); margin-right: 4px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-style: dashed; }
+.legend i.l { border-top-color: var(--light); border-top-style: dotted; }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+</style>
+</head>
+<body>
+<h2>典型二阶系统阶跃响应与阻尼比 $\zeta$</h2>
+<p class="sub">传递函数 $\Phi(s) = \frac{\omega_n^2}{s^2 + 2\zeta\omega_n s + \omega_n^2}$。改变阻尼比 $\zeta$ 观察根分布与动态指标。</p>
+
+<div class="btns">
+  <button id="b0">无阻尼 (ζ=0)</button>
+  <button id="b1">强欠阻尼 (ζ=0.3)</button>
+  <button id="b2" class="on">工程最佳 (ζ=0.707)</button>
+  <button id="b3">临界阻尼 (ζ=1.0)</button>
+  <button id="b4">过阻尼 (ζ=1.6)</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <label><span>阻尼比 $\zeta$ (Damping Ratio)</span><b id="v_zeta"></b></label>
+    <input id="in_zeta" type="range" min="0.0" max="2.0" step="0.01" value="0.707">
+    <label><span>自然角频率 $\omega_n$ (rad/s)</span><b id="v_wn"></b></label>
+    <input id="in_wn" type="range" min="0.5" max="4.0" step="0.1" value="2.0">
+
+    <div class="kv"><span>阻尼状态</span><b id="state_desc"></b></div>
+    <div class="kv"><span>闭环极点 $s_{1,2}$</span><b id="pole_val"></b></div>
+    <div class="kv"><span>最大超调量 $\sigma\%$</span><b id="m_os"></b></div>
+    <div class="kv"><span>峰值时间 $t_p$</span><b id="m_tp"></b></div>
+    <div class="kv"><span>上升时间 $t_r$</span><b id="m_tr"></b></div>
+    <div class="kv"><span>调节时间 $t_s$ (2% 准则)</span><b id="m_ts"></b></div>
+
+    <div style="margin-top: 8px;">
+      <canvas id="cv_s" style="height: 120px; border: 1px solid var(--line);"></canvas>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">阶跃响应曲线 $y(t)$ 与误差带</div>
+    <canvas id="cv_t" style="height: 290px;"></canvas>
+    <div class="legend">
+      <span><i></i>阶跃响应 $y(t)$</span>
+      <span><i class="m"></i>稳态值 $y=1.0$</span>
+      <span><i class="l"></i>±2% 容差带</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K[n] = C(n); }); }
+refreshK();
+
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+let zeta = 0.707, wn = 2.0;
+
+function update() {
+  zeta = parseFloat($("in_zeta").value);
+  wn = parseFloat($("in_wn").value);
+  $("v_zeta").textContent = zeta.toFixed(3);
+  $("v_wn").textContent = wn.toFixed(1);
+
+  if (zeta === 0) {
+    $("state_desc").textContent = "无阻尼 (Undamped)";
+    $("pole_val").textContent = `±j${wn.toFixed(2)}`;
+    $("m_os").textContent = "100.0 %";
+    $("m_tp").textContent = (Math.PI / wn).toFixed(2) + " s";
+    $("m_tr").textContent = (Math.PI / (2 * wn)).toFixed(2) + " s";
+    $("m_ts").textContent = "∞ (持续等幅振荡)";
+    $("hint").textContent = "系统没有能量耗散，以频率 ω_n 永远等幅振荡，没有稳态。";
+  } else if (zeta < 1.0) {
+    $("state_desc").textContent = `欠阻尼 (Underdamped, ζ=${zeta.toFixed(2)})`;
+    const wd = wn * Math.sqrt(1 - zeta * zeta);
+    const sigma = zeta * wn;
+    $("pole_val").textContent = `-${sigma.toFixed(2)} ± j${wd.toFixed(2)}`;
+    const os = Math.exp(-zeta * Math.PI / Math.sqrt(1 - zeta * zeta)) * 100;
+    const tp = Math.PI / wd;
+    const beta = Math.atan(Math.sqrt(1 - zeta * zeta) / zeta);
+    const tr = (Math.PI - beta) / wd;
+    const ts = 4.0 / (zeta * wn);
+    $("m_os").textContent = os.toFixed(1) + " %";
+    $("m_tp").textContent = tp.toFixed(2) + " s";
+    $("m_tr").textContent = tr.toFixed(2) + " s";
+    $("m_ts").textContent = ts.toFixed(2) + " s";
+    if (Math.abs(zeta - 0.707) < 0.05) {
+      $("hint").textContent = "工程最优阻尼比 ζ≈0.707：超调量仅 4.3%，调节时间最短，平稳与快速兼备。";
+    } else {
+      $("hint").textContent = "欠阻尼响应具有超调和衰减振荡；阻尼比 ζ 越小，超调量越大。";
+    }
+  } else if (Math.abs(zeta - 1.0) < 1e-4) {
+    $("state_desc").textContent = "临界阻尼 (Critically Damped)";
+    $("pole_val").textContent = `-${wn.toFixed(2)} (二重实根)`;
+    $("m_os").textContent = "0.0 % (无超调)";
+    $("m_tp").textContent = "无峰值";
+    $("m_tr").textContent = (3.36 / wn).toFixed(2) + " s";
+    $("m_ts").textContent = (4.75 / wn).toFixed(2) + " s";
+    $("hint").textContent = "无超调单调过渡的最快状态；再增加阻尼则变为缓慢的过阻尼。";
+  } else {
+    $("state_desc").textContent = "过阻尼 (Overdamped)";
+    const sq = Math.sqrt(zeta * zeta - 1);
+    const s1 = -wn * (zeta - sq);
+    const s2 = -wn * (zeta + sq);
+    $("pole_val").textContent = `${s1.toFixed(2)}, ${s2.toFixed(2)}`;
+    $("m_os").textContent = "0.0 % (无超调)";
+    $("m_tp").textContent = "无峰值";
+    $("m_tr").textContent = "缓慢单调上升";
+    const ts = 4.0 / Math.abs(s1);
+    $("m_ts").textContent = `≈ ${ts.toFixed(2)} s`;
+    $("hint").textContent = "极点分裂为两个负实根，响应单调缓慢上升，主导极点决定响应速度。";
+  }
+
+  drawPoles();
+  drawStep();
+}
+
+function drawPoles() {
+  const { g, w, h } = fit($("cv_s"));
+  g.clearRect(0, 0, w, h);
+
+  const cx = w * 0.75, cy = h * 0.5;
+  const maxW = 5.0;
+  const scale = (w * 0.65) / maxW;
+
+  // LHP background
+  g.fillStyle = K.fill;
+  g.fillRect(0, 0, cx, h);
+
+  // Axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, cy); g.lineTo(w, cy);
+  g.moveTo(cx, 0); g.lineTo(cx, h);
+  g.stroke();
+
+  // wn circle arc in LHP
+  g.strokeStyle = K.light;
+  g.setLineDash([3, 3]);
+  g.beginPath();
+  g.arc(cx, cy, wn * scale, Math.PI * 0.5, Math.PI * 1.5);
+  g.stroke();
+  g.setLineDash([]);
+
+  // Label
+  g.fillStyle = K.muted;
+  g.fillText("σ", w - 14, cy - 5);
+  g.fillText("jω", cx + 5, 12);
+
+  function drawCross(x, y) {
+    const px = cx + x * scale;
+    const py = cy - y * scale;
+    g.strokeStyle = K.ink;
+    g.lineWidth = 2;
+    const s = 4.5;
+    g.beginPath();
+    g.moveTo(px - s, py - s); g.lineTo(px + s, py + s);
+    g.moveTo(px - s, py + s); g.lineTo(px + s, py - s);
+    g.stroke();
+  }
+
+  if (zeta < 1.0) {
+    const wd = wn * Math.sqrt(1 - zeta * zeta);
+    const sig = -zeta * wn;
+    drawCross(sig, wd);
+    if (wd > 0.05) drawCross(sig, -wd);
+  } else if (Math.abs(zeta - 1.0) < 1e-4) {
+    drawCross(-wn, 0);
+  } else {
+    const sq = Math.sqrt(zeta * zeta - 1);
+    drawCross(-wn * (zeta - sq), 0);
+    drawCross(-wn * (zeta + sq), 0);
+  }
+}
+
+function drawStep() {
+  const { g, w, h } = fit($("cv_t"));
+  g.clearRect(0, 0, w, h);
+
+  const padL = 34, padR = 14, padT = 16, padB = 24;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const tMax = Math.max(6.0, (8.0 / Math.max(0.2, zeta * wn)));
+  const yMax = 1.8;
+
+  const toX = (t) => padL + (t / tMax) * pw;
+  const toY = (y) => padT + ph - (y / yMax) * ph;
+
+  // Grid & axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(padL, padT); g.lineTo(padL, padT + ph);
+  g.moveTo(padL, padT + ph); g.lineTo(padL + pw, padT + ph);
+  g.stroke();
+
+  // Steady state 1.0 line (dashed)
+  g.strokeStyle = K.mid;
+  g.setLineDash([5, 4]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.0)); g.lineTo(padL + pw, toY(1.0));
+  g.stroke();
+
+  // +/- 2% band
+  g.strokeStyle = K.light;
+  g.setLineDash([2, 3]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.02)); g.lineTo(padL + pw, toY(1.02));
+  g.moveTo(padL, toY(0.98)); g.lineTo(padL + pw, toY(0.98));
+  g.stroke();
+  g.setLineDash([]);
+
+  // Labels
+  g.fillStyle = K.muted;
+  g.fillText("1.0", padL - 24, toY(1.0) + 4);
+  g.fillText("0", padL - 14, padT + ph + 4);
+  g.fillText(yMax.toFixed(1), padL - 24, padT + 10);
+
+  // Time grid marks
+  const stepT = tMax > 10 ? 2 : 1;
+  for (let t = stepT; t < tMax; t += stepT) {
+    const x = toX(t);
+    g.beginPath();
+    g.moveTo(x, padT + ph - 3); g.lineTo(x, padT + ph + 3);
+    g.stroke();
+    g.fillText(t + "s", x - 6, padT + ph + 14);
+  }
+
+  // Curve simulation
+  const N = 300;
+  const pts = [];
+  let peakPt = null, maxVal = -1;
+
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * tMax;
+    let y = 0;
+    if (zeta === 0) {
+      y = 1 - Math.cos(wn * t);
+    } else if (zeta < 1.0) {
+      const wd = wn * Math.sqrt(1 - zeta * zeta);
+      const beta = Math.atan(Math.sqrt(1 - zeta * zeta) / zeta);
+      y = 1 - (Math.exp(-zeta * wn * t) / Math.sqrt(1 - zeta * zeta)) * Math.sin(wd * t + beta);
+    } else if (Math.abs(zeta - 1.0) < 1e-4) {
+      y = 1 - (1 + wn * t) * Math.exp(-wn * t);
+    } else {
+      const sq = Math.sqrt(zeta * zeta - 1);
+      const s1 = -wn * (zeta - sq);
+      const s2 = -wn * (zeta + sq);
+      const c1 = -s2 / (s1 - s2);
+      const c2 = s1 / (s1 - s2);
+      y = 1 + c1 * Math.exp(s1 * t) + c2 * Math.exp(s2 * t);
+    }
+    pts.push({ t, y });
+    if (y > maxVal) { maxVal = y; peakPt = { t, y }; }
+  }
+
+  // Draw response line
+  g.strokeStyle = K.ink;
+  g.lineWidth = 2;
+  g.beginPath();
+  pts.forEach((p, idx) => {
+    const x = toX(p.t);
+    const y = toY(p.y);
+    if (idx === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  });
+  g.stroke();
+
+  // Peak marker if overshoot > 0.5%
+  if (zeta < 1.0 && maxVal > 1.01 && peakPt) {
+    const px = toX(peakPt.t), py = toY(peakPt.y);
+    g.fillStyle = K.ink;
+    g.beginPath();
+    g.arc(px, py, 3.5, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = K.muted;
+    g.fillText(`峰值 (${peakPt.t.toFixed(2)}s, ${maxVal.toFixed(2)})`, px + 6, py - 4);
+  }
+}
+
+function setP(z, w, id) {
+  $("in_zeta").value = z;
+  $("in_wn").value = w;
+  document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on"));
+  if ($(id)) $(id).classList.add("on");
+  update();
+}
+
+$("b0").onclick = () => setP(0.0, 2.0, "b0");
+$("b1").onclick = () => setP(0.3, 2.0, "b1");
+$("b2").onclick = () => setP(0.707, 2.0, "b2");
+$("b3").onclick = () => setP(1.0, 2.0, "b3");
+$("b4").onclick = () => setP(1.6, 2.0, "b4");
+
+$("in_zeta").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); update(); };
+$("in_wn").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); update(); };
+
+window.addEventListener("resize", () => { drawPoles(); drawStep(); });
+update();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

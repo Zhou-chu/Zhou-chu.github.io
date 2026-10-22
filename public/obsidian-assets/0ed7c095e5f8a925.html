@@ -1,0 +1,230 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>节点导纳矩阵与网络拓扑动态联动</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 8px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+table.mat { width: 100%; border-collapse: collapse; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; margin-top: 6px; }
+table.mat th, table.mat td { border: 1px solid var(--line); padding: 5px 4px; text-align: center; }
+table.mat th { background: var(--fill); color: var(--muted); font-weight: 600; }
+table.mat td.hl-diag { background: var(--ink); color: var(--bg); font-weight: 600; }
+table.mat td.hl-mut { background: var(--fill); color: var(--ink); font-weight: 600; outline: 1px dashed var(--ink); }
+table.mat td.zero { color: var(--light); }
+</style>
+</head>
+<body>
+<h2>4 节点电力网络拓扑与节点导纳矩阵 $\boldsymbol{Y}_{\text{bus}}$ 联动</h2>
+<p class="sub">点击下方节点选择聚焦对象，观察网络拓扑中相连支路与导纳矩阵自导纳 $Y_{ii}$、互导纳 $Y_{ij}$ 的严格映射。</p>
+
+<div class="btns">
+  <button id="n1" class="on">节点 1 (发电机母线)</button>
+  <button id="n2">节点 2 (负荷母线)</button>
+  <button id="n3">节点 3 (负荷母线)</button>
+  <button id="n4">节点 4 (联络母线)</button>
+  <button id="sw" style="margin-left:auto;">切换 1-2 支路通断: 投入</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 2px;">网络拓扑图（拓扑连接与对地电容）</div>
+    <canvas id="cv_net" style="height: 200px; border: 1px solid var(--line);"></canvas>
+    <div class="hint" id="calc_hint"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">节点导纳矩阵 $\boldsymbol{Y}_{\text{bus}}$ (标幺值 S)</div>
+    <table class="mat" id="mat_tbl"></table>
+    <div class="kv" style="margin-top: 8px;"><span>主对角自导纳 $Y_{ii}$ 规则</span><b>连接各支路导纳之和 + 对地导纳</b></div>
+    <div class="kv"><span>非对角互导纳 $Y_{ij}$ 规则</span><b>直接相连支路导纳的负值 $-y_{ij}$ (无连则为 0)</b></div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshColors() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K[n] = C(n); }); }
+refreshColors();
+
+function fit(c) {
+  refreshColors();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+let activeNode = 1;
+let line12Active = true;
+
+// 4-bus parameters (per-unit y = g + jb, shunt y0)
+const branches = [
+  { f: 1, t: 2, g: 2.0, b: -6.0, b0: 0.05, active: true },
+  { f: 1, t: 3, g: 1.5, b: -4.5, b0: 0.04, active: true },
+  { f: 2, t: 4, g: 2.5, b: -7.5, b0: 0.06, active: true },
+  { f: 3, t: 4, g: 1.8, b: -5.4, b0: 0.05, active: true },
+];
+
+function calcYbus() {
+  const Y = Array(4).fill(0).map(() => Array(4).fill(0).map(() => ({ g: 0, b: 0 })));
+  branches[0].active = line12Active;
+
+  branches.forEach(br => {
+    if (!br.active) return;
+    const i = br.f - 1, j = br.t - 1;
+    // Mutual
+    Y[i][j].g -= br.g; Y[i][j].b -= br.b;
+    Y[j][i].g -= br.g; Y[j][i].b -= br.b;
+    // Self
+    Y[i][i].g += br.g; Y[i][i].b += br.b + br.b0;
+    Y[j][j].g += br.g; Y[j][j].b += br.b + br.b0;
+  });
+  return Y;
+}
+
+function update() {
+  const Y = calcYbus();
+  drawNet();
+  renderTable(Y);
+  renderHint(Y);
+}
+
+const nodePos = [
+  { x: 0.22, y: 0.28, name: "Node 1" },
+  { x: 0.78, y: 0.28, name: "Node 2" },
+  { x: 0.22, y: 0.75, name: "Node 3" },
+  { x: 0.78, y: 0.75, name: "Node 4" },
+];
+
+function drawNet() {
+  const { g, w, h } = fit($("cv_net"));
+  g.clearRect(0, 0, w, h);
+
+  // Draw branches
+  branches.forEach(br => {
+    const p1 = nodePos[br.f - 1], p2 = nodePos[br.t - 1];
+    const x1 = p1.x * w, y1 = p1.y * h, x2 = p2.x * w, y2 = p2.y * h;
+
+    if (!br.active) {
+      g.strokeStyle = K.light;
+      g.setLineDash([4, 4]);
+      g.lineWidth = 1;
+    } else if (br.f === activeNode || br.t === activeNode) {
+      g.strokeStyle = K.ink;
+      g.setLineDash([]);
+      g.lineWidth = 2.2;
+    } else {
+      g.strokeStyle = K.line;
+      g.setLineDash([]);
+      g.lineWidth = 1.2;
+    }
+
+    g.beginPath();
+    g.moveTo(x1, y1); g.lineTo(x2, y2);
+    g.stroke();
+    g.setLineDash([]);
+
+    // Line label
+    const mx = (x1 + x2) * 0.5, my = (y1 + y2) * 0.5;
+    g.fillStyle = K.muted;
+    g.fillText(br.active ? `y_${br.f}${br.t}` : "断开", mx - 10, my - 4);
+  });
+
+  // Draw nodes
+  nodePos.forEach((p, idx) => {
+    const x = p.x * w, y = p.y * h;
+    const isAct = (idx + 1) === activeNode;
+
+    g.fillStyle = isAct ? K.ink : K.bg;
+    g.strokeStyle = K.ink;
+    g.lineWidth = isAct ? 2.5 : 1.5;
+
+    g.beginPath();
+    g.arc(x, y, isAct ? 12 : 9, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+
+    g.fillStyle = isAct ? K.bg : K.ink;
+    g.font = isAct ? 'bold 11px system-ui' : '10.5px system-ui';
+    g.fillText(String(idx + 1), x - 3, y + 3.5);
+
+    g.fillStyle = K.ink;
+    g.fillText(p.name, x - 18, y - 14);
+  });
+}
+
+function renderTable(Y) {
+  let html = '<tr><th>i\\j</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>';
+  for (let i = 0; i < 4; i++) {
+    html += `<tr><th>${i + 1}</th>`;
+    for (let j = 0; j < 4; j++) {
+      const isDiag = (i === j);
+      const isActDiag = isDiag && (i + 1 === activeNode);
+      const isActMut = !isDiag && (i + 1 === activeNode || j + 1 === activeNode) && (Y[i][j].g !== 0 || Y[i][j].b !== 0);
+
+      let cls = '';
+      if (isActDiag) cls = 'hl-diag';
+      else if (isActMut) cls = 'hl-mut';
+      else if (Y[i][j].g === 0 && Y[i][j].b === 0) cls = 'zero';
+
+      const valG = Y[i][j].g.toFixed(1);
+      const valB = Y[i][j].b >= 0 ? `+j${Y[i][j].b.toFixed(1)}` : `-j${Math.abs(Y[i][j].b).toFixed(1)}`;
+      html += `<td class="${cls}">${valG}${valB}</td>`;
+    }
+    html += '</tr>';
+  }
+  $("mat_tbl").innerHTML = html;
+}
+
+function renderHint(Y) {
+  const i = activeNode - 1;
+  const diag = Y[i][i];
+  const bSign = diag.b >= 0 ? '+' : '-';
+  $("calc_hint").textContent = `当前选中节点 ${activeNode}：自导纳 Y_${activeNode}${activeNode} = ${diag.g.toFixed(2)} ${bSign} j${Math.abs(diag.b).toFixed(2)}。断开或接入支路时，仅相关 4 个元素实时修正，其余元素严格保持不变！`;
+}
+
+$("n1").onclick = () => setNode(1);
+$("n2").onclick = () => setNode(2);
+$("n3").onclick = () => setNode(3);
+$("n4").onclick = () => setNode(4);
+
+function setNode(n) {
+  activeNode = n;
+  for (let i = 1; i <= 4; i++) $(`n${i}`).classList.remove("on");
+  $(`n${n}`).classList.add("on");
+  update();
+}
+
+$("sw").onclick = () => {
+  line12Active = !line12Active;
+  $("sw").textContent = `切换 1-2 支路通断: ${line12Active ? '投入' : '切除'}`;
+  update();
+};
+
+window.addEventListener("resize", update);
+update();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

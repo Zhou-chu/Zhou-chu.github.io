@@ -1,0 +1,342 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>根轨迹与闭环时域性能仿真</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 2px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ink); margin-right: 4px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-style: dashed; }
+.legend i.l { border-top-color: var(--light); border-top-style: dotted; }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+</style>
+</head>
+<body>
+<h2>三阶系统根轨迹与闭环阶跃响应动态仿真</h2>
+<p class="sub">开环传递函数 $G_0(s) = \frac{K}{s(s+2)(s+4)}$。拖动根轨迹增益 $K$，观察极点在 S 平面移动及闭环阶跃响应。</p>
+
+<div class="btns">
+  <button id="b1">实轴过阻尼 (K=5.0)</button>
+  <button id="b2">分离点临界 (K=13.1)</button>
+  <button id="b3" class="on">欠阻尼优良 (K=25.0)</button>
+  <button id="b4">虚轴临界等幅 (K=48.0)</button>
+  <button id="b5">发散失稳 (K=65.0)</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <label><span>根轨迹增益 $K$ (Root Locus Gain)</span><b id="v_k"></b></label>
+    <input id="in_k" type="range" min="0.5" max="70.0" step="0.5" value="25.0">
+
+    <div class="kv"><span>系统稳定性</span><b id="stat_desc"></b></div>
+    <div class="kv"><span>闭环主导极点 $s_{1,2}$</span><b id="poles_desc"></b></div>
+    <div class="kv"><span>第三极点 $s_3$（实轴衰减）</span><b id="p3_desc"></b></div>
+    <div class="kv"><span>临界增益 $K_{\text{crit}}$</span><b>48.0 ($\omega_{\text{crit}} = \pm j2.83$)</b></div>
+
+    <div style="margin-top: 8px;">
+      <div style="font-size: 11.5px; color: var(--muted); margin-bottom: 2px;">S 平面极点轨迹（含渐近线与分离点）</div>
+      <canvas id="cv_s" style="height: 180px; border: 1px solid var(--line);"></canvas>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">闭环系统单位阶跃响应曲线 $y(t)$</div>
+    <canvas id="cv_t" style="height: 290px;"></canvas>
+    <div class="legend">
+      <span><i></i>阶跃响应 $y(t)$</span>
+      <span><i class="m"></i>稳态值 $y=1.0$</span>
+      <span><i class="l"></i>渐近线 / 虚轴</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K_COLOR = {};
+function refreshColors() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K_COLOR[n] = C(n); }); }
+refreshColors();
+
+function fit(c) {
+  refreshColors();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+let K_val = 25.0;
+
+// Solve cubic equation s^3 + 6s^2 + 8s + K = 0
+function solveCubic(K) {
+  const a = 6, b = 8, c = K;
+  const p = b - (a * a) / 3;
+  const q = (2 * a * a * a) / 27 - (a * b) / 3 + c;
+  const delta = (q * q) / 4 + (p * p * p) / 27;
+
+  if (delta > 0) {
+    const u = Math.cbrt(-q / 2 + Math.sqrt(delta));
+    const v = Math.cbrt(-q / 2 - Math.sqrt(delta));
+    const y1 = u + v;
+    const s1 = y1 - a / 3;
+    const realPart = -(u + v) / 2 - a / 3;
+    const imagPart = ((u - v) * Math.sqrt(3)) / 2;
+    return [{ re: realPart, im: Math.abs(imagPart) }, { re: realPart, im: -Math.abs(imagPart) }, { re: s1, im: 0 }];
+  } else {
+    const r = Math.sqrt(-(p * p * p) / 27);
+    const phi = Math.acos(Math.max(-1, Math.min(1, -q / (2 * r))));
+    const y1 = 2 * Math.cbrt(r) * Math.cos(phi / 3);
+    const y2 = 2 * Math.cbrt(r) * Math.cos((phi + 2 * Math.PI) / 3);
+    const y3 = 2 * Math.cbrt(r) * Math.cos((phi + 4 * Math.PI) / 3);
+    const roots = [y1 - a / 3, y2 - a / 3, y3 - a / 3].sort((x, y) => x - y);
+    return [{ re: roots[2], im: 0 }, { re: roots[1], im: 0 }, { re: roots[0], im: 0 }];
+  }
+}
+
+function update() {
+  K_val = parseFloat($("in_k").value);
+  $("v_k").textContent = K_val.toFixed(1);
+
+  const roots = solveCubic(K_val);
+  const p1 = roots[0], p2 = roots[1], p3 = roots[2];
+
+  if (K_val < 13.1) {
+    $("stat_desc").textContent = "严格渐近稳定（三实根，过阻尼单调上升）";
+    $("poles_desc").textContent = `${p1.re.toFixed(2)}, ${p2.re.toFixed(2)}`;
+    $("p3_desc").textContent = p3.re.toFixed(2);
+    $("hint").textContent = "增益较小，闭环极点全在负实轴上，时域响应单调上升无超调。";
+  } else if (Math.abs(K_val - 13.1) < 0.8) {
+    $("stat_desc").textContent = "临界分离点状态 (K≈13.1, s≈-0.85 重根)";
+    $("poles_desc").textContent = "-0.85 (二重重实根)";
+    $("p3_desc").textContent = p3.re.toFixed(2);
+    $("hint").textContent = "极点在 s=-0.85 处发生碰撞分离，即将进入复数欠阻尼振荡模式。";
+  } else if (K_val < 48.0) {
+    $("stat_desc").textContent = "欠阻尼衰减振荡（左半面共轭复极点，稳定）";
+    $("poles_desc").textContent = `${p1.re.toFixed(2)} ± j${p1.im.toFixed(2)}`;
+    $("p3_desc").textContent = p3.re.toFixed(2);
+    $("hint").textContent = "极点具有负实部，瞬态振荡衰减收敛；增益越大，振荡越剧烈。";
+  } else if (Math.abs(K_val - 48.0) < 0.6) {
+    $("stat_desc").textContent = "虚轴临界等幅振荡 (K=48.0, s=±j2.83)";
+    $("poles_desc").textContent = `0.00 ± j2.83 (纯虚根)`;
+    $("p3_desc").textContent = p3.re.toFixed(2);
+    $("hint").textContent = "闭环极点越过虚轴交点，系统进入持续无衰减等幅正弦振荡！";
+  } else {
+    $("stat_desc").textContent = "不稳定（右半面共轭极点，指数发散）";
+    $("poles_desc").textContent = `+${p1.re.toFixed(2)} ± j${p1.im.toFixed(2)}`;
+    $("p3_desc").textContent = p3.re.toFixed(2);
+    $("hint").textContent = "实部变为正数，输出振幅随时间呈指数发散，系统失稳。";
+  }
+
+  drawSPlane(roots);
+  drawStep(roots);
+}
+
+function drawSPlane(currentRoots) {
+  const { g, w, h } = fit($("cv_s"));
+  g.clearRect(0, 0, w, h);
+
+  const cx = w * 0.78, cy = h * 0.5;
+  const scale = w / 9.5;
+
+  // LHP background fill
+  g.fillStyle = K_COLOR.fill;
+  g.fillRect(0, 0, cx, h);
+
+  // Axes
+  g.strokeStyle = K_COLOR.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, cy); g.lineTo(w, cy); // sigma axis
+  g.moveTo(cx, 0); g.lineTo(cx, h); // jw axis
+  g.stroke();
+
+  // Axis Labels
+  g.fillStyle = K_COLOR.muted;
+  g.fillText("σ", w - 12, cy - 4);
+  g.fillText("jω", cx + 4, 12);
+  g.fillText("左半平面 (稳定)", 6, 12);
+
+  // Asymptotes: sigma_a = -2, angle = 60, 180, 300
+  const fx = cx - 2.0 * scale;
+  g.strokeStyle = K_COLOR.light;
+  g.setLineDash([3, 3]);
+  g.beginPath();
+  g.moveTo(fx, cy); g.lineTo(fx + 4.5 * scale * Math.cos(Math.PI / 3), cy - 4.5 * scale * Math.sin(Math.PI / 3));
+  g.moveTo(fx, cy); g.lineTo(fx + 4.5 * scale * Math.cos(Math.PI / 3), cy + 4.5 * scale * Math.sin(Math.PI / 3));
+  g.moveTo(fx, cy); g.lineTo(0, cy);
+  g.stroke();
+  g.setLineDash([]);
+
+  // Draw static root locus curves
+  g.strokeStyle = K_COLOR.mid;
+  g.lineWidth = 1.4;
+
+  // Real axis segments: [-2, 0] and [-inf, -4]
+  g.beginPath();
+  g.moveTo(cx, cy); g.lineTo(cx - 2.0 * scale, cy);
+  g.moveTo(cx - 4.0 * scale, cy); g.lineTo(0, cy);
+  g.stroke();
+
+  // Complex branches (sample K from 13.1 to 80)
+  g.beginPath();
+  let first = true;
+  for (let k = 13.1; k <= 80; k += 0.8) {
+    const r = solveCubic(k)[0];
+    const px = cx + r.re * scale;
+    const py = cy - r.im * scale;
+    if (first) { g.moveTo(px, py); first = false; } else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  g.beginPath();
+  first = true;
+  for (let k = 13.1; k <= 80; k += 0.8) {
+    const r = solveCubic(k)[1];
+    const px = cx + r.re * scale;
+    const py = cy - r.im * scale;
+    if (first) { g.moveTo(px, py); first = false; } else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  // Open loop poles crosses (0, -2, -4)
+  function drawOpenPole(x, y) {
+    const px = cx + x * scale, py = cy - y * scale;
+    g.strokeStyle = K_COLOR.ink;
+    g.lineWidth = 2;
+    const s = 4;
+    g.beginPath();
+    g.moveTo(px - s, py - s); g.lineTo(px + s, py + s);
+    g.moveTo(px - s, py + s); g.lineTo(px + s, py - s);
+    g.stroke();
+  }
+  drawOpenPole(0, 0);
+  drawOpenPole(-2, 0);
+  drawOpenPole(-4, 0);
+
+  // Current closed loop poles (black circles)
+  currentRoots.forEach((rt) => {
+    const px = cx + rt.re * scale, py = cy - rt.im * scale;
+    g.fillStyle = K_COLOR.ink;
+    g.beginPath();
+    g.arc(px, py, 3.5, 0, Math.PI * 2);
+    g.fill();
+  });
+}
+
+function drawStep(roots) {
+  const { g, w, h } = fit($("cv_t"));
+  g.clearRect(0, 0, w, h);
+
+  const padL = 34, padR = 14, padT = 16, padB = 24;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const tMax = 12.0;
+  const yMax = K_val > 55 ? 4.0 : 2.0;
+
+  const toX = (t) => padL + (t / tMax) * pw;
+  const toY = (y) => padT + ph - (y / yMax) * ph;
+
+  // Grid
+  g.strokeStyle = K_COLOR.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(padL, padT); g.lineTo(padL, padT + ph);
+  g.moveTo(padL, toY(0)); g.lineTo(padL + pw, toY(0));
+  g.stroke();
+
+  // 1.0 baseline
+  g.strokeStyle = K_COLOR.mid;
+  g.setLineDash([4, 4]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.0)); g.lineTo(padL + pw, toY(1.0));
+  g.stroke();
+  g.setLineDash([]);
+
+  // Labels
+  g.fillStyle = K_COLOR.muted;
+  g.fillText("1.0", padL - 22, toY(1.0) + 4);
+  g.fillText("0", padL - 14, toY(0) + 4);
+  g.fillText(tMax + "s", padL + pw - 14, toY(0) + 14);
+
+  // Simulate third order system step response
+  // TF = K / (s^3 + 6s^2 + 8s + K)
+  const dt = 0.02;
+  const N = Math.floor(tMax / dt);
+  const pts = [];
+  let y = 0, y_dot = 0, y_ddot = 0;
+
+  for (let i = 0; i <= N; i++) {
+    const t = i * dt;
+    pts.push({ t, y });
+    const u = 1.0;
+    const y_dddot = K_val * (u - y) - 8 * y_dot - 6 * y_ddot;
+    y_ddot += y_dddot * dt;
+    y_dot += y_ddot * dt;
+    y += y_dot * dt;
+    if (Math.abs(y) > 10.0) break;
+  }
+
+  // Draw curve
+  g.strokeStyle = K_COLOR.ink;
+  g.lineWidth = 1.8;
+  g.beginPath();
+  pts.forEach((p, idx) => {
+    const x = toX(p.t);
+    const yPx = Math.max(padT - 10, Math.min(padT + ph + 20, toY(p.y)));
+    if (idx === 0) g.moveTo(x, yPx); else g.lineTo(x, yPx);
+  });
+  g.stroke();
+}
+
+function setK(val, id) {
+  $("in_k").value = val;
+  document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on"));
+  if ($(id)) $(id).classList.add("on");
+  update();
+}
+
+$("b1").onclick = () => setK(5.0, "b1");
+$("b2").onclick = () => setK(13.1, "b2");
+$("b3").onclick = () => setK(25.0, "b3");
+$("b4").onclick = () => setK(48.0, "b4");
+$("b5").onclick = () => setK(65.0, "b5");
+
+$("in_k").oninput = () => {
+  document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on"));
+  update();
+};
+
+window.addEventListener("resize", () => update());
+update();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

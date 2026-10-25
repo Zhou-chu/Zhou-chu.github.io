@@ -1,0 +1,198 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>二极管整流换流重叠</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2 id="ttl"></h2>
+<p class="sub" id="sub"></p>
+<div class="btns"><button id="b1">单相桥</button><button id="b3">三相桥</button></div>
+<div class="grid">
+<div class="card">
+<div id="arow"><label><span>触发延迟角 α</span><b id="va"></b></label><input id="a" type="range" min="0" max="175" step="1"></div>
+<label><span>交流侧电感 L<sub>s</sub></span><b id="vL"></b></label><input id="L" type="range" min="0" max="10" step="0.1">
+<label><span>直流电流 I<sub>d</sub>（大电感负载）</span><b id="vI"></b></label><input id="I" type="range" min="1" max="60" step="1">
+<div class="kv"><span>重叠角 u</span><b id="oU"></b></div>
+<div class="kv"><span>平均输出 V<sub>d</sub></span><b id="oV"></b></div>
+<div class="kv" id="grow"><span>灭弧角 γ = 180° − α − u</span><b id="oG"></b></div>
+<div class="kv"><span>功率因数 PF ≈ ξ·cos(α + u/2)</span><b id="oPF"></b></div>
+<p class="formula" id="fm"></p>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:300px"></canvas>
+<div class="legend"><span><i class="l"></i><span id="lgv">v<sub>s</sub></span></span><span><i></i>v<sub>d</sub></span><span><i class="m d"></i>V<sub>d</sub> 平均</span><span><i class="bl"></i>换流缺口</span><span><i></i><span id="lgi">i<sub>s</sub></span></span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+const CFG = {"diode": true, "phase": 1, "alpha": 0, "Ls": 3, "Id": 30};
+// CFG is injected per article: {diode:true} locks α = 0.
+const W = 2 * Math.PI * 50, D2R = Math.PI / 180;
+let ph = CFG.phase;
+const VLL = 380, V1 = 220;
+$("a").value = CFG.alpha; $("L").value = CFG.Ls; $("I").value = CFG.Id;
+if (CFG.diode) { $("arow").style.display = "none"; $("grow").style.display = "none"; }
+$("ttl").textContent = CFG.diode ? "二极管整流的换流：Lₛ 把方波电流“扳”成梯形" : "晶闸管整流：α、换相重叠与灭弧角";
+$("sub").innerHTML = (CFG.diode ? "理想二极管桥 + 大电感负载（电流恒为 I<sub>d</sub>）。" : "理想晶闸管全控桥 + 大电感负载（电流恒为 I<sub>d</sub>，逆变时需直流侧反电势）。") +
+  "单相 V<sub>s</sub> = 220 V，三相 V<sub>LL</sub> = 380 V，50 Hz。";
+
+function calc() {
+  const A = CFG.diode ? 0 : +$("a").value * D2R, Ls = +$("L").value * 1e-3, Id = +$("I").value;
+  const Vm = ph === 1 ? V1 * Math.SQRT2 : VLL * Math.SQRT2;          // single: vs peak; three: line peak
+  const k = ph === 1 ? 2 / Math.PI : 3 / Math.PI, xi = ph === 1 ? 0.9 : 0.955;
+  const c = Math.cos(A) - 2 * W * Ls * Id / Vm;                        // cos(α+u)
+  const fail = c < -1;
+  const u = fail ? Math.PI - A : Math.acos(c) - A;
+  const Vd0 = k * Vm, Vd = k * Vm * Math.cos(A) - k * W * Ls * Id;
+  return { A, Ls, Id, Vm, k, xi, u, fail, Vd0, Vd, g: Math.PI - A - u };
+}
+
+// instantaneous waveforms, θ in rad
+function single(th, s) {
+  const x = th - s.A, m = ((x % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const pair = m < Math.PI ? 1 : -1, t = m % Math.PI;                 // pair 1 = T1T2 (or D1D2)
+  const vs = s.Vm * Math.sin(th);
+  if (t < s.u) {
+    const iu = s.Ls > 0 ? s.Vm / (W * s.Ls) * (Math.cos(s.A) - Math.cos(s.A + t)) : 2 * s.Id;
+    return { vs, vd: 0, i: pair * (-s.Id + Math.min(iu, 2 * s.Id)), notch: true, ref: vs };
+  }
+  return { vs, vd: pair * vs, i: pair * s.Id, notch: false, ref: vs };
+}
+const PH = [0, -2 * Math.PI / 3, 2 * Math.PI / 3];                     // a, b, c
+function three(th, s) {
+  const Vp = s.Vm / Math.sqrt(3), v = PH.map((p) => Vp * Math.sin(th + p));
+  // positive group: a,b,c take over at 30°,150°,270° (+α); negative group: c,a,b at 90°,210°,330° (+α)
+  const rail = (starts, order) => {
+    let best = null;
+    starts.forEach((st, j) => {
+      const t = (((th - st - s.A) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      if (best === null || t < best.t) best = { t, j };
+    });
+    const inc = order[best.j], out = order[(best.j + 2) % 3];
+    const iu = best.t < s.u ? (s.Ls > 0 ? s.Vm / (2 * W * s.Ls) * (Math.cos(s.A) - Math.cos(s.A + best.t)) : s.Id) : s.Id;
+    const ov = best.t < s.u;
+    return { v: ov ? (v[inc] + v[out]) / 2 : v[inc], inc, out, iu: Math.min(iu, s.Id), ov };
+  };
+  const P = rail([30 * D2R, 150 * D2R, 270 * D2R], [0, 1, 2]);
+  const N = rail([90 * D2R, 210 * D2R, 330 * D2R], [2, 0, 1]);
+  let ia = 0;
+  if (P.inc === 0) ia += P.iu; else if (P.out === 0 && P.ov) ia += s.Id - P.iu;
+  if (N.inc === 0) ia -= N.iu; else if (N.out === 0 && N.ov) ia -= s.Id - N.iu;
+  return { vs: v[0], vd: P.v - N.v, i: ia, notch: P.ov || N.ov, ref: v[0], P: P.v, N: N.v, v };
+}
+
+let T = 0;
+function draw() {
+  const s = calc(), deg = (r) => (r / D2R).toFixed(1) + "°";
+  $("b1").className = ph === 1 ? "on" : ""; $("b3").className = ph === 3 ? "on" : "";
+  $("va").textContent = $("a").value + "°"; $("vL").textContent = (+$("L").value).toFixed(1) + " mH"; $("vI").textContent = $("I").value + " A";
+  $("oU").textContent = s.fail ? "换不完" : deg(s.u);
+  $("oV").textContent = s.Vd.toFixed(0) + " V（无 Lₛ 时 " + (s.Vd0 * Math.cos(s.A)).toFixed(0) + " V）";
+  $("oG").textContent = s.fail ? "< 0" : deg(s.g);
+  const pf = s.xi * Math.cos(s.A + s.u / 2); $("oPF").textContent = pf.toFixed(3) + (pf < 0 ? "（负号：有功回送电网）" : "");
+  $("fm").textContent = ph === 1 ? "Vd = (2/π)Vm·cosα − (2ωLs/π)·Id，cos(α+u) = cosα − 2ωLsId/Vm"
+                                 : "Vd = (3/π)VLL,m·cosα − (3ωLs/π)·Id，cos(α+u) = cosα − 2ωLsId/VLL,m";
+  $("lgv").innerHTML = ph === 1 ? "v<sub>s</sub>" : "相电压 v<sub>a</sub>, v<sub>b</sub>, v<sub>c</sub>";
+  $("lgi").innerHTML = ph === 1 ? "i<sub>s</sub>" : "i<sub>a</sub>";
+  let h = "";
+  if (s.fail || (!CFG.diode && s.g < 5 * D2R)) h = "γ 不足 5°：被换下的晶闸管来不及恢复阻断就再次承受正压，发生换相失败。减小 α 或 I_d。";
+  else if (!CFG.diode && s.Vd < 0) h = "V_d < 0 而 I_d 仍为正：有源逆变，能量从直流侧送回电网。注意 α 越接近 180°，γ 越小。";
+  else if (s.Ls === 0) h = "L_s = 0：瞬时换流，电流是理想方波，没有缺口。";
+  else h = "每次换流在 v_d 上挖掉一块伏秒面积，L_s 或 I_d 越大，u 越大、V_d 越低。";
+  $("hint").textContent = h;
+
+  const { g, w, h: H } = fit($("cv")); g.clearRect(0, 0, w, H);
+  const pl = 8, pr = 8, pw = w - pl - pr, n = 720, span = 4 * Math.PI;
+  const X = (th) => pl + pw * th / span;
+  const p1t = 16, p1h = H * 0.56, y1 = p1t + p1h * 0.5, sc1 = p1h * 0.46 / s.Vm;
+  const p2t = p1t + p1h + 20, p2h = H - p2t - 6, y2 = p2t + p2h / 2, sc2 = p2h * 0.42 / s.Id;
+  g.strokeStyle = K.line; g.lineWidth = 1;
+  [y1, y2].forEach((y) => { g.beginPath(); g.moveTo(pl, y); g.lineTo(w - pr, y); g.stroke(); });
+  const f = ph === 1 ? single : three, pts = [];
+  for (let i = 0; i <= n; i++) { const th = span * i / n; pts.push({ th, ...f(th, s) }); }
+  // notch shading between vd and the "no-overlap" curve
+  g.fillStyle = K.light; g.globalAlpha = 0.35;
+  pts.forEach((p, i) => { if (p.notch && i < n) { g.fillRect(X(p.th), p1t, X(pts[i + 1].th) - X(p.th) + 0.5, p1h); } });
+  g.globalAlpha = 1;
+  if (ph === 3) { [0, 1, 2].forEach((j) => { g.strokeStyle = K.light; g.lineWidth = 1; g.beginPath(); pts.forEach((p, i) => { const y = y1 - p.v[j] * sc1; i ? g.lineTo(X(p.th), y) : g.moveTo(X(p.th), y); }); g.stroke(); }); }
+  else { g.strokeStyle = K.light; g.lineWidth = 1.2; g.beginPath(); pts.forEach((p, i) => { const y = y1 - p.vs * sc1; i ? g.lineTo(X(p.th), y) : g.moveTo(X(p.th), y); }); g.stroke(); }
+  const yd = (v) => y1 - v * sc1;
+  g.strokeStyle = K.ink; g.lineWidth = 2; g.beginPath();
+  pts.forEach((p, i) => { const y = yd(p.vd); i ? g.lineTo(X(p.th), y) : g.moveTo(X(p.th), y); }); g.stroke();
+  g.setLineDash(DASH); g.strokeStyle = K.mid; g.lineWidth = 1.2; g.beginPath(); g.moveTo(pl, yd(s.Vd)); g.lineTo(w - pr, yd(s.Vd)); g.stroke(); g.setLineDash([]);
+  // current
+  g.strokeStyle = K.ink; g.lineWidth = 2; g.beginPath();
+  pts.forEach((p, i) => { const y = y2 - p.i * sc2; i ? g.lineTo(X(p.th), y) : g.moveTo(X(p.th), y); }); g.stroke();
+  // firing markers (single-phase / phase a positive group)
+  if (!CFG.diode) {
+    g.strokeStyle = K.light; g.setLineDash(DOT); g.lineWidth = 1;
+    const base = ph === 1 ? [0, Math.PI, 2 * Math.PI, 3 * Math.PI] : [30, 390].map((d) => d * D2R);
+    base.forEach((b) => { const th = b + s.A; if (th < span) { g.beginPath(); g.moveTo(X(th), p1t); g.lineTo(X(th), H - 6); g.stroke(); } });
+    g.setLineDash([]);
+  }
+  // moving cursor
+  const k = Math.floor(((T * 0.12) % 1) * n), p = pts[k];
+  g.fillStyle = K.ink; g.beginPath(); g.arc(X(p.th), yd(p.vd), 3.5, 0, 7); g.fill();
+  g.beginPath(); g.arc(X(p.th), y2 - p.i * sc2, 3.5, 0, 7); g.fill();
+  g.fillStyle = K.muted; g.textAlign = "left";
+  g.fillText(ph === 1 ? "电压" : "相电压（细）与 v_d = v_P − v_N（粗）", pl + 2, 11);
+  g.fillText((ph === 1 ? "输入电流 i_s" : "a 相电流 i_a") + "（±" + s.Id + " A）" + (CFG.diode ? "" : "，点线 = 触发时刻"), pl + 2, p2t - 5);
+}
+$("b1").onclick = () => { ph = 1; draw(); }; $("b3").onclick = () => { ph = 3; draw(); };
+["a", "L", "I"].forEach((id) => $(id).addEventListener("input", draw));
+addEventListener("resize", draw);
+loop((dt) => { T += dt; draw(); }); draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

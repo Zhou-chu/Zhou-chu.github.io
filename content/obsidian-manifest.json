@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 108,
-  "assetCount": 285,
+  "noteCount": 111,
+  "assetCount": 319,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -30,42 +30,42 @@
       "slug": "电力电子-第1讲-introduction-导论-pe1l01",
       "title": "电力电子：第 1 讲 Introduction（导论）学习笔记",
       "publishedAt": "2026-09-15",
-      "hash": "ba5d9d8e5a461d2610314fe75d864be66d197880683c1bca810c99b46f8c56df"
+      "hash": "0df76ab5e198ce00c3e48d2bdb3d59f1b8ad24806da913819c4c60bf05e40ab3"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第2讲-功率器件-Power-Devices-pe1l02.md",
       "slug": "电力电子-第2讲-功率器件-power-devices-pe1l02",
       "title": "电力电子：第 2 讲 功率器件（Power Devices）学习笔记",
       "publishedAt": "2026-09-29",
-      "hash": "71f4403338594a52a8b692dbdfcb11f76fc4ebdb9cc352fef91fda68e4d4ba83"
+      "hash": "0b1b561abc8fcdfceac1018840d78aa25808c01588273ed78f52789c0b4f81c7"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第2章-二极管整流器-AC-DC学习笔记.md",
       "slug": "电力电子-第2章-二极管整流器-ac-dc-acdc02",
-      "title": "电力电子：第 2 章 二极管整流器（Diode Rectifiers）学习笔记",
+      "title": "电力电子：第 3 讲 二极管整流器（Diode Rectifiers）学习笔记",
       "publishedAt": "2026-09-22",
-      "hash": "b6bc0e4bab91771726d7ffa84bd5cb689ab04f453f3eb902592fd96050b0f180"
+      "hash": "a4f5df3e816d0382e61ffad4afb84143a6dcadaa6a948ae608f5555b795ecc76"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第4讲-晶闸管可控整流-AC-DC-pe1l04.md",
       "slug": "电力电子-第4讲-晶闸管可控整流-ac-dc-pe1l04",
       "title": "电力电子：第 4 讲 晶闸管 AC-DC 变换器（Thyristor AC-DC Converters）学习笔记",
       "publishedAt": "2026-09-29",
-      "hash": "725b730dc4829b5fcc1cf3a0c957af688d3e5407269b5dbde00a95bfbab003a8"
+      "hash": "74991cc633da183e78f0c1e84fb958f161292bbc369b3c99636e1a582510a2eb"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-第5讲-直流斩波器-DC-DC-pe1l05.md",
       "slug": "电力电子-第5讲-直流斩波器-dc-dc-pe1l05",
       "title": "电力电子：第 5 讲 DC-DC 变换器（直流斩波器）学习笔记",
       "publishedAt": "2026-10-20",
-      "hash": "9a172228669bfb4342a4bcddf3bb7a5f3ce796bcef753ad0ad2017ffd941c3dd"
+      "hash": "c4532a42245cf41b160cd94742bf57a9f89eaa54301e4f677790330ce1aa6264"
     },
     {
       "sourcePath": "blog/电力电子/电力电子-宽禁带功率半导体器件综述-SiC与GaN-wbg01.md",
       "slug": "宽禁带功率半导体器件综述-sic与gan-wbg01",
       "title": "宽禁带功率半导体器件综述 Digest：SiC 与 GaN",
       "publishedAt": "2026-09-27",
-      "hash": "d3071b1f2c2236f7737e92514e1338ce701e3d2b35d88206355d88d5236d7bd1"
+      "hash": "7af40701d816ed6bc4b4d09e4ffbcc0207f67d4d17995d5710dbef4fcc585c16"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-标幺制入门-交互演示-pwrdemo1.md",
@@ -115,6 +115,20 @@
       "title": "电力系统分析：第3章 第6讲：简单电力系统潮流计算",
       "publishedAt": "2026-10-12",
       "hash": "53dd4911439ae758289147c8d5e232ef0e7936a13f92f896559a1fa324379ee5"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第7讲-电力网络方程与矩阵及功率方程-pwr3l07.md",
+      "slug": "电力系统分析-第3章-第7讲-电力网络方程与矩阵及功率方程-pwr3l07",
+      "title": "电力系统分析：第3章 第7讲 电力网络方程与矩阵及功率方程",
+      "publishedAt": "2026-10-22",
+      "hash": "02dd1f082afb70057a93f3d83d5a6e1b7d39b74cbf13a2b77885d2f57d9b242d"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第8讲-实际潮流方程与计算机解法-pwr3l08.md",
+      "slug": "电力系统分析-第3章-第8讲-实际潮流方程与计算机解法-pwr3l08",
+      "title": "电力系统分析：第3章 第8讲 实际潮流方程与计算机解法",
+      "publishedAt": "2026-10-22",
+      "hash": "8652aef7b9c741547e36d2cddcf1011f14c942f20a89bd2336d24507be58c96e"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",
@@ -324,14 +338,21 @@
       "slug": "自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03",
       "title": "自动控制原理：第 3 讲 传递函数与状态空间转换及稳定性",
       "publishedAt": "2026-10-21",
-      "hash": "d5e94f318f34c9371aa31d1e65b69e781550b5386214badaf4de45d8215d5d09"
+      "hash": "a9be7100fa93c8ff9329417ff1ae9dc99ca7cfc2ac1730ccbb896a31023b16e8"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04.md",
       "slug": "自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04",
       "title": "自动控制原理：第 4 讲 代数稳定性判据、稳态误差与瞬态响应",
       "publishedAt": "2026-10-21",
-      "hash": "fb70b185a713558462c01c5486d74c3d14f431467838cb4eb15963f48462a254"
+      "hash": "1d13d188ac94ece9b771f52f1595575c1fe96c215399b5eb383cabcf3974d206"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第5讲-根轨迹法与高阶系统时域近似-acs05.md",
+      "slug": "自动控制原理-第5讲-根轨迹法与高阶系统时域近似-acs05",
+      "title": "自动控制原理：第 5 讲 根轨迹法与高阶系统时域近似",
+      "publishedAt": "2026-10-22",
+      "hash": "59d6e603f1f9e74e1999b6b9d6175665c703134ce392d4f485a39f14041950b0"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",

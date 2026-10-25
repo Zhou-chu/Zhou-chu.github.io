@@ -76,20 +76,25 @@ tags:
 
 课堂接着把损耗**拆成两块**——这是本页的灵魂：
 
-```
-Wstatic = Won + Woff
-        = ∫on-time ion(t)·von-state(t) dt + ∫off-time ileakage(t)·voff(t) dt
-Wdynamic = ∫turn-on i(t)·v(t) dt + ∫turn-off i(t)·v(t) dt
-Paverage = (Wstatic + Wswitch) / T
-```
+$$
+\begin{aligned}
+W_{static}&=W_{on}+W_{off}=\int_{\text{on-time}} i_{on}\,v_{on\text{-}state}\,dt+\int_{\text{off-time}} i_{leakage}\,v_{off}\,dt\\
+W_{dynamic}&=\int_{\text{turn-on}} i\,v\,dt+\int_{\text{turn-off}} i\,v\,dt\\
+P_{average}&=\frac{W_{static}+W_{dynamic}}{T}
+\end{aligned}
+$$
+
+（课件最后一式写作 $W_{switch}$，与 $W_{dynamic}$ 是同一个量。）
 
 图中 (a) 开通、(b) 关断把 i(t)、v(t)、p=vi 三条曲线叠在一起，阴影 "Area = power × time" 即**一次开关过程的能量 = i·v 曲线下的面积**。
+
+为什么频率决定谁是主角：导通损耗约等于"导通时的 $I\cdot V_{on}$ × 占空比"，只要占空比不变就与频率无关；而 $W_{dynamic}$ 是每开关一次就要付的一笔固定"过路费"，$P_{switch}=W_{dynamic}\cdot f_s$，频率翻倍它就翻倍。所以低频时静态损耗为主，高频时开关损耗追上并超过它（下面的控件可以拖出这个交叉点）。
 
 > **课堂结论句（务必记住）**：
 > - **Pstatic —— major loss at lower-frequency operation**（低频时的主要损耗）；
 > - **Pswitch —— significant at high-frequency operation**（高频时变得显著）。
 >
-> 由此引出整门课一条暗线：**要提高开关频率（从而缩小无源元件体积），就必须压低开关损耗——这就逼着器件往"快"的方向演进**（BJT → MOSFET → IGBT → 宽禁带）。
+> 由此引出整门课一条暗线：**要提高开关频率（从而缩小无源元件体积），就必须压低开关损耗——这就逼着器件往"快"的方向演进**。硅器件里 MOSFET 最快、IGBT 次之、BJT 和晶闸管最慢；宽禁带器件（SiC、GaN）则在高耐压下也能快速开关。
 
 ![widget|520](/obsidian-assets/023daf54405d3424.html)
 
@@ -130,9 +135,9 @@ Paverage = (Wstatic + Wswitch) / T
 
 课堂在这里回答一个矛盾："**又要高耐压，又要低压降，怎么办？**"
 
-- 高耐压需要厚而低掺杂的 **n⁻ 漂移区**（图中 250 μm 厚；掺杂 Na~10¹⁹、n⁻~10¹⁴）。
+- 高耐压需要厚而低掺杂的 **n⁻ 漂移区**：图中 n⁻ 外延层掺杂只有 $10^{14}\,\text{cm}^{-3}$，厚度 $W_d$ 由所需击穿电压决定（标注 "Breakdown voltage dependent"）；两侧 p⁺、n⁺ 掺杂为 $10^{19}\,\text{cm}^{-3}$（250 μm 是 n⁺ 衬底的厚度，不是漂移区）。
 - 但厚低掺杂区电阻很大 → 通态压降会很高。
-- 解法是**电导调制（conductivity modulation）**：正偏时从 p⁺、n⁺ 两端向 n⁻ 区**注入大量过剩载流子**（右图 np(x)、pn(x) 分布曲线），使 n⁻ 区电阻**大幅下降**。
+- 解法是**电导调制（conductivity modulation）**：正偏时从 p⁺、n⁺ 两端向 n⁻ 区**注入大量过剩载流子**（右图）。注入后 n⁻ 区里电子、空穴浓度都达到约 $10^{16}\,\text{cm}^{-3}$，比原本的掺杂 $10^{14}$ 高两个数量级，漂移区的电阻率随之下降约百倍——这就是为什么 PiN 二极管又能耐高压、通态压降又只有 1–3 V。
 - 代价：器件变成**双极型（bipolar）**——电子与空穴同时参与导电；这也埋下隐患：关断时**必须先把存储的少数载流子抽走**（引出下页的 tr、Qr）。
 
 **③ 开关波形：反向恢复（P8）**
@@ -166,7 +171,7 @@ Paverage = (Wstatic + Wswitch) / T
 | 类型 | 额定（up to） | 开关时间 |
 |---|---|---|
 | 工频二极管 Line-frequency Diodes | 9000 V / 8400 A | ~100 μs |
-| 快恢复二极管 Fast Recovery Diodes | 4500 V / 1000 A | 反向恢复时间 < 1 μs |
+| 快恢复二极管 Fast Recovery Diodes | 4500 V / 1000 A（第 1 讲课件写 690 A） | 反向恢复时间 < 1 μs |
 
 **结论**：无源器件；只导通正向电流；电流试图反向时自动关断；可阻断反向电压；正向压降低、功率定额高；**但开关损耗大、开关频率受限**。
 
@@ -220,7 +225,7 @@ Paverage = (Wstatic + Wswitch) / T
   b) 集电极电流变化要有对应基极电流匹配；
   c) 关断时基极加**负偏置**以加速载流子扫出。
 
-结论（P18）：基极控制复杂、开关损耗高；过去常用，现多用于特定场合，**已被 MOSFET/IGBT 取代**。额定 up to 1400 V / 400 A，频率 up to 10 kHz。
+结论（P18）：基极控制复杂、开关损耗高；过去常用，现多用于特定场合，**已被 MOSFET/IGBT 取代**。额定 up to 1400 V / 400 A（第 1 讲课件写 1200 V），频率 up to 10 kHz。
 
 ### 4-4 功率 MOSFET（P19–P22）
 
@@ -275,18 +280,18 @@ Paverage = (Wstatic + Wswitch) / T
 
 ## 六、器件六维对比表（P26–P27）
 
-课堂基于"理想特性"的 6 条，给各器件按 高/中/低 打分（考试常考，务必背下）：
+课件对照理想特性逐条比较。注意课件里的"高/中/低"描述的是**该项指标本身的大小**（损耗低、成本低才是好），不是"接近理想的程度"，背的时候别把方向弄反：
 
-| 指标 | 高 (high) | 中 (medium) | 低 (low) |
-|---|---|---|---|
-| 1. 可控开通/关断 | MOSFET、IGBT（电压控） | SCR、BJT（电流控） | — |
-| 2. 触发功率要求为零 | MOSFET、IGBT | SCR、BJT | — |
-| 3. 导通损耗为零 | SCR | BJT、IGBT | MOSFET |
-| 4. 电压/电流额定无限 | SCR | IGBT、BJT | MOSFET |
-| 5. 瞬时开通/关断 | MOSFET | IGBT、BJT | SCR |
-| 6. 成本低 | SCR | BJT、IGBT | MOSFET |
+| 理想特性 | 课件原话 | 谁最接近理想 |
+|---|---|---|
+| 1. 可控开通/关断 | 电压控制：MOSFET、IGBT；电流控制：BJT；SCR 只能控开通（半控） | MOSFET、IGBT |
+| 2. 触发功率为零 | 触发功率 **低**：MOSFET、IGBT；**中**：SCR、BJT | MOSFET、IGBT |
+| 3. 导通损耗为零 | 导通损耗 **低**：SCR；**中**：BJT、IGBT；**高**：MOSFET | SCR |
+| 4. 电压/电流定额无限 | 定额 **高**：SCR；**中**：IGBT、BJT；**低**：MOSFET | SCR |
+| 5. 瞬时开通/关断 | 速度 **高**：MOSFET；**中**：IGBT、BJT；**低**：SCR | MOSFET |
+| 6. 成本低 | 成本 **低**：SCR；**中**：BJT、IGBT；**高**：MOSFET | SCR |
 
-> **读法**：SCR 综合是"高定额、低成本，但慢且半控"；MOSFET 是"快、易驱动，但损耗高、定额低、且贵"；IGBT 多项取"中"，是折中王，故成为中高功率主力。
+> **读法**：SCR 是"定额高、压降低、便宜，但慢且半控"；MOSFET 是"快、易驱动，但导通损耗高、定额低、贵"；IGBT 在 3–6 项都取"中"，又继承了 MOSFET 的电压驱动，所以成为中高功率的主力。
 
 ---
 
@@ -302,11 +307,11 @@ Paverage = (Wstatic + Wswitch) / T
 
 1. 理想功率器件的 7 条目标是什么？其中用于电路拓扑分析的 4 条理想化特性是哪 4 条？为什么"理想"和"真实"要分开讲？
 2. 真实器件按 on / off / commutation 分哪三类定额？各自看什么参数？
-3. 写出 Wstatic、Wdynamic、Paverage 的表达式；结合 P4 波形说明"开关能量就是 i·v 面积"，并解释为何高频下开关损耗成为主要矛盾。
+3. 写出 $W_{static}$、$W_{dynamic}$、$P_{average}$ 的表达式；结合 P4 波形说明"开关能量就是 i·v 面积"，并解释为何高频下开关损耗成为主要矛盾。
 4. 按可控性把二极管、SCR、BJT 分类；SCR 开通与关断各需什么条件？为什么说它是"闩锁"？
 5. PiN 二极管的"电导调制"是什么？它解决了什么矛盾、又带来什么隐患？
 6. 结合 P8~P10 说明二极管关断时 tr、Qr 的来历；为何快恢复二极管要 < 1 μs？
 7. 功率晶体管为什么基极电流"太小二次击穿、太大关断慢"？
 8. MOSFET 的体二极管有何四条性质？为什么易于直接并联？
 9. IGBT 相比 BJT、MOSFET 的优缺点各是什么？为何成为中高功率主力？
-10. 画出 SOA 示意图（三条边界）；并说出六维对比表中 SCR 与 MOSFET 各自的长短板。
+10. 画出 SOA 示意图（三条边界）；并说出六维对比表中 SCR 与 MOSFET 各自的长短板（注意"导通损耗高""成本高"是坏事）。

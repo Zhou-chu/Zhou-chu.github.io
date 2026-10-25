@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DC-DC 斩波器波形</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>Buck / Boost / Buck-Boost：电感电流与连续、断续导通</h2>
+<p class="sub">理想器件，默认参数取自实验 3：V<sub>d</sub> = 25 V、L = 1 mH、f<sub>s</sub> = 10 kHz、C = 680 µF。负载电流低于临界值 I<sub>oB</sub> 时进入断续（DCM），电压比不再只由 D 决定。</p>
+<div class="btns"><button id="t0">Buck</button><button id="t1">Boost</button><button id="t2">Buck-Boost</button></div>
+<div class="grid">
+<div class="card">
+<label><span>占空比 D</span><b id="vD"></b></label><input id="D" type="range" min="0.05" max="0.9" step="0.01" value="0.5">
+<label><span>开关频率 f<sub>s</sub></span><b id="vf"></b></label><input id="f" type="range" min="2" max="50" step="1" value="10">
+<label><span>电感 L</span><b id="vL"></b></label><input id="L" type="range" min="0.1" max="3" step="0.05" value="1">
+<label><span>负载电流 I<sub>o</sub></span><b id="vI"></b></label><input id="I" type="range" min="0.05" max="3" step="0.05" value="1">
+<div class="kv"><span>导通模式</span><b id="oM"></b></div>
+<div class="kv"><span>输出电压 V<sub>o</sub>（理想 CCM 值）</span><b id="oV"></b></div>
+<div class="kv"><span>临界电流 I<sub>oB</sub></span><b id="oB"></b></div>
+<div class="kv"><span>电感电流 平均 / 纹波 ΔI<sub>L</sub> / 峰值</span><b id="oL"></b></div>
+<div class="kv"><span>输出电压纹波 ΔV<sub>o</sub></span><b id="oR"></b></div>
+<p class="formula" id="fm"></p>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:320px"></canvas>
+<div class="legend"><span><i class="b"></i>开关导通</span><span><i></i>i<sub>L</sub></span><span><i class="m d"></i>I<sub>L</sub> 平均</span><span><i class="l"></i>理想 CCM 电压比</span><span><i></i>当前 I<sub>o</sub> 下的电压比</span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+const Vd = 25, Cf = 680e-6, NAMES = ["Buck", "Boost", "Buck-Boost"];
+let topo = 0;
+const ideal = (t, D) => t === 0 ? D : t === 1 ? 1 / (1 - D) : D / (1 - D);
+function solve(t, D, fs, L, Io) {
+  const IoB = Vd * D * (1 - D) / (2 * fs * L);                         // same in terms of Vd for all three
+  const Ts = 1 / fs;
+  if (Io >= IoB) {
+    const M = ideal(t, D), Vo = M * Vd;
+    const dI = t === 0 ? (Vd - Vo) * D * Ts / L : Vd * D * Ts / L;
+    const IL = t === 0 ? Io : Io / (1 - D);
+    return { ccm: true, M, Vo, IoB, dI, IL, D1: 1 - D, ipk: IL + dI / 2, imin: IL - dI / 2 };
+  }
+  const d1 = 2 * fs * L * Io / (Vd * D);                               // Δ1, same form for all three
+  const M = t === 0 ? D / (D + d1) : t === 1 ? (d1 + D) / d1 : D / d1;
+  const Vo = M * Vd, ipk = t === 0 ? (Vd - Vo) * D * Ts / L : Vd * D * Ts / L;
+  return { ccm: false, M, Vo, IoB, dI: ipk, IL: ipk * (D + d1) / 2, D1: d1, ipk, imin: 0 };
+}
+const fmtA = (x) => x >= 10 ? x.toFixed(1) : x.toFixed(2);
+function draw() {
+  const D = +$("D").value, fs = +$("f").value * 1e3, L = +$("L").value * 1e-3, Io = +$("I").value;
+  [0, 1, 2].forEach((k) => { $("t" + k).className = k === topo ? "on" : ""; });
+  $("vD").textContent = D.toFixed(2); $("vf").textContent = $("f").value + " kHz"; $("vL").textContent = (+$("L").value).toFixed(2) + " mH"; $("vI").textContent = Io.toFixed(2) + " A";
+  const s = solve(topo, D, fs, L, Io), Ts = 1 / fs;
+  $("oM").textContent = s.ccm ? "连续导通 CCM" : "断续导通 DCM";
+  $("oV").textContent = (topo === 0 ? "" : topo === 2 ? "−" : "") + s.Vo.toFixed(1) + " V（" + (ideal(topo, D) * Vd).toFixed(1) + " V）";
+  $("oB").textContent = fmtA(s.IoB) + " A";
+  $("oL").textContent = fmtA(s.IL) + " / " + fmtA(s.dI) + " / " + fmtA(s.ipk) + " A";
+  $("oR").textContent = !s.ccm ? "—（DCM 不套用该公式）" : (topo === 0 ? Vd * D * (1 - D) / (8 * L * Cf * fs * fs) : Io * D / (fs * Cf)).toFixed(3) + " V";
+  $("fm").textContent = ["CCM: Vo = D·Vd，ΔIL = Vd·D(1−D)/(fsL)，IoB = Vd·D(1−D)/(2fsL)",
+                         "CCM: Vo = Vd/(1−D)，ΔIL = Vd·D/(fsL)，IoB = Vd·D(1−D)/(2fsL)",
+                         "CCM: Vo = D/(1−D)·Vd（反极性），ΔIL = Vd·D/(fsL)，IoB = Vd·D(1−D)/(2fsL)"][topo];
+  let h;
+  if (!s.ccm) h = "I_o < I_oB：电感电流每周期降到零并停留一段，" + (topo === 0 ? "V_o 高于 D·V_d" : "V_o 高于理想值") + "，负载越轻偏得越多。增大 L 或 f_s 可以把临界电流压低。";
+  else if (topo === 1 && s.M > 5) h = "D 接近 1 时 Boost 的 V_o 对 D 非常敏感；实际电路还受电感电阻限制，达不到这个理想值。";
+  else h = "连续导通：V_o 只由 D 决定。ΔI_L 与 f_s·L 成反比，" + (topo === 0 ? "D = 0.5 时最大。" : "随 D 增大而增大。");
+  $("hint").textContent = h;
+
+  const { g, w, h: H } = fit($("cv")); g.clearRect(0, 0, w, H);
+  const pl = 34, pr = 10;
+  // --- topo: three switching periods of iL
+  const t1 = 20, h1 = H * 0.46, gate = 8, pw = w - pl - pr;
+  const imax = Math.max(s.ipk * 1.15, 0.5);
+  const X = (t) => pl + pw * t / (3 * Ts), Y = (i) => t1 + gate + 6 + (h1 - gate - 6) * (1 - i / imax);
+  g.strokeStyle = K.line; g.lineWidth = 1; g.beginPath(); g.moveTo(pl, Y(0)); g.lineTo(w - pr, Y(0)); g.stroke();
+  g.fillStyle = K.muted; g.textAlign = "right"; g.fillText("0", pl - 4, Y(0) + 4); g.fillText(fmtA(s.ipk), pl - 4, Y(s.ipk) + 4);
+  for (let k = 0; k < 3; k++) { g.fillStyle = K.ink; g.fillRect(X(k * Ts), t1, X(D * Ts) - X(0), gate); }
+  g.strokeStyle = K.ink; g.lineWidth = 2; g.beginPath();
+  for (let k = 0; k < 3; k++) {
+    const t0 = k * Ts;
+    if (k === 0) g.moveTo(X(t0), Y(s.imin)); else g.lineTo(X(t0), Y(s.imin));
+    g.lineTo(X(t0 + D * Ts), Y(s.ipk));
+    if (s.ccm) g.lineTo(X(t0 + Ts), Y(s.imin));
+    else { g.lineTo(X(t0 + (D + s.D1) * Ts), Y(0)); g.lineTo(X(t0 + Ts), Y(0)); }
+  }
+  g.stroke();
+  g.setLineDash(DASH); g.strokeStyle = K.mid; g.lineWidth = 1.2; g.beginPath(); g.moveTo(pl, Y(s.IL)); g.lineTo(w - pr, Y(s.IL)); g.stroke(); g.setLineDash([]);
+  // moving dot along iL
+  const ph = ((performance.now() / 1000) * 0.25 % 1) * 3, kk = Math.floor(ph), fr = ph - kk;
+  let iv; if (fr < D) iv = s.imin + (s.ipk - s.imin) * fr / D; else if (s.ccm) iv = s.ipk - (s.ipk - s.imin) * (fr - D) / (1 - D); else iv = fr < D + s.D1 ? s.ipk * (1 - (fr - D) / s.D1) : 0;
+  g.fillStyle = K.ink; g.beginPath(); g.arc(X(ph * Ts), Y(iv), 3.5, 0, 7); g.fill();
+  g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("电感电流 i_L（3 个开关周期，上方黑条 = 开关导通）", pl, 11);
+  // --- bottom: voltage ratio vs D
+  const t2 = t1 + h1 + 30, h2 = H - t2 - 22, ymax = topo === 0 ? 1 : 5;
+  const XD = (d) => pl + pw * d, YM = (m) => t2 + h2 * (1 - Math.min(m, ymax * 1.02) / ymax);
+  g.strokeStyle = K.line; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(pl, YM(0)); g.lineTo(w - pr, YM(0)); g.stroke();
+  g.fillStyle = K.muted; g.textAlign = "right";
+  (topo === 0 ? [0, 0.5, 1] : [0, 1, 3, 5]).forEach((m) => { g.fillText(m, pl - 4, YM(m) + 4); g.beginPath(); g.moveTo(pl, YM(m)); g.lineTo(w - pr, YM(m)); g.stroke(); });
+  g.textAlign = "center"; [0, 0.25, 0.5, 0.75, 1].forEach((d) => g.fillText(d, XD(d), H - 6));
+  const curve = (fn, col, lw, dash) => { g.strokeStyle = col; g.lineWidth = lw; g.setLineDash(dash || []); g.beginPath(); let first = true;
+    for (let i = 1; i < 200; i++) { const d = 0.02 + 0.9 * i / 200, m = fn(d); if (!isFinite(m)) continue; const y = YM(m); if (first) { g.moveTo(XD(d), y); first = false; } else g.lineTo(XD(d), y); } g.stroke(); g.setLineDash([]); };
+  curve((d) => ideal(topo, d), K.light, 2);
+  curve((d) => solve(topo, d, fs, L, Io).M, K.ink, 1.6);
+  g.fillStyle = K.ink; g.beginPath(); g.arc(XD(D), YM(s.M), 5, 0, 7); g.fill();
+  g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("电压比 |V_o|/V_d 随 D（横轴）", pl, t2 - 6);
+}
+[0, 1, 2].forEach((k) => { $("t" + k).onclick = () => { topo = k; }; });
+["D", "f", "L", "I"].forEach((id) => $(id).addEventListener("input", draw));
+addEventListener("resize", draw);
+loop(() => draw()); draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

@@ -1,0 +1,217 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>牛顿法与P-Q分解法</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>牛顿法 vs P-Q 分解法：同一个 3 节点潮流，谁收敛得快</h2>
+<p class="sub">节点 1 平衡（1.05∠0°），节点 2 为 PV（P = 0.5，U = 1.00），节点 3 为 PQ 负荷（Q = 0.5P）。三条线路的 r、x、b/2 固定，下面两个滑块改负荷和电阻比例。每次改动都从平启动重新迭代到 |ΔP|、|ΔQ| &lt; 10<sup>-4</sup>。</p>
+<div class="grid">
+<div class="card">
+<label><span>节点 3 负荷 P<sub>3</sub></span><b id="vP"></b></label><input id="P" type="range" min="0.2" max="1.8" step="0.05" value="0.8">
+<label><span>线路电阻倍数（r 乘以）</span><b id="vR"></b></label><input id="R" type="range" min="0.2" max="6" step="0.1" value="1">
+<label><span>查看第 k 次迭代</span><b id="vk"></b></label><input id="k" type="range" min="0" max="10" step="1" value="1">
+<div class="kv"><span>迭代次数（牛顿法 / P-Q 分解法）</span><b id="oN"></b></div>
+<div class="kv"><span>收敛解 U<sub>3</sub>∠δ<sub>3</sub></span><b id="oU"></b></div>
+<div class="kv"><span>δ<sub>2</sub> / 节点 2 无功 Q<sub>2</sub>（负值为吸收）</span><b id="oQ"></b></div>
+<div class="kv"><span>线路 R/X（1-2、1-3、2-3）</span><b id="oRX"></b></div>
+<pre class="mat" id="tab"></pre>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:300px"></canvas>
+<div class="legend"><span><i></i>牛顿法（极坐标）</span><span><i class="m d"></i>P-Q 分解法（XB 型）</span><span><i class="l"></i>门限 10<sup>-4</sup></span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+// 3-bus network: [from, to, r, x, b/2], buses 0..2 (shown as 1..3)
+const LINES = [[0, 1, 0.02, 0.10, 0.02], [0, 2, 0.03, 0.12, 0.025], [1, 2, 0.02, 0.08, 0.015]];
+const TOL = 1e-4, MAXIT = 30;
+
+function build(rk) {
+  const G = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], B = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  LINES.forEach(([i, j, r0, x, bh]) => {
+    const r = r0 * rk, d = r * r + x * x, g = r / d, b = -x / d;
+    G[i][i] += g; G[j][j] += g; G[i][j] -= g; G[j][i] -= g;
+    B[i][i] += b + bh; B[j][j] += b + bh; B[i][j] -= b; B[j][i] -= b;
+  });
+  return { G, B };
+}
+function pq(Y, V, d) {
+  const P = [0, 0, 0], Q = [0, 0, 0];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const a = d[i] - d[j], c = Math.cos(a), s = Math.sin(a);
+    P[i] += V[i] * V[j] * (Y.G[i][j] * c + Y.B[i][j] * s);
+    Q[i] += V[i] * V[j] * (Y.G[i][j] * s - Y.B[i][j] * c);
+  }
+  return { P, Q };
+}
+function solve(A, b) { // small dense Gaussian elimination
+  const n = b.length, M = A.map((r, i) => [...r, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    [M[c], M[p]] = [M[p], M[c]];
+    for (let r = c + 1; r < n; r++) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+  }
+  const x = new Array(n).fill(0);
+  for (let r = n - 1; r >= 0; r--) { let s = M[r][n]; for (let k = r + 1; k < n; k++) s -= M[r][k] * x[k]; x[r] = s / M[r][r]; }
+  return x;
+}
+function mism(Y, V, d, sp) {
+  const { P, Q } = pq(Y, V, d);
+  const m = [sp.P2 - P[1], sp.P3 - P[2], sp.Q3 - Q[2]];
+  return { m, err: Math.max(...m.map(Math.abs)), P, Q };
+}
+function snap(V, d, mm) { return { V: [...V], d: [...d], err: mm.err, m: mm.m, Q: mm.Q }; }
+
+function runNR(Y, sp) {
+  const V = [1.05, 1.0, 1.0], d = [0, 0, 0], hist = [];
+  let mm = mism(Y, V, d, sp); hist.push(snap(V, d, mm));
+  for (let it = 0; it < MAXIT && mm.err >= TOL; it++) {
+    const { P, Q } = mm, idxD = [1, 2], H = (i, j) => {
+      if (i === j) return -Q[i] - Y.B[i][i] * V[i] * V[i];
+      const a = d[i] - d[j]; return V[i] * V[j] * (Y.G[i][j] * Math.sin(a) - Y.B[i][j] * Math.cos(a));
+    }, N = (i, j) => {
+      if (i === j) return P[i] + Y.G[i][i] * V[i] * V[i];
+      const a = d[i] - d[j]; return V[i] * V[j] * (Y.G[i][j] * Math.cos(a) + Y.B[i][j] * Math.sin(a));
+    }, M = (i, j) => (i === j ? P[i] - Y.G[i][i] * V[i] * V[i] : -N(i, j)),
+       L = (i, j) => (i === j ? Q[i] - Y.B[i][i] * V[i] * V[i] : H(i, j));
+    const J = [[H(1, 1), H(1, 2), N(1, 2)], [H(2, 1), H(2, 2), N(2, 2)], [M(2, 1), M(2, 2), L(2, 2)]];
+    const dx = solve(J, mm.m);
+    d[1] += dx[0]; d[2] += dx[1]; V[2] *= 1 + dx[2];
+    mm = mism(Y, V, d, sp); hist.push(snap(V, d, mm));
+    if (!isFinite(mm.err) || mm.err > 1e3) break;
+  }
+  return hist;
+}
+function runFD(Y, sp) {
+  // XB scheme: B' from 1/x only (no r, no shunts); B'' = -B of the full Y for PQ bus 3
+  const Bp = [[0, 0], [0, 0]];
+  LINES.forEach(([i, j, , x]) => {
+    const w = 1 / x, a = i - 1, b = j - 1;
+    if (a >= 0) Bp[a][a] += w; if (b >= 0) Bp[b][b] += w;
+    if (a >= 0 && b >= 0) { Bp[a][b] -= w; Bp[b][a] -= w; }
+  });
+  const Bpp = -Y.B[2][2];
+  const V = [1.05, 1.0, 1.0], d = [0, 0, 0], hist = [];
+  let mm = mism(Y, V, d, sp); hist.push(snap(V, d, mm));
+  for (let it = 0; it < MAXIT && mm.err >= TOL; it++) {
+    const dd = solve(Bp, [mm.m[0] / V[1], mm.m[1] / V[2]]);
+    d[1] += dd[0]; d[2] += dd[1];
+    const half = mism(Y, V, d, sp);
+    V[2] += half.m[2] / V[2] / Bpp;
+    mm = mism(Y, V, d, sp); hist.push(snap(V, d, mm));
+    if (!isFinite(mm.err) || mm.err > 1e3) break;
+  }
+  return hist;
+}
+
+let S = null;
+function recompute() {
+  const P3 = +$("P").value, rk = +$("R").value, Y = build(rk), sp = { P2: 0.5, P3: -P3, Q3: -0.5 * P3 };
+  S = { nr: runNR(Y, sp), fd: runFD(Y, sp), rk };
+  const kmax = Math.max(S.nr.length, S.fd.length) - 1;
+  $("k").max = kmax; if (+$("k").value > kmax) $("k").value = kmax;
+}
+const deg = (r) => (r * 180 / Math.PI).toFixed(2) + "°";
+const fe = (x) => (x < 1e-3 ? x.toExponential(1) : x.toFixed(4));
+function show() {
+  const k = +$("k").value, nr = S.nr, fd = S.fd;
+  $("vP").textContent = (+$("P").value).toFixed(2) + " + j" + (0.5 * $("P").value).toFixed(2);
+  $("vR").textContent = "×" + (+$("R").value).toFixed(1);
+  $("vk").textContent = k;
+  const ok = (h) => h[h.length - 1].err < TOL;
+  $("oN").textContent = (ok(nr) ? nr.length - 1 : "不收敛") + " / " + (ok(fd) ? fd.length - 1 : "未收敛（30 次）");
+  const f = ok(nr) ? nr[nr.length - 1] : null;
+  $("oU").textContent = f ? f.V[2].toFixed(4) + "∠" + deg(f.d[2]) : "—";
+  $("oQ").textContent = f ? deg(f.d[1]) + " / " + (f.Q[1] + 0).toFixed(3) : "—";
+  $("oRX").textContent = LINES.map((l) => (l[2] * S.rk / l[3]).toFixed(2)).join("、");
+  const row = (name, h) => {
+    const s = h[Math.min(k, h.length - 1)];
+    return name.padEnd(8) + s.V[2].toFixed(4).padStart(8) + deg(s.d[1]).padStart(9) + deg(s.d[2]).padStart(9) + fe(s.err).padStart(10);
+  };
+  $("tab").textContent = "k=" + k + "       U3      δ2       δ3    max误差\n" + row("牛顿法", nr) + "\n" + row("P-Q分解", fd);
+  let h;
+  if (!ok(fd)) h = "电阻太大时 R/X 不再远小于 1，P-Q 分解法忽略的 N、M 子块变得重要，常数矩阵近似失效，收敛变慢甚至不收敛；牛顿法用完整雅可比矩阵，不受影响。";
+  else if (fd.length > nr.length + 2) h = "牛顿法误差每步大致平方缩小（二阶收敛）；P-Q 分解法每步按大致固定比例缩小（线性收敛），次数多，但每次只解两个常系数小方程。把电阻倍数调大，看两者差距怎样变化。";
+  else h = "R/X 小时，有功-相角、无功-电压的解耦很好，P-Q 分解法与牛顿法的迭代次数接近。";
+  if (!ok(nr)) h = "负荷太重，平启动下牛顿法也没有收敛：这个运行点可能已经超出网络的输送能力（没有潮流解）。";
+  $("hint").textContent = h;
+  draw(k);
+}
+function draw(k) {
+  const { g, w, h } = fit($("cv")); g.clearRect(0, 0, w, h);
+  const pl = 44, pr = 10, pt = 12, pb = 26, pw = w - pl - pr, ph = h - pt - pb;
+  const kmax = Math.max(S.nr.length, S.fd.length, 4) - 1, lo = -7, hi = 1;
+  const X = (i) => pl + pw * i / kmax, Y = (e) => pt + ph * (hi - Math.max(lo, Math.min(hi, Math.log10(Math.max(e, 1e-12))))) / (hi - lo);
+  g.strokeStyle = K.line; g.fillStyle = K.muted; g.textAlign = "right";
+  for (let e = hi; e >= lo; e--) { g.beginPath(); g.moveTo(pl, Y(10 ** e)); g.lineTo(w - pr, Y(10 ** e)); g.stroke(); if ((e - lo) % 2 === 0) g.fillText("1e" + e, pl - 4, Y(10 ** e) + 4); }
+  g.textAlign = "center"; for (let i = 0; i <= kmax; i += kmax > 12 ? 5 : 1) g.fillText(i, X(i), h - 8);
+  g.strokeStyle = K.light; g.setLineDash(DOT); g.beginPath(); g.moveTo(pl, Y(TOL)); g.lineTo(w - pr, Y(TOL)); g.stroke(); g.setLineDash([]);
+  g.strokeStyle = K.light; g.beginPath(); g.moveTo(X(k), pt); g.lineTo(X(k), pt + ph); g.stroke();
+  const line = (hist, col, dash, lw) => {
+    g.strokeStyle = col; g.lineWidth = lw; g.setLineDash(dash); g.beginPath();
+    hist.forEach((s, i) => (i ? g.lineTo(X(i), Y(s.err)) : g.moveTo(X(i), Y(s.err)))); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col; hist.forEach((s, i) => { g.beginPath(); g.arc(X(i), Y(s.err), i === k ? 4.5 : 2.5, 0, 7); g.fill(); });
+  };
+  line(S.fd, K.mid, DASH, 1.6); line(S.nr, K.ink, [], 2.2);
+  g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("max |ΔP|, |ΔQ|（对数坐标），横轴为迭代次数", pl + 4, pt + 12);
+}
+["P", "R"].forEach((id) => $(id).addEventListener("input", () => { recompute(); show(); }));
+$("k").addEventListener("input", show);
+addEventListener("resize", show);
+recompute(); show();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

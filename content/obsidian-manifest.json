@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 111,
-  "assetCount": 319,
+  "noteCount": 112,
+  "assetCount": 331,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -79,28 +79,28 @@
       "slug": "电力系统分析-第1章-第1讲-电力系统概述-pwr1l01",
       "title": "电力系统分析：第1章 第1讲：电力系统概述（Lecture 1）",
       "publishedAt": "2026-09-14",
-      "hash": "6bd7f685ab75bb712577122b1ca77bd65294ee2a4478c542128262f7e5a3d473"
+      "hash": "589223dc731e01a67953446334f6a43534ff5247403502444af10ccdc138dcb5"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第1章-第2讲-电力系统概述-pwr1l02.md",
       "slug": "电力系统分析-第1章-第2讲-电力系统概述-pwr1l02",
       "title": "电力系统分析：第1章 第2讲：电力系统概述（Lecture 2）",
       "publishedAt": "2026-09-14",
-      "hash": "a5aa3fd71500608d22b3a0554947338a6a95ad9d5b184941a7a3315f7d1d932c"
+      "hash": "3e806a8ea09b88c8545db66917e14254664f7bbea455a8bcb3020d9863edf5f1"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03.md",
       "slug": "电力系统分析-第2章-第3讲-电力线路参数与等值电路-pwr2l03",
       "title": "电力系统分析：第2章 第3讲：电力线路参数与等值电路",
       "publishedAt": "2026-09-28",
-      "hash": "a629cfbc3860c264ac569cef1c32a2f1f17a046fbe2dea239abd75a364e03699"
+      "hash": "4fd6ced71a8ae89d9e35fd5b495ece84aa6a399f3ea07e706f281f32f88b3e1d"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04.md",
       "slug": "电力系统分析-第2章-第4讲-变压器参数与等值电路-pwr2l04",
       "title": "电力系统分析：第2章 第4讲：变压器参数与等值电路",
       "publishedAt": "2026-09-28",
-      "hash": "50a0727f1c3a586d08715f9db43a7f39a81d306c75c4c289b59f342cb2366f8c"
+      "hash": "fe72a707cb2cd8761f16141fb977cc76ba910e84b979dacd18ddd849dad31ff9"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第2章-第5讲-标幺制与等值电路-pwr2l05.md",
@@ -121,14 +121,21 @@
       "slug": "电力系统分析-第3章-第7讲-电力网络方程与矩阵及功率方程-pwr3l07",
       "title": "电力系统分析：第3章 第7讲 电力网络方程与矩阵及功率方程",
       "publishedAt": "2026-10-22",
-      "hash": "02dd1f082afb70057a93f3d83d5a6e1b7d39b74cbf13a2b77885d2f57d9b242d"
+      "hash": "22fbb777038d99eb559efacd4f623389d060ba21e53f6d4439e6f9a0b9c4df48"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第8讲-实际潮流方程与计算机解法-pwr3l08.md",
       "slug": "电力系统分析-第3章-第8讲-实际潮流方程与计算机解法-pwr3l08",
       "title": "电力系统分析：第3章 第8讲 实际潮流方程与计算机解法",
       "publishedAt": "2026-10-22",
-      "hash": "8652aef7b9c741547e36d2cddcf1011f14c942f20a89bd2336d24507be58c96e"
+      "hash": "8230c523639dc061d9addf7a5f737c947519c2c7e5606b9072e9ab5f51683459"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第9讲-极坐标牛顿法与PQ分解法-pwr3l09.md",
+      "slug": "电力系统分析-第3章-第9讲-极坐标牛顿法与pq分解法-pwr3l09",
+      "title": "电力系统分析：第3章 第9讲 极坐标牛顿法与 P-Q 分解法",
+      "publishedAt": "2026-10-26",
+      "hash": "bbbde495b6168a4d4726d4a97c17bcf867d3c0dd41ede021fd1adc0cd8b7f375"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",

@@ -1,0 +1,130 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>两节点潮流的两个解</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>两节点潮流：同一组方程的两个解</h2>
+<p class="sub">课件 P19 的系统：U<sub>1</sub> = 1∠0°，线路电抗 x = 0.1（导纳 −j10），两端对地 j0.1。节点 2 为 PQ 节点，净注入 P<sub>2</sub> = −P<sub>L</sub>、Q<sub>2</sub> = −Q<sub>L</sub>。课件的工况是 P<sub>L</sub> = 4、Q<sub>L</sub> = 0。</p>
+<div class="grid">
+<div class="card">
+<label><span>节点 2 净有功负荷 P<sub>L</sub></span><b id="vP"></b></label><input id="P" type="range" min="0" max="6" step="0.05" value="4">
+<label><span>节点 2 净无功负荷 Q<sub>L</sub></span><b id="vQ"></b></label><input id="Q" type="range" min="-2" max="3" step="0.05" value="0">
+<div class="kv"><span>高电压解 U<sub>2</sub>∠δ<sub>2</sub></span><b id="oH"></b></div>
+<div class="kv"><span>低电压解 U<sub>2</sub>∠δ<sub>2</sub></span><b id="oL"></b></div>
+<div class="kv"><span>牛顿法从平启动出发收敛到</span><b id="oN"></b></div>
+<div class="kv"><span>节点 1 注入 P<sub>1</sub> + jQ<sub>1</sub></span><b id="oS"></b></div>
+<p class="formula">−P_L = 10·U2·sinδ2，−Q_L = 9.9·U2² − 10·U2·cosδ2</p>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:290px"></canvas>
+<div class="legend"><span><i></i>高电压解（可行）</span><span><i class="m d"></i>低电压解</span><span><i class="b"></i>当前负荷</span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4], DOT = [1.5, 3.5], DD = [9, 3, 2, 3];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+let visible = true;
+try { new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(document.body); } catch (e) {}
+function loop(fn) { let last = performance.now(); (function f(t) { if (visible && !document.hidden) fn(Math.min(0.05, (t - last) / 1000)); last = t; requestAnimationFrame(f); })(last); }
+// For net injection Pn, Qn at bus 2: 98.01x^2 - (19.8Qn + 100)x + (Pn^2 + Qn^2) = 0, x = U2^2
+function roots(PL, QL) {
+  const Pn = -PL, Qn = -QL, a = 98.01, b = -(19.8 * Qn + 100), c = Pn * Pn + Qn * Qn, disc = b * b - 4 * a * c;
+  if (disc < 0) return null;
+  const xs = [(-b + Math.sqrt(disc)) / (2 * a), (-b - Math.sqrt(disc)) / (2 * a)].filter((x) => x > 0);
+  return xs.map((x) => { const U = Math.sqrt(x); return { U, d: Math.atan2(Pn / (10 * U), (9.9 * x - Qn) / (10 * U)) }; });
+}
+function newton(PL, QL) { // polar N-R, unknowns d2, U2, flat start
+  let d = 0, U = 1;
+  for (let k = 0; k < 30; k++) {
+    const P = 10 * U * Math.sin(d), Q = 9.9 * U * U - 10 * U * Math.cos(d);
+    const f1 = -PL - P, f2 = -QL - Q;
+    if (Math.max(Math.abs(f1), Math.abs(f2)) < 1e-8) return { U, d, k };
+    const J = [[10 * U * Math.cos(d), 10 * Math.sin(d)], [10 * U * Math.sin(d), 19.8 * U - 10 * Math.cos(d)]];
+    const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
+    d += (J[1][1] * f1 - J[0][1] * f2) / det; U += (-J[1][0] * f1 + J[0][0] * f2) / det;
+    if (!isFinite(U) || U <= 0.01 || U > 5) return null;
+  }
+  return null;
+}
+const deg = (r) => (r * 180 / Math.PI).toFixed(1) + "°";
+function draw() {
+  const PL = +$("P").value, QL = +$("Q").value;
+  $("vP").textContent = PL.toFixed(2); $("vQ").textContent = QL.toFixed(2);
+  const r = roots(PL, QL), nr = newton(PL, QL);
+  $("oH").textContent = r && r[0] ? r[0].U.toFixed(3) + "∠" + deg(r[0].d) : "无解";
+  $("oL").textContent = r && r[1] ? r[1].U.toFixed(3) + "∠" + deg(r[1].d) : "无解";
+  $("oN").textContent = nr ? nr.U.toFixed(3) + "∠" + deg(nr.d) + "（" + nr.k + " 次）" : "不收敛";
+  if (r && r[0]) { const { U, d } = r[0]; $("oS").textContent = (10 * U * Math.sin(-d)).toFixed(2) + " + j" + (9.9 - 10 * U * Math.cos(d)).toFixed(2); } else $("oS").textContent = "—";
+  $("hint").textContent = !r ? "负荷超过了这条线路的输送极限，潮流方程没有实数解；牛顿法也就无法收敛。"
+    : (r[0].U - (r[1] ? r[1].U : 0) < 0.15 ? "两个解已经很接近，运行点靠近鼻尖：负荷再增一点就无解，这就是电压崩溃的边缘。"
+    : "高电压解在额定电压附近，是实际运行点；低电压解电压太低、电流太大，物理上不可行。从平启动出发的牛顿法收敛到高电压解。");
+
+  const { g, w, h } = fit($("cv")); g.clearRect(0, 0, w, h);
+  const pl = 38, pr = 12, pt = 14, pb = 28, pw = w - pl - pr, ph = h - pt - pb, Pmax = 6.5;
+  const X = (p) => pl + pw * p / Pmax, Y = (u) => pt + ph * (1 - u / 1.1);
+  g.strokeStyle = K.line; g.fillStyle = K.muted; g.textAlign = "right";
+  [0, 0.25, 0.5, 0.75, 1].forEach((u) => { g.beginPath(); g.moveTo(pl, Y(u)); g.lineTo(w - pr, Y(u)); g.stroke(); g.fillText(u.toFixed(2), pl - 4, Y(u) + 4); });
+  g.textAlign = "center"; [0, 1, 2, 3, 4, 5, 6].forEach((p) => g.fillText(p, X(p), h - 12));
+  g.fillText("P_L", w - pr - 8, h - 12);
+  const up = [], lo = [];
+  for (let i = 0; i <= 400; i++) { const p = Pmax * i / 400, s = roots(p, QL); if (!s) break; up.push([p, s[0].U]); if (s[1]) lo.push([p, s[1].U]); }
+  const line = (pts, col, dash, lw) => { g.strokeStyle = col; g.lineWidth = lw; g.setLineDash(dash); g.beginPath(); pts.forEach(([p, u], i) => (i ? g.lineTo(X(p), Y(u)) : g.moveTo(X(p), Y(u)))); g.stroke(); g.setLineDash([]); };
+  line(up, K.ink, [], 2); line(lo, K.mid, DASH, 1.6);
+  if (up.length) { const [pn, un] = up[up.length - 1]; g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("鼻尖 P≈" + pn.toFixed(2), Math.min(X(pn) + 6, w - pr - 70), Y(un) - 6); }
+  g.strokeStyle = K.light; g.beginPath(); g.moveTo(X(PL), pt); g.lineTo(X(PL), pt + ph); g.stroke();
+  if (r) r.forEach((s, i) => { g.fillStyle = i ? K.mid : K.ink; g.beginPath(); g.arc(X(PL), Y(s.U), 5, 0, 7); g.fill(); });
+  g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("U2 随负荷 P_L 的变化（Q_L 固定）", pl + 4, pt + 10);
+}
+["P", "Q"].forEach((id) => $(id).addEventListener("input", draw));
+addEventListener("resize", draw); draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

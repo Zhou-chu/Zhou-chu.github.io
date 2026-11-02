@@ -1,0 +1,148 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>无功平衡与电压水平</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f4f4f4; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 16px 18px; background: var(--bg); color: var(--ink); font: 13.5px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+p.sub { margin: 0 0 12px; color: var(--muted); font-size: 12.5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 4px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus { outline: none; }
+input[type=range]:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+pre.mat { margin: 6px 0 0; font: 12px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--ink); overflow-x: auto; white-space: pre; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); margin: 2px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.formula { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+.hint { margin-top: 8px; font-size: 12px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 8px; }
+.hint:empty { display: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+button { font: inherit; font-size: 12.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 10px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--ink); margin-right: 5px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-width: 1.5px; }
+.legend i.d { border-top-style: dashed; }
+.legend i.t { border-top-style: dotted; border-top-width: 2px; }
+.legend i.l { border-top-color: var(--light); }
+.legend i.b { height: 9px; border: 0; background: var(--ink); width: 14px; }
+.legend i.bl { height: 9px; border: 1px solid var(--mid); background: var(--fill); width: 14px; }
+sub, sup { line-height: 0; }
+</style></head><body>
+<h2>无功平衡决定电压：Q-U 曲线的交点</h2>
+<p class="sub">电源电势 E 经 X<sub>Σ</sub> = 0.25 向负荷供电（标幺值）。电源曲线 Q = √((EU/X)² − P²) − U²/X；负荷 P<sub>D</sub> = λ·0.8·U，Q<sub>D</sub> = λ·0.6·U³（综合负荷在额定电压附近的陡峭静特性）。并联电容器发出 Q<sub>C</sub> = B<sub>C</sub>U²，从电网吸收的无功为 Q<sub>D</sub> − Q<sub>C</sub>。运行点是两条曲线在右侧的交点。</p>
+<div class="btns"><button data-s="0">① 初始</button><button data-s="1">② 负荷增加</button><button data-s="2">③ 提高 E</button><button data-s="3">④ 改投电容器</button></div>
+<div class="grid">
+<div class="card">
+<label><span>负荷倍数 λ</span><b id="vL"></b></label><input id="L" type="range" min="0.5" max="2" step="0.01" value="1">
+<label><span>电源电势 E（励磁）</span><b id="vE"></b></label><input id="E" type="range" min="0.95" max="1.3" step="0.005" value="1.15">
+<label><span>并联电容器 B<sub>C</sub></span><b id="vB"></b></label><input id="B" type="range" min="0" max="0.6" step="0.01" value="0">
+<div class="kv"><span>负荷节点电压 U</span><b id="oU"></b></div>
+<div class="kv"><span>电压偏移</span><b id="oD"></b></div>
+<div class="kv"><span>负荷吸收 Q<sub>D</sub></span><b id="oQ"></b></div>
+<div class="kv"><span>电容器发出 Q<sub>C</sub> = B<sub>C</sub>U²</span><b id="oC"></b></div>
+<div class="kv"><span>电源经 X 送来的无功</span><b id="oS"></b></div>
+<div class="kv"><span>线路无功损耗 ≈ (P²+Q²)X/U²</span><b id="oLoss"></b></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="card"><canvas id="cv" style="height:320px"></canvas>
+<div class="legend"><span><i></i>电源 Q-U 曲线（当前 E）</span><span><i class="m d"></i>负荷净吸收 Q<sub>D</sub>−Q<sub>C</sub></span><span><i class="l"></i>①初始工况的两条曲线</span><span><i class="b"></i>运行点</span></div></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["ink","muted","mid","light","line","fill","bg"].forEach((n) => { K[n] = C(n); }); }
+const DASH = [6, 4];
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d)); c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11.5px system-ui, "Microsoft YaHei", sans-serif'; g.lineWidth = 1; g.setLineDash([]);
+  return { g, w: r.width, h: r.height };
+}
+refreshK();
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => dispatchEvent(new Event("resize"))); } catch (e) {}
+const X = 0.25, P0 = 0.8, Q0 = 0.6;
+const PD = (U, l) => l * P0 * U;
+const QD = (U, l) => l * Q0 * U * U * U;
+function Qs(U, E, l) { const a = E * U / X, p = PD(U, l); return a * a < p * p ? NaN : Math.sqrt(a * a - p * p) - U * U / X; }
+const Qnet = (U, l, B) => QD(U, l) - B * U * U;
+// operating point: highest-U root of f(U) = Qs - Qnet, scanning downward
+function solve(E, l, B) {
+  const f = (U) => Qs(U, E, l) - Qnet(U, l, B);
+  let U1 = 1.6, f1 = f(U1);
+  for (let U = 1.6 - 0.002; U > 0.3; U -= 0.002) {
+    const f0 = f(U);
+    if (!isFinite(f0)) return null;
+    if (f0 >= 0 && f1 < 0) { let a = U, b = U1; for (let k = 0; k < 60; k++) { const m = (a + b) / 2; f(m) >= 0 ? (a = m) : (b = m); } return (a + b) / 2; }
+    U1 = U; f1 = f0;
+  }
+  return null;
+}
+const S = [ { L: 1, E: 1.15, B: 0 }, { L: 1.35, E: 1.15, B: 0 }, { L: 1.35, E: 1.25, B: 0 }, { L: 1.35, E: 1.15, B: 0.35 } ];
+document.querySelectorAll("button[data-s]").forEach((b) => b.addEventListener("click", () => {
+  const s = S[+b.dataset.s]; $("L").value = s.L; $("E").value = s.E; $("B").value = s.B;
+  document.querySelectorAll("button[data-s]").forEach((x) => x.classList.toggle("on", x === b)); draw();
+}));
+function draw() {
+  const l = +$("L").value, E = +$("E").value, B = +$("B").value;
+  $("vL").textContent = l.toFixed(2); $("vE").textContent = E.toFixed(3); $("vB").textContent = B.toFixed(2);
+  const U = solve(E, l, B), U0 = solve(S[0].E, S[0].L, S[0].B);
+  if (U) {
+    const qd = QD(U, l), qc = B * U * U, qs = qd - qc, p = PD(U, l);
+    $("oU").textContent = U.toFixed(3); $("oD").textContent = ((U - 1) * 100 >= 0 ? "+" : "") + ((U - 1) * 100).toFixed(1) + "%";
+    $("oQ").textContent = qd.toFixed(3); $("oC").textContent = qc.toFixed(3); $("oS").textContent = qs.toFixed(3);
+    $("oLoss").textContent = ((p * p + qs * qs) * X / (U * U)).toFixed(3);
+  } else ["oU","oD","oQ","oC","oS","oLoss"].forEach((id) => { $(id).textContent = "—"; });
+  let h;
+  if (!U) h = "两条曲线已不相交：电源在任何电压下都送不出负荷要的无功，系统没有平衡点，对应电压崩溃。";
+  else if (U < 0.85) h = "电压已远低于允许范围。这个模型里负荷无功按 U³ 随电压下降，起了自我缓解作用，交点才没有消失；若负荷接近恒功率，曲线会不再相交，即电压崩溃。";
+  else if (U < 0.95) h = "电压低于 0.95，超出 ±5% 的允许范围。无功不足时平衡点只能落在低电压处：提高 E 或在负荷侧补偿无功都能把交点推向右边。";
+  else if (U > 1.05) h = "电压高于 1.05：无功过剩。实际运行中要切除部分电容器或降低励磁。";
+  else if (B > 0) h = "电容器使负荷从电网吸收的无功减少，曲线下移，交点右移。注意 Q_C = B_C·U²：电压越低它发得越少，所以电容器在低电压时支撑能力变差。";
+  else h = "电压在 ±5% 范围内。拖动 λ 增加负荷，负荷曲线上移，交点沿电源曲线向左下移动，电压下降。";
+  $("hint").textContent = h;
+
+  const { g, w, h: H } = fit($("cv")); g.clearRect(0, 0, w, H);
+  const pl = 40, pr = 12, pt = 16, pb = 28, pw = w - pl - pr, ph = H - pt - pb;
+  const u0 = 0.6, u1 = 1.3, q0 = -0.2, q1 = 2.0;
+  const XX = (u) => pl + pw * (u - u0) / (u1 - u0), YY = (q) => pt + ph * (1 - (q - q0) / (q1 - q0));
+  g.strokeStyle = K.line; g.fillStyle = K.muted; g.textAlign = "right";
+  [0, 0.5, 1, 1.5, 2].forEach((q) => { g.beginPath(); g.moveTo(pl, YY(q)); g.lineTo(w - pr, YY(q)); g.stroke(); g.fillText(q.toFixed(1), pl - 4, YY(q) + 4); });
+  g.textAlign = "center"; [0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2].forEach((u) => g.fillText(u.toFixed(1), XX(u), H - 12));
+  g.fillStyle = K.fill; g.fillRect(XX(0.95), pt, XX(1.05) - XX(0.95), ph);
+  g.fillStyle = K.muted; g.textAlign = "left"; g.fillText("±5%", XX(0.95) + 3, pt + 12);
+  g.textAlign = "right"; g.fillText("U", w - pr, H - 12); g.textAlign = "left"; g.fillText("Q", pl + 4, pt + 10);
+  const curve = (fn, col, dash, lw) => {
+    g.save(); g.beginPath(); g.rect(pl, pt, pw, ph); g.clip();
+    g.strokeStyle = col; g.lineWidth = lw; g.setLineDash(dash); g.beginPath(); let on = false;
+    for (let i = 0; i <= 300; i++) { const u = u0 + (u1 - u0) * i / 300, q = fn(u); if (!isFinite(q)) { on = false; continue; } on ? g.lineTo(XX(u), YY(q)) : g.moveTo(XX(u), YY(q)); on = true; }
+    g.stroke(); g.restore();
+  };
+  const s0 = S[0];
+  curve((u) => Qs(u, s0.E, s0.L), K.light, [], 1.2); curve((u) => Qnet(u, s0.L, s0.B), K.light, DASH, 1.2);
+  curve((u) => Qs(u, E, l), K.ink, [], 2); curve((u) => Qnet(u, l, B), K.mid, DASH, 1.8);
+  if (U0) { g.fillStyle = K.light; g.beginPath(); g.arc(XX(U0), YY(Qs(U0, s0.E, s0.L)), 4, 0, 7); g.fill(); }
+  if (U) {
+    const q = Qs(U, E, l);
+    g.strokeStyle = K.light; g.setLineDash([2, 3]); g.beginPath(); g.moveTo(XX(U), YY(q)); g.lineTo(XX(U), pt + ph); g.stroke(); g.setLineDash([]);
+    g.fillStyle = K.ink; g.beginPath(); g.arc(XX(U), YY(q), 5, 0, 7); g.fill();
+    g.textAlign = "left"; g.fillText("U = " + U.toFixed(3), Math.min(XX(U) + 7, w - pr - 70), YY(q) - 8);
+  }
+}
+["L", "E", "B"].forEach((id) => $(id).addEventListener("input", () => { document.querySelectorAll("button[data-s]").forEach((x) => x.classList.remove("on")); draw(); }));
+addEventListener("resize", draw); draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 112,
-  "assetCount": 331,
+  "noteCount": 113,
+  "assetCount": 346,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -136,6 +136,13 @@
       "title": "电力系统分析：第3章 第9讲 极坐标牛顿法与 P-Q 分解法",
       "publishedAt": "2026-10-26",
       "hash": "bbbde495b6168a4d4726d4a97c17bcf867d3c0dd41ede021fd1adc0cd8b7f375"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第4章-第10讲-无功功率与电压调整-pwr4l10.md",
+      "slug": "电力系统分析-第4章-第10讲-无功功率与电压调整-pwr4l10",
+      "title": "电力系统分析：第4章 第10讲 无功功率与电压调整",
+      "publishedAt": "2026-11-02",
+      "hash": "5b289676ec33759245bd203ed1d5cf92cbbbd03b1bfe0044b3afbdb94dfb326a"
     },
     {
       "sourcePath": "blog/调试日志/Deepseek Harness抢救日志-0830.md",

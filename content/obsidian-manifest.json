@@ -2,7 +2,7 @@
   "version": 1,
   "source": "Obsidian",
   "noteCount": 113,
-  "assetCount": 346,
+  "assetCount": 347,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -114,7 +114,7 @@
       "slug": "电力系统分析-第3章-第6讲-简单电力系统潮流计算-pwr3l06",
       "title": "电力系统分析：第3章 第6讲：简单电力系统潮流计算",
       "publishedAt": "2026-10-12",
-      "hash": "eb248c268639cd5e4df11e497ce23706336b3c6c42b48618762d7dae1f25f958"
+      "hash": "24c813d44b20d6bd84264edd86264e95294ab8648ab6fa8493ac1ce4d5f77f98"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第3章-第7讲-电力网络方程与矩阵及功率方程-pwr3l07.md",

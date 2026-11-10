@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 113,
-  "assetCount": 347,
+  "noteCount": 129,
+  "assetCount": 421,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -159,6 +159,69 @@
       "hash": "a69808fe3d8e7c33aa6858bd772bdef03cdcb2674766042b41776166748eb221"
     },
     {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第1讲-课程引言.md",
+      "slug": "ics-01-intro",
+      "title": "计算机系统概论（一）：课程引言——从一行 C 代码到一个进程的一生",
+      "publishedAt": "2026-11-10",
+      "hash": "263c5d24e82c2baa7cf2782174dcce9452beb9167afea1d6d27fb2f450853a13"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第2讲-整数.md",
+      "slug": "ics-02-integers",
+      "title": "计算机系统概论（二）：整数——同一串比特，两种解读",
+      "publishedAt": "2026-11-10",
+      "hash": "ad0de70ae35b9771ab9f3ec9ebaed30340b53a703fe6c6ba9b2eb001a39e5b61"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第3讲-浮点数.md",
+      "slug": "ics-03-floating-point",
+      "title": "计算机系统概论（三）：浮点数——有限的比特如何近似实数",
+      "publishedAt": "2026-11-10",
+      "hash": "433fccd52af989955bf8cbd32820d217c44073cd7dbd7b4511944dabad89d0c3"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第4讲-汇编入门.md",
+      "slug": "ics-04-assembly-basics",
+      "title": "计算机系统概论（四）：汇编入门——寄存器、mov 与寻址方式",
+      "publishedAt": "2026-11-10",
+      "hash": "13a2972284d11c19681ce17b2f023231612de273d81c213e75e544fd2729ce89"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第5讲-控制流.md",
+      "slug": "ics-05-control-flow",
+      "title": "计算机系统概论（五）：控制流——条件码、跳转、循环与 switch",
+      "publishedAt": "2026-11-10",
+      "hash": "0d94278052a0f4f2265c40644b3fbff148e8a2c6dda8b4500ad4655790444d6e"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第6讲-函数调用.md",
+      "slug": "ics-06-function-calls",
+      "title": "计算机系统概论（六）：函数调用——运行栈、栈帧与寄存器约定",
+      "publishedAt": "2026-11-10",
+      "hash": "f49ddd8919973d8536c3613d5ea247185ecb4e700aea8b04b1279a6200b18584"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第7讲-内存布局与缓冲区溢出.md",
+      "slug": "ics-07-memory-layout-buffer-overflow",
+      "title": "计算机系统概论（七）：内存布局与缓冲区溢出",
+      "publishedAt": "2026-11-10",
+      "hash": "b437ec7b87404c9bf4d236073d45f4217d00555ef33680a62e61c319f09dee88"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第8讲-数组与结构.md",
+      "slug": "ics-08-arrays-and-structs",
+      "title": "计算机系统概论（八）：数组与结构——地址计算与内存对齐",
+      "publishedAt": "2026-11-10",
+      "hash": "3f19874422d0b8a91ae77a7489a396c20ea34c9184f60b97bce94703cf390851"
+    },
+    {
+      "sourcePath": "blog/计算机系统概论/计算机系统概论-第9讲-程序链接.md",
+      "slug": "ics-09-linking",
+      "title": "计算机系统概论（九）：程序链接——符号解析、重定位与共享库",
+      "publishedAt": "2026-11-10",
+      "hash": "44b5d468b119d598999f3872a8f2b1d3482b0eca37cd05bbb92672c146eb9565"
+    },
+    {
       "sourcePath": "blog/均匀传输线/均匀传输线-a-1-均匀传输线及其方程-mryrh50s.md",
       "slug": "均匀传输线-a-1-均匀传输线及其方程-mryrh50s",
       "title": "均匀传输线：A-1：均匀传输线及其方程",
@@ -185,6 +248,55 @@
       "title": "核心知识库 · Beck《First-Order Methods in Optimization》",
       "publishedAt": "2026-09-23",
       "hash": "7d633d01683931b44799c9e1ef52d4ec1345c692ff59071929718dc9d5c8a660"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第1讲-优化问题建模与LASSO-opt1l01.md",
+      "slug": "人工智能的优化方法-第1讲-优化问题建模与lasso-opt1l01",
+      "title": "人工智能的优化方法：第 1 讲 优化问题建模、压缩感知与收敛速度",
+      "publishedAt": "2026-11-05",
+      "hash": "195f37398bcfd034669be50d6dfd6c07a4be757bda2ad570b4b911a7449bd854"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第2讲-凸集理论与分离定理-opt1l02.md",
+      "slug": "人工智能的优化方法-第2讲-凸集理论与分离定理-opt1l02",
+      "title": "人工智能的优化方法：第 2 讲 凸集理论与分离定理",
+      "publishedAt": "2026-11-05",
+      "hash": "ba6ea977a5d587d1055be133e93a01d7e081ea7304aebfd38a32ac9fc2593390"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第3讲-凸函数基础-opt1l03.md",
+      "slug": "人工智能的优化方法-第3讲-凸函数基础-opt1l03",
+      "title": "人工智能的优化方法：第 3 讲 凸函数基础",
+      "publishedAt": "2026-11-05",
+      "hash": "e2715723aab180d045dff1630a7259c7a2611fb8db9c4664a04e4cd8845c3d8e"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第4讲-光滑性与次微分-opt1l04.md",
+      "slug": "人工智能的优化方法-第4讲-光滑性与次微分-opt1l04",
+      "title": "人工智能的优化方法：第 4 讲 函数光滑性与次微分理论",
+      "publishedAt": "2026-11-08",
+      "hash": "a5271165de0f2cee71ce79e59a5e46183889b93dd460b00aa3fee08759ce9b1e"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第5讲-邻近算子与共轭函数-opt1l05.md",
+      "slug": "人工智能的优化方法-第5讲-邻近算子与共轭函数-opt1l05",
+      "title": "人工智能的优化方法：第 5 讲 邻近算子与共轭函数",
+      "publishedAt": "2026-11-08",
+      "hash": "38a575dcb1457c2028ecaff46e6a59ece31d5da7b6c536ed9b270eb82b65a248"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第6讲-对偶理论基础-opt1l06.md",
+      "slug": "人工智能的优化方法-第6讲-对偶理论基础-opt1l06",
+      "title": "人工智能的优化方法：第 6 讲 对偶理论基础",
+      "publishedAt": "2026-11-08",
+      "hash": "9cfed9b07c5c79f00189908d3c49399ca5fcca86227a3e1666de7a36df79ec93"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第7讲-最优性条件-opt1l07.md",
+      "slug": "人工智能的优化方法-第7讲-最优性条件-opt1l07",
+      "title": "人工智能的优化方法：第 7 讲 最优性条件",
+      "publishedAt": "2026-11-08",
+      "hash": "82a432ac546394e16bdc9c44e78db08c5a6a20e8f07af1ffdb0eaa3459bfee90"
     },
     {
       "sourcePath": "blog/人工智能的优化方法/chapter-1-vector-spaces-msn1gxzx.md",

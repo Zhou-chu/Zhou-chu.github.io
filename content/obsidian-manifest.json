@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 129,
-  "assetCount": 421,
+  "noteCount": 138,
+  "assetCount": 473,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -150,6 +150,69 @@
       "title": "Deepseek Harness 抢救日志 (0830)",
       "publishedAt": "2026-08-30",
       "hash": "dfadb30d00281440b54918efb44c0bfd2c0eab651b04470acbd2ea3009b05f2b"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/00 学习地图.md",
+      "slug": "piano-theory-roadmap",
+      "title": "钢琴入门与乐理：学习地图",
+      "publishedAt": "2026-11-10",
+      "hash": "676fa7aabd236b7b8806417f3f90155f5f560b452df3aaec672f2afe3e1ad6fd"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/01 键盘与音名.md",
+      "slug": "piano-keyboard-and-note-names",
+      "title": "键盘与音名：从 88 个键到八度",
+      "publishedAt": "2026-11-10",
+      "hash": "b544d99feb108970596fd9d26cb082724231df077e7daa6c92b65669a62417c8"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/02 五线谱与读谱.md",
+      "slug": "staff-and-clefs",
+      "title": "五线谱与读谱：谱号、线间与加线",
+      "publishedAt": "2026-11-10",
+      "hash": "d0bda99bf2195fc8d9dd25af982e1fcac2a822d1a17149e1b8941450c2088b05"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/03 节奏与节拍.md",
+      "slug": "rhythm-and-meter",
+      "title": "节奏与节拍：时值、附点、拍号与小节",
+      "publishedAt": "2026-11-10",
+      "hash": "db5fd896c2eacdb711d6414888f55cefa1a2f1b5d04630e40712e480a88978e7"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/04 半音全音与音阶.md",
+      "slug": "semitone-whole-tone-and-scale",
+      "title": "半音、全音与音阶：大调音阶的构造",
+      "publishedAt": "2026-11-10",
+      "hash": "fc5811efdf300d5fe6f379dab945fb590fee8a1507f79f5f605409c86676f5e2"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/05 调号与五度圈.md",
+      "slug": "key-signature-and-circle-of-fifths",
+      "title": "调号与五度圈：为什么 G 大调有一个升号",
+      "publishedAt": "2026-11-10",
+      "hash": "0252c2a3662eb63011740ff8749fee3e6f199a87d9de6d5748f84942d0ffafcb"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/06 音程.md",
+      "slug": "intervals",
+      "title": "音程：度数、半音数与移调",
+      "publishedAt": "2026-11-10",
+      "hash": "1f17cf77499c06f358fc0cca69ba06cb710a4de9161de754d120fb0ea76bb403"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/07 和弦.md",
+      "slug": "chords-and-inversions",
+      "title": "和弦：三和弦、属七和弦与转位",
+      "publishedAt": "2026-11-10",
+      "hash": "832673fcf5be718b0ae7da4d66eb6cde9d70a42e33f27ee0efd701a8c734b9bf"
+    },
+    {
+      "sourcePath": "blog/钢琴入门与音乐基础/08 力度速度与演奏记号.md",
+      "slug": "dynamics-tempo-and-marks",
+      "title": "力度、速度与演奏记号",
+      "publishedAt": "2026-11-10",
+      "hash": "35257e196af87f36ceb1b33cae583ed1520d864a53c6c48da4ed884f7669e39d"
     },
     {
       "sourcePath": "blog/高等电路网络分析/高等电路网络分析-形成网络方程的系统化方法-hcna01.md",

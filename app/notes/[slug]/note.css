@@ -694,3 +694,57 @@
   overflow-y: hidden;
   padding-bottom: 2px;
 }
+
+/* The article only looks through the static forest photo. Keep its filtered
+   copy at viewport size so scrolling the text does not re-filter a long card. */
+.note-article-glass {
+  display: none;
+}
+
+@supports (clip-path: inset(0 round 1px)) and (filter: blur(1px)) {
+  @media (min-width: 1024px) and (pointer: fine) {
+    html:not([data-style="mono"]) body .note-page .note-article {
+      --reader-glass-tint: rgba(255, 253, 247, 0.56);
+      --reader-glass-filter: blur(24px) saturate(0.72) brightness(1.12);
+      isolation: isolate;
+      background: transparent;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    html[data-theme="dark"]:not([data-style="mono"]) body .note-page .note-article {
+      --reader-glass-tint: rgba(22, 29, 23, 0.3);
+      --reader-glass-filter: blur(22px) saturate(0.72) brightness(0.76);
+    }
+
+    html:not([data-style="mono"]) .note-article-glass {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      clip-path: inset(0 round 28px);
+      pointer-events: none;
+    }
+
+    html:not([data-style="mono"]) .note-article-glass::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: var(--ft-background-image);
+      background-position: center 55%;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: var(--reader-glass-filter);
+    }
+
+    html:not([data-style="mono"]) .note-article-glass::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: var(--reader-glass-tint);
+    }
+  }
+}

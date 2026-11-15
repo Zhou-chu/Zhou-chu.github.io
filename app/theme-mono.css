@@ -891,3 +891,13 @@ html[data-style="mono"][data-theme="dark"] .pub-shell::after {
     radial-gradient(40% 50% at 70% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
     radial-gradient(50% 45% at 92% 110%, var(--fold-shade), transparent 70%);
 }
+
+/* Keep the draped light and folds, but let the background rest while reading.
+   Animating the page shell's pseudo-elements repeatedly resolves styles on
+   the long article and keeps the GPU drawing even when the reader is idle. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-style="mono"] .pub-shell:has(.note-page)::before,
+  html[data-style="mono"] .pub-shell:has(.note-page)::after {
+    animation-play-state: paused;
+  }
+}

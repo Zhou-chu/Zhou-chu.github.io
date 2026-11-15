@@ -198,6 +198,7 @@ export default async function NotePage({ params }: PageProps) {
       <div className="note-article-wrapper">
         {/* ── Article body ── */}
         <article className="note-article" aria-labelledby="note-title">
+          <div className="note-article-glass" aria-hidden="true" />
           {/* ── Ruler: metadata tick strip (DESIGN.md §5.11) ── */}
           <div className="note-ruler">
             <span className="note-ruler__category">{note.category}</span>

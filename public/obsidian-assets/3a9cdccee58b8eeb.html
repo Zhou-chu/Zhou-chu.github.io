@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Armijo 回溯：一步步试出步长</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#242722;--muted:#686d65;--line:#d9ddd5;--soft:#f4f5f1;--accent:#98604c;--green:#567059}
+@media(prefers-color-scheme:dark){:root{--bg:#181b17;--ink:#e5e8df;--muted:#a8afa1;--line:#41483d;--soft:#20251e;--accent:#dfad91;--green:#9bb6a0}}
+*{box-sizing:border-box}body{margin:0;padding:18px;font:14px/1.65 system-ui,"Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}h2{font-size:18px;font-weight:600;margin:0 0 4px}p{margin:0 0 12px}.sub,.hint{font-size:12px;color:var(--muted)}.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:12px 0}label{display:block;font-size:12px;color:var(--muted)}label b{float:right;color:var(--ink);font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:var(--green);min-height:22px;margin:8px 0}button{min-height:38px;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:3px;background:transparent;color:var(--ink);padding:5px 11px;cursor:pointer}button.primary{color:var(--bg);background:var(--ink)}button:disabled{opacity:.5;cursor:default}button:focus-visible,input:focus-visible{outline:2px solid var(--green);outline-offset:3px}.actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}canvas{width:100%;height:270px;display:block;border:1px solid var(--line)}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:8px 0}.legend i{display:inline-block;width:18px;border-top:2px solid var(--ink);vertical-align:middle;margin-right:4px}.legend i.rule{border-color:var(--accent);border-top-style:dashed}.results{max-height:185px;overflow:auto;border-top:1px solid var(--line)}table{width:100%;font-size:12px;border-collapse:collapse;text-align:right;font-variant-numeric:tabular-nums}th,td{padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}th:first-child,td:first-child{text-align:left}th{font-weight:500;color:var(--muted)}.accepted{background:var(--soft);color:var(--green)}.status{font-size:13px;border-left:2px solid var(--green);padding-left:10px;margin-top:12px}.rule-text{font-size:12px;color:var(--muted)}
+@media(max-width:580px){body{padding:13px}h2{font-size:16px}.controls{grid-template-columns:1fr;gap:1px}canvas{height:250px}th,td{padding:7px 5px;font-size:11px}}
+</style></head><body>
+<h2>先试一脚，不合适就缩短</h2>
+<p class="sub">沿着方向看函数 φ(γ) = (γ − 1)² / 2。蓝黑实线是真实高度，虚线是 Armijo 要求的高度上限。</p>
+<div class="controls">
+<div><label for="initial">初始尝试 γ̄ <b id="initial-value"></b></label><input id="initial" type="range" min="0.2" max="4" step="0.1" value="2"></div>
+<div><label for="c">下降要求 c <b id="c-value"></b></label><input id="c" type="range" min="0.05" max="0.95" step="0.05" value="0.25"></div>
+<div><label for="rho">每次保留比例 ρ <b id="rho-value"></b></label><input id="rho" type="range" min="0.1" max="0.9" step="0.05" value="0.5"></div>
+</div>
+<canvas id="plot" role="img" aria-label="真实函数曲线、Armijo 上限直线和各次试探步长"></canvas>
+<div class="legend"><span><i></i>φ(γ)</span><span><i class="rule"></i>φ(0) + cγφ′(0) = 1/2 − cγ</span></div>
+<div class="actions"><button id="next" class="primary">尝试下一步</button><button id="finish">完成本轮回溯</button><button id="reset">重新尝试</button><button id="example">课件参数</button></div>
+<p class="rule-text" id="threshold"></p>
+<div class="results"><table><thead><tr><th>尝试</th><th>步长 γ</th><th>真实值</th><th>要求上限</th><th>结果</th></tr></thead><tbody id="trials"></tbody></table></div>
+<p class="status" id="status" role="status" aria-live="polite">从初始步长开始，点“尝试下一步”。</p>
+<p class="hint">候选点落在虚线的下方或线上时接受。调整参数会开始新一轮试验；也可以逐次点击，观察每次缩短带来的变化。</p>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),colors=name=>getComputedStyle(document.documentElement).getPropertyValue('--'+name).trim();
+let trials=[];
+const f=x=>.5*(x-1)**2,fmt=x=>Math.abs(x)<.001&&x!==0?x.toExponential(2):x.toFixed(4);
+function settings(){return{initial:+$('initial').value,c:+$('c').value,rho:+$('rho').value};}
+function accepted(){return trials.length>0&&trials[trials.length-1].accepted;}
+function attempt(){if(accepted())return;const s=settings(),gamma=s.initial*s.rho**trials.length,value=f(gamma),limit=.5-s.c*gamma;trials.push({gamma,value,limit,accepted:value<=limit+1e-12});}
+function draw(){
+ const s=settings(),A=2*(1-s.c);$('initial-value').textContent=s.initial.toFixed(1);$('c-value').textContent=s.c.toFixed(2);$('rho-value').textContent=s.rho.toFixed(2);
+ $('threshold').textContent='本例可接受区间：0 < γ ≤ '+A.toFixed(2)+'；下一候选总是上一候选的 '+s.rho.toFixed(2)+' 倍。';
+ $('trials').replaceChildren(...trials.map((t,i)=>{const row=document.createElement('tr');if(t.accepted)row.className='accepted';for(const text of [i+1,fmt(t.gamma),fmt(t.value),fmt(t.limit),t.accepted?'接受':'缩短再试']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}return row;}));
+ $('next').disabled=accepted();$('finish').disabled=accepted();
+ $('status').textContent=!trials.length?'从初始步长 '+s.initial.toFixed(2)+' 开始，点“尝试下一步”。':accepted()?'第 '+trials.length+' 次尝试接受 γ = '+fmt(trials.at(-1).gamma)+'，共缩短 '+(trials.length-1)+' 次。':'γ = '+fmt(trials.at(-1).gamma)+' 还不够好；下一次试 γ = '+fmt(s.initial*s.rho**trials.length)+'。';
+ const node=$('plot'),r=node.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);node.width=Math.round(r.width*dpr);node.height=Math.round(r.height*dpr);const g=node.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.font='11px system-ui, sans-serif';
+ const w=r.width,h=r.height,p={l:43,r:18,t:20,b:30},xmax=Math.max(2.6,s.initial*1.12),ymin=Math.min(-.25,.5-s.c*xmax-.12),ymax=Math.max(.8,f(xmax)+.15),X=x=>p.l+x/xmax*(w-p.l-p.r),Y=y=>p.t+(ymax-y)/(ymax-ymin)*(h-p.t-p.b);
+ g.globalAlpha=.07;g.fillStyle=colors('green');g.fillRect(X(0),p.t,X(A)-X(0),h-p.t-p.b);g.globalAlpha=1;
+ function curve(fn,color,dash=[]){g.beginPath();g.strokeStyle=color;g.lineWidth=1.8;g.setLineDash(dash);for(let i=0;i<=200;i++){const x=xmax*i/200;i?g.lineTo(X(x),Y(fn(x))):g.moveTo(X(x),Y(fn(x)));}g.stroke();g.setLineDash([]);}
+ g.lineWidth=1;g.strokeStyle=colors('line');g.beginPath();g.moveTo(X(0),Y(ymin));g.lineTo(X(0),Y(ymax));g.moveTo(X(0),Y(0));g.lineTo(X(xmax),Y(0));g.stroke();
+ g.fillStyle=colors('muted');for(let i=0;i<=4;i++){const x=xmax*i/4;g.fillText(x.toFixed(1),X(x)-7,h-10);}g.fillText('γ',w-13,h-10);g.fillText('0',p.l-15,Y(0)+4);g.fillText('0.5',p.l-27,Y(.5)+4);
+ curve(f,colors('ink'));curve(x=>.5-s.c*x,colors('accent'),[6,4]);
+ g.setLineDash([2,4]);g.strokeStyle=colors('green');g.beginPath();g.moveTo(X(A),p.t);g.lineTo(X(A),h-p.b);g.stroke();g.setLineDash([]);g.fillStyle=colors('green');g.fillText('可接受到 '+A.toFixed(2),Math.max(p.l+4,Math.min(X(A)-42,w-120)),p.t+11);
+ trials.forEach((t,i)=>{g.fillStyle=t.accepted?colors('green'):colors('accent');g.beginPath();g.arc(X(t.gamma),Y(t.value),i===trials.length-1?5:3,0,2*Math.PI);g.fill();if(i===trials.length-1){g.fillStyle=colors('ink');g.fillText('γ = '+fmt(t.gamma),Math.max(p.l+4,Math.min(X(t.gamma)+8,w-100)),Math.max(p.t+25,Y(t.value)-10));}});
+ window.armijoExperiment={...s,threshold:A,trials:trials.map(t=>({...t}))};
+}
+for(const id of ['initial','c','rho'])$(id).addEventListener('input',()=>{trials=[];draw();});
+$('next').addEventListener('click',()=>{attempt();draw();});$('finish').addEventListener('click',()=>{while(!accepted()&&trials.length<200)attempt();draw();});$('reset').addEventListener('click',()=>{trials=[];draw();});$('example').addEventListener('click',()=>{$('initial').value=2;$('c').value=.25;$('rho').value=.5;trials=[];draw();});
+let queued=false;new ResizeObserver(()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;draw();});}}).observe(document.body);matchMedia('(prefers-color-scheme:dark)').addEventListener('change',draw);draw();
+})();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

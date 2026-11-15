@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 138,
-  "assetCount": 474,
+  "noteCount": 139,
+  "assetCount": 478,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -969,6 +969,13 @@
       "title": "可编程恒流信号源装置（TI杯赛道二）权威资料调研报告",
       "publishedAt": "2026-09-06",
       "hash": "f00d85a11722d190650fd16715da6d908e945abeb36623661b4d36459c901115"
+    },
+    {
+      "sourcePath": "blog/人工智能的优化方法/人工智能的优化方法-第8讲-梯度下降法-opt1l08.md",
+      "slug": "人工智能的优化方法-第8讲-梯度下降法-opt1l08",
+      "title": "人工智能的优化方法：第 8 讲 梯度下降法",
+      "publishedAt": "2026-11-15",
+      "hash": "17e0111eac297eb6ed940bbdf585de4175e79e2036378e4a32fa3623e0c57fb9"
     }
   ]
 }

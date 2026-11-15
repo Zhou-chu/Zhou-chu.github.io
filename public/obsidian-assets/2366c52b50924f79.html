@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>梯度下降：步长与条件数</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#242722;--muted:#686d65;--line:#d9ddd5;--soft:#f4f5f1;--accent:#98604c;--green:#567059}
+@media(prefers-color-scheme:dark){:root{--bg:#181b17;--ink:#e5e8df;--muted:#a8afa1;--line:#41483d;--soft:#20251e;--accent:#dfad91;--green:#9bb6a0}}
+*{box-sizing:border-box}body{margin:0;padding:18px;font:14px/1.65 system-ui,"Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+h2{margin:0 0 4px;font-size:18px;font-weight:600}p{margin:0 0 14px}.sub,.hint{color:var(--muted);font-size:12px}.presets,.actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}button{min-height:36px;padding:5px 11px;font:inherit;font-size:12px;background:transparent;border:1px solid var(--line);border-radius:3px;color:var(--ink);cursor:pointer}button:hover{border-color:var(--ink)}button:focus-visible,input:focus-visible{outline:2px solid var(--green);outline-offset:3px}button.primary{background:var(--ink);color:var(--bg)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:15px 0}label{display:block;font-size:12px;color:var(--muted)}label b{float:right;color:var(--ink);font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:var(--green);margin:10px 0;cursor:pointer;min-height:20px}.charts{display:grid;grid-template-columns:1.08fr 1fr;gap:12px}.panel{min-width:0;border:1px solid var(--line);padding:10px;background:var(--bg)}.panel h3{font-size:12px;font-weight:500;color:var(--muted);margin:0 0 3px}canvas{display:block;width:100%;height:290px}#history{height:230px}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.metric{font-size:11px;color:var(--muted);overflow-wrap:anywhere}.metric strong{display:block;font-size:14px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}.legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:11px}.legend i{display:inline-block;width:16px;border-top:2px solid var(--accent);vertical-align:middle;margin-right:4px}.legend .distance{border-color:var(--green);border-top-style:dashed}.status{margin:12px 0 0;padding-left:10px;border-left:2px solid var(--green);font-size:12px}#landscape{cursor:crosshair;touch-action:pan-y}.formula{font:12px/1.6 ui-monospace,Consolas,monospace;color:var(--muted)}
+@media(max-width:580px){body{padding:13px}.controls{grid-template-columns:1fr;gap:2px}.charts{grid-template-columns:1fr}canvas{height:290px}#history{height:210px}.metrics{grid-template-columns:1fr 1fr 1fr}h2{font-size:16px}}
+</style>
+</head>
+<body>
+<h2>同一个负梯度，怎样走出不同的轨迹</h2>
+<p class="sub">f(x,y) = (κx² + y²) / 2，μ = 1，L = κ。左图看位置，右图看误差怎样变化。</p>
+<div class="presets" aria-label="选择一个实验">
+<button data-preset="round">圆碗：一步到达</button><button data-preset="valley">窄谷折返</button><button data-preset="edge">边界往返</button><button data-preset="large">步长过大</button>
+</div>
+<div class="controls">
+<div><label for="kappa">条件数 κ <b id="kappa-value"></b></label><input id="kappa" type="range" min="1" max="60" step="1" value="12"></div>
+<div><label for="alpha">步长比例 α = γL <b id="alpha-value"></b></label><input id="alpha" type="range" min="0.05" max="2.4" step="0.01" value="1.5"></div>
+<div><label for="steps">显示到第几步 k <b id="steps-value"></b></label><input id="steps" type="range" min="0" max="80" step="1" value="20"></div>
+</div>
+<div class="charts">
+<section class="panel"><h3>等高线与迭代点 · 点图可更换起点</h3><canvas id="landscape" role="img" aria-label="二次函数等高线和梯度下降轨迹"></canvas><p class="hint">空心点为起点，实心点为当前点；超出图框的部分保留在右侧误差曲线中。</p></section>
+<section class="panel"><h3>相对误差 · 对数纵轴</h3><canvas id="history" role="img" aria-label="归一化距离和目标差随迭代次数变化的对数曲线"></canvas><div class="legend"><span><i></i>目标差 / 初始目标差</span><span><i class="distance"></i>距离 / 初始距离</span></div><p class="hint">误差恰为 0 时画在下边界。两条曲线比较的是各自相对初始值的比例。</p></section>
+</div>
+<div class="metrics" aria-live="polite">
+<div class="metric">实际步长 γ<strong id="gamma-value"></strong></div><div class="metric">当前点 (xᵏ, yᵏ)<strong id="point-value"></strong></div><div class="metric">最坏距离因子 q<strong id="q-value"></strong></div>
+<div class="metric">当前目标差 f(xᵏ) − f*<strong id="gap-value"></strong></div><div class="metric">到最优点的距离<strong id="distance-value"></strong></div><div class="metric">梯度范数<strong id="gradient-value"></strong></div>
+</div>
+<div class="actions"><button id="next" class="primary">再走一步</button><button id="back">退一步</button><button id="reset">回到第 0 步</button></div>
+<p class="status" id="status" role="status"></p>
+<p class="formula">xᵏ⁺¹ = (1 − α)xᵏ，yᵏ⁺¹ = (1 − α/κ)yᵏ；q = max(|1 − α|, |1 − α/κ|)。</p>
+<script>
+(() => {
+  const el = id => document.getElementById(id);
+  let start = [2, 1.5], geometry;
+  const format = n => n === 0 ? '0' : Math.abs(n) < 0.001 || Math.abs(n) >= 10000 ? n.toExponential(2) : n.toFixed(3);
+  const color = name => getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim();
+  function canvas(id) {
+    const node = el(id), r = node.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+    node.width = Math.max(1,Math.round(r.width*dpr)); node.height = Math.max(1,Math.round(r.height*dpr));
+    const c = node.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0);
+    c.font = '11px system-ui, sans-serif'; c.lineWidth = 1;
+    return { c, w:r.width, h:r.height };
+  }
+  function path(c, points, stroke, dash=[]) {
+    if (!points.length) return;
+    c.beginPath(); c.setLineDash(dash); c.strokeStyle=stroke;
+    points.forEach(([x,y],i) => i ? c.lineTo(x,y) : c.moveTo(x,y)); c.stroke(); c.setLineDash([]);
+  }
+  function draw() {
+    const kappa=+el('kappa').value, alpha=+el('alpha').value, k=+el('steps').value;
+    const points=[start.slice()];
+    for(let i=0;i<k;i++) { const [x,y]=points[i]; points.push([(1-alpha)*x,(1-alpha/kappa)*y]); }
+    const value=([x,y])=>(kappa*x*x+y*y)/2;
+    const last=points[k], distance=Math.hypot(...last), q=Math.max(Math.abs(1-alpha),Math.abs(1-alpha/kappa));
+    el('kappa-value').textContent=kappa; el('alpha-value').textContent=alpha.toFixed(2); el('steps-value').textContent=k;
+    el('gamma-value').textContent=format(alpha/kappa); el('point-value').textContent=last.map(format).join(', ');
+    el('q-value').textContent=q.toFixed(4); el('gap-value').textContent=format(value(last));
+    el('distance-value').textContent=format(distance); el('gradient-value').textContent=format(Math.hypot(kappa*last[0],last[1]));
+    el('next').disabled=k>=80; el('back').disabled=k===0;
+    let message=alpha<2?'0 < γL < 2：每个特征方向的误差振幅都会缩小。':alpha===2?'γL = 2：陡峭方向的误差因子为 −1，会持续往返。':'γL > 2：陡峭方向的误差振幅增大；本例起点含有这一方向的分量时会发散。';
+    if(q===0) message='κ = 1 且 γL = 1：两个方向同时归零，一步就到最优点。';
+    if(last.some(v=>Math.abs(v)>2.8)) message+=' 当前点已在左图之外。';
+    el('status').textContent=message;
+    const {c,w,h}=canvas('landscape'), range=2.8, scale=Math.max(1,Math.min(w-50,h-40))/(2*range), cx=w/2, cy=h/2;
+    geometry={cx,cy,scale}; const xy=([x,y])=>[cx+scale*x,cy-scale*y];
+    c.save(); c.beginPath();c.rect(cx-scale*range,cy-scale*range,2*scale*range,2*scale*range);c.clip();
+    for(const f of [0.25,0.6,1.2,2.5,5,10,20,40,80,160]) {
+      c.beginPath();c.ellipse(cx,cy,scale*Math.sqrt(2*f/kappa),scale*Math.sqrt(2*f),0,0,Math.PI*2);c.strokeStyle=color('line');c.stroke();
+    }
+    path(c,[xy([-range,0]),xy([range,0])],color('line'));path(c,[xy([0,-range]),xy([0,range])],color('line'));
+    c.lineWidth=1.8;path(c,points.map(xy),color('accent'));
+    c.fillStyle=color('accent'); points.forEach(p=>{if(p.every(v=>Math.abs(v)<=range)){const [x,y]=xy(p);c.beginPath();c.arc(x,y,2.4,0,2*Math.PI);c.fill();}});
+    const [sx,sy]=xy(start);c.beginPath();c.arc(sx,sy,5,0,Math.PI*2);c.fillStyle=color('bg');c.fill();c.strokeStyle=color('accent');c.stroke();
+    if(last.every(v=>Math.abs(v)<=range)){const [x,y]=xy(last);c.beginPath();c.arc(x,y,4.5,0,2*Math.PI);c.fillStyle=color('ink');c.fill();}
+    c.restore();c.fillStyle=color('muted');c.fillText('x',cx+range*scale-8,cy-8);c.fillText('y',cx+7,cy-range*scale+9);c.fillText('0',cx+6,cy+15);
+    for(const t of [-2,-1,1,2]){c.fillText(String(t),cx+scale*t-5,cy+15);c.fillText(String(t),cx+7,cy-scale*t+4);}
+    const graph=canvas('history'),g=graph.c,W=graph.w,H=graph.h,pad={l:43,r:12,t:14,b:30};
+    const f0=value(points[0]),d0=Math.hypot(...points[0]);
+    const gaps=points.map(p=>Math.log10(Math.max(value(p)/f0,1e-14))), distances=points.map(p=>Math.log10(Math.max(Math.hypot(...p)/d0,1e-14)));
+    const lo=Math.min(-1,Math.floor(Math.min(...gaps,...distances))),hi=Math.max(0,Math.ceil(Math.max(...gaps,...distances)));
+    const gx=i=>pad.l+i/Math.max(k,1)*(W-pad.l-pad.r),gy=v=>pad.t+(hi-v)/(hi-lo)*(H-pad.t-pad.b);
+    g.fillStyle=color('muted');const tick=Math.max(1,Math.ceil((hi-lo)/5));
+    for(let v=hi;v>=lo;v-=tick){path(g,[[pad.l,gy(v)],[W-pad.r,gy(v)]],color('line'));g.fillText('10^'+v,2,gy(v)+4);}
+    for(let i=0;i<=4;i++){const step=Math.round(k*i/4);g.fillText(String(step),gx(step)-4,H-9);}
+    g.lineWidth=1.8;path(g,gaps.map((v,i)=>[gx(i),gy(v)]),color('accent'));path(g,distances.map((v,i)=>[gx(i),gy(v)]),color('green'),[5,4]);
+    g.fillStyle=color('muted');g.fillText('k',W-12,H-9);
+    window.gradientExperiment={kappa,alpha,k,point:last,gap:value(last),distance,q};
+  }
+  for(const id of ['kappa','alpha','steps'])el(id).addEventListener('input',draw);
+  el('next').addEventListener('click',()=>{el('steps').value=Math.min(80,+el('steps').value+1);draw();});
+  el('back').addEventListener('click',()=>{el('steps').value=Math.max(0,+el('steps').value-1);draw();});
+  el('reset').addEventListener('click',()=>{el('steps').value=0;draw();});
+  document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{
+    const choices={round:[1,1,1],valley:[18,1.8,25],edge:[1,2,12],large:[8,2.2,15]};
+    const [kappa,alpha,steps]=choices[button.dataset.preset];start=[2,1.5];el('kappa').value=kappa;el('alpha').value=alpha;el('steps').value=steps;draw();
+  }));
+  el('landscape').addEventListener('click',event=>{const r=el('landscape').getBoundingClientRect();let x=(event.clientX-r.left-geometry.cx)/geometry.scale,y=-(event.clientY-r.top-geometry.cy)/geometry.scale;if(Math.abs(x)>2.8||Math.abs(y)>2.8)return;if(Math.hypot(x,y)<0.04){x=0.15;y=0.15;}start=[x,y];el('steps').value=0;draw();});
+  let scheduled=false;new ResizeObserver(()=>{if(!scheduled){scheduled=true;requestAnimationFrame(()=>{scheduled=false;draw();});}}).observe(document.querySelector('.charts'));
+  matchMedia('(prefers-color-scheme:dark)').addEventListener('change',draw);draw();
+})();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

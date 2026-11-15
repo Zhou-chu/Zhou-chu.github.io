@@ -563,17 +563,37 @@ html body .home-page .home-research__count {
    木漏れ日 itself. Sized per viewport: phones ~270KB, wide/HiDPI 2560px.
    -------------------------------------------------------------------------- */
 html {
+  --ft-background-image: url("/images/materials/moss-garden-1280.webp");
   background-color: #4b6a3a;
-  background-image: url("/images/materials/moss-garden-1280.webp");
+  background-image: none;
   background-position: center 55%;
+  background-attachment: scroll;
+}
+
+/* Keep the fixed photograph on one viewport-sized compositor layer. A fixed
+   root background invalidates the document paint on every scroll; on long
+   KaTeX articles that repeatedly traverses tens of thousands of text nodes.
+   The glass surfaces still sample the same photo, without changing their
+   blur, transparency, or the reading layout. */
+html:not([data-style="mono"])::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--ft-background-image);
+  background-position: inherit;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  will-change: transform;
 }
 
 @media (min-width: 801px) and (max-width: 1600px) and (max-resolution: 1.99dppx), (min-resolution: 2dppx) and (min-width: 481px) and (max-width: 960px) {
-  html { background-image: url("/images/materials/moss-garden-1920.webp"); }
+  html { --ft-background-image: url("/images/materials/moss-garden-1920.webp"); }
 }
 
 @media (min-width: 1601px), (min-resolution: 2dppx) and (min-width: 961px) {
-  html { background-image: url("/images/materials/moss-garden-2560.webp"); }
+  html { --ft-background-image: url("/images/materials/moss-garden-2560.webp"); }
 }
 
 html body .pub-footer__photo {

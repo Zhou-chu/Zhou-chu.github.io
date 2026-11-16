@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 139,
-  "assetCount": 478,
+  "noteCount": 142,
+  "assetCount": 491,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -976,6 +976,27 @@
       "title": "人工智能的优化方法：第 8 讲 梯度下降法",
       "publishedAt": "2026-11-15",
       "hash": "17e0111eac297eb6ed940bbdf585de4175e79e2036378e4a32fa3623e0c57fb9"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第13讲-暂态分析概述与同步发电机模型-pwrtr01.md",
+      "slug": "电力系统分析-第13讲-暂态分析概述与同步发电机模型-pwrtr01",
+      "title": "电力系统分析：第13讲 暂态分析概述与同步发电机模型",
+      "publishedAt": "2026-11-16",
+      "hash": "acef8aa42fe37f2cd4ee89ed0026666d40e6294f2fe145ea6679d4cd62e791d3"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第4章-第11讲-有功功率与频率调整-pwr4l11.md",
+      "slug": "电力系统分析-第4章-第11讲-有功功率与频率调整-pwr4l11",
+      "title": "电力系统分析：第4章 第11讲 有功功率与频率调整",
+      "publishedAt": "2026-11-16",
+      "hash": "7309e52e7d314f4d553edda918bc17b51e4303d9d0a542b2727cee794e90a2ef"
+    },
+    {
+      "sourcePath": "blog/电力系统分析/电力系统分析-第4章-第12讲-经济运行与经济调度-pwr4l12.md",
+      "slug": "电力系统分析-第4章-第12讲-经济运行与经济调度-pwr4l12",
+      "title": "电力系统分析：第4章 第12讲 经济运行与经济调度",
+      "publishedAt": "2026-11-16",
+      "hash": "4332f9e5b2c468fd820e04a205fe1428b166730802746add573b627a013fb9e7"
     }
   ]
 }

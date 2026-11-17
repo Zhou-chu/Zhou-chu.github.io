@@ -1,0 +1,50 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PCA：转动投影轴，比较保留与丢失</title><style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#20252a;--muted:#666f76;--line:#d9dee3;--blue:#237b92;--orange:#b9602e;--soft:#f5f7f8}
+@media(prefers-color-scheme:dark){:root{--bg:#181b20;--ink:#e9eef3;--muted:#a8b0ba;--line:#404751;--blue:#75c8df;--orange:#f0b181;--soft:#232830}}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--ink);font:14px/1.65 "Microsoft YaHei",system-ui,sans-serif}h1{font-size:18px;margin:0 0 4px}p{margin:6px 0}.muted{color:var(--muted);font-size:12px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:14px 0}label{display:block;min-width:0}input[type=range]{width:100%;accent-color:var(--blue);margin:7px 0;display:block}input[type=checkbox]{accent-color:var(--blue)}output,.number{font-variant-numeric:tabular-nums}
+button,select{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:5px 10px;min-height:36px}button{cursor:pointer}button:hover{border-color:var(--blue)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.formula{background:var(--soft);padding:12px;border-left:3px solid var(--blue);margin:10px 0;overflow-wrap:anywhere}canvas{display:block;width:100%;height:auto;aspect-ratio:800/280;background:var(--bg)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.metric{border:1px solid var(--line);padding:10px;min-width:0}.metric span{display:block;color:var(--muted);font-size:12px}.metric output{font-size:20px;font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}th{font-weight:500;color:var(--muted)}.bar{height:8px;background:var(--blue);min-width:0;border-radius:3px}.barbox{width:28%}
+@media(max-width:500px){body{padding:12px}.controls{grid-template-columns:1fr;gap:6px}.metrics{gap:6px}.metric{padding:7px}.metric output{font-size:17px}canvas{aspect-ratio:800/350}}
+</style><body>
+<h1>PCA：转动投影轴，比较保留与丢失</h1>
+<p class="muted">蓝点为已中心化数据；橙点为投影重构；虚线为每个点丢失的垂直分量。</p>
+<label for="angle">投影轴方向：<output id="angleLabel"></output><input id="angle" type="range" min="0" max="180" step="1" value="0"></label>
+<div class="actions"><button id="principal">第一主成分</button><button id="reset">水平轴</button></div>
+<canvas aria-label="数据点向可转动直线的正交投影" role="img"></canvas>
+<div class="metrics"><div class="metric"><span>投影方差</span><output id="variance"></output></div><div class="metric"><span>均方重构误差</span><output id="residual"></output></div><div class="metric"><span>总方差</span><output id="total"></output></div></div>
+<div class="formula" id="identity" aria-live="polite"></div>
+<label for="sample">追踪一个样本<select id="sample" aria-label="选择追踪样本"></select></label>
+<div class="formula"><span id="samplePoint"></span><br>投影坐标 z = <output id="sampleProjection"></output>；该点平方重构误差 = <output id="pointError"></output><br><span id="sampleReconstruction"></span></div>
+<p class="muted">方差使用 1/n。单位轴向量 u=(cosθ,sinθ)，坐标 z=x·u，重构 x̂=zu。保留的方差越大，正交残差越小；两者之和等于总方差。轴反向只改变坐标符号。</p>
+<script>
+const $=id=>document.getElementById(id),num=id=>Number($(id).value),fmt=x=>(Math.abs(x)<.00005?0:x).toFixed(4);
+const cv=document.querySelector('canvas'),ctx=cv.getContext('2d');
+function palette(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['ink','muted','line','blue','orange','bg'].map(x=>[x,c.getPropertyValue('--'+x).trim()]));}
+function setup(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;ctx.setTransform(d*r.width/800,0,0,d*r.height/280,0,0);ctx.clearRect(0,0,800,280);ctx.font=(r.width<500?25:15)+'px "Microsoft YaHei",sans-serif';return palette();}
+new ResizeObserver(()=>draw()).observe(cv);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>draw());
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>draw()));
+
+const points=Array.from({length:16},(_,j)=>{const t=2*Math.PI*j/16,a=2.8*Math.cos(t),b=.6*Math.sin(t),r=Math.PI/6;return[a*Math.cos(r)-b*Math.sin(r),a*Math.sin(r)+b*Math.cos(r)];});
+$('sample').innerHTML=points.map((_p,j)=>'<option value="'+j+'">样本 '+(j+1)+'</option>').join('');
+function draw(){
+ const angle=num('angle'),a=angle*Math.PI/180,u=[Math.cos(a),Math.sin(a)],zs=points.map(p=>p[0]*u[0]+p[1]*u[1]),total=points.reduce((s,p)=>s+p[0]*p[0]+p[1]*p[1],0)/points.length,variance=zs.reduce((s,z)=>s+z*z,0)/points.length,residual=total-variance;
+ $('angleLabel').textContent=angle+'°';$('variance').textContent=fmt(variance);$('residual').textContent=fmt(residual);$('total').textContent=fmt(total);
+ $('identity').textContent=fmt(variance)+'（保留） + '+fmt(residual)+'（丢失） = '+fmt(total)+'（总量）';
+ const selected=num('sample'),point=points[selected],z=zs[selected],reconstruction=[z*u[0],z*u[1]],error=(point[0]-reconstruction[0])**2+(point[1]-reconstruction[1])**2;
+ $('samplePoint').textContent='x = ('+point.map(fmt).join(', ')+')；u = ('+u.map(fmt).join(', ')+')';
+ $('sampleProjection').textContent=fmt(z);$('pointError').textContent=fmt(error);
+ $('sampleReconstruction').textContent='x̂ = z u = ('+reconstruction.map(fmt).join(', ')+')';
+ const p=setup(),ox=400,oy=140,scale=46;
+ ctx.strokeStyle=p.line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(50,oy);ctx.lineTo(750,oy);ctx.moveTo(ox,10);ctx.lineTo(ox,270);ctx.stroke();
+ ctx.strokeStyle=p.blue;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ox-u[0]*180,oy+u[1]*180);ctx.lineTo(ox+u[0]*180,oy-u[1]*180);ctx.stroke();
+ points.forEach((v,j)=>{const z=zs[j],xp=ox+z*u[0]*scale,yp=oy-z*u[1]*scale,x=ox+v[0]*scale,y=oy-v[1]*scale;ctx.setLineDash([4,3]);ctx.strokeStyle=p.muted;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xp,yp);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=p.blue;ctx.beginPath();ctx.arc(x,y,4,0,2*Math.PI);ctx.fill();ctx.fillStyle=p.orange;ctx.beginPath();ctx.arc(xp,yp,3,0,2*Math.PI);ctx.fill();if(j===selected){ctx.strokeStyle=p.ink;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,8,0,2*Math.PI);ctx.stroke();ctx.beginPath();ctx.arc(xp,yp,6,0,2*Math.PI);ctx.stroke();}});
+ ctx.fillStyle=p.muted;ctx.fillText('x₁',750,oy-8);ctx.fillText('x₂',ox+8,20);
+}
+$('principal').addEventListener('click',()=>{$('angle').value=30;draw();});$('reset').addEventListener('click',()=>{$('angle').value=0;draw();});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

@@ -1017,49 +1017,49 @@
       "slug": "大数据技术与应用-第2讲-数学基础-bd02",
       "title": "大数据技术与应用：第 2 讲 数学基础",
       "publishedAt": "2026-11-18",
-      "hash": "1da8bc2f500979f574486e111ec90189b268f96d951fce86513de5ca2930acdd"
+      "hash": "d97e98699d70c07a9791aa19a9e0e178487b458d9eda8a5bd4f7d2cafee4cbce"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第3讲-分类与支持向量机及决策树-bd03.md",
       "slug": "大数据技术与应用-第3讲-分类与支持向量机及决策树-bd03",
       "title": "大数据技术与应用：第 3 讲 分类与支持向量机及决策树",
       "publishedAt": "2026-11-18",
-      "hash": "e9642a96f0e647e20f3d0134a55e09dfd31507f6510ddb6e729023f9f43f9dc8"
+      "hash": "ae8276509f128f778144856741e9637461094639fb7edfe89a250e00aaba4a77"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第4讲-神经网络与反向传播-bd04.md",
       "slug": "大数据技术与应用-第4讲-神经网络与反向传播-bd04",
       "title": "大数据技术与应用：第 4 讲 神经网络与反向传播",
       "publishedAt": "2026-11-18",
-      "hash": "3798f25f130729f2e0469cbb13988ec62969ccab7713a38f9affd8f381beaaf6"
+      "hash": "f8feb9be78ecddb01cd3bb17d5a63f587c4d4df14406f017e0589a8cb12a0a93"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第5讲-RNN与LSTM及图神经网络-bd05.md",
       "slug": "大数据技术与应用-第5讲-rnn与lstm及图神经网络-bd05",
       "title": "大数据技术与应用：第 5 讲 RNN与LSTM及图神经网络",
       "publishedAt": "2026-11-18",
-      "hash": "04962d16080154790830fcb0e1badc1606e05bfcf872cda94d6eb53d3aa890e1"
+      "hash": "f7acc2d5815574d2ad325773e5de009b576fbb8c098bc22eaf26fb08098a659f"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第6讲-Transformer与Attention-bd06.md",
       "slug": "大数据技术与应用-第6讲-transformer与attention-bd06",
       "title": "大数据技术与应用：第 6 讲 Transformer与Attention",
       "publishedAt": "2026-11-18",
-      "hash": "5503044f6a16bace68d81daeec17b6ce4f10fba823f48deaa10db3482df26972"
+      "hash": "fea83f381795f75ce4ac59ccf907f60a1a3dfe9621fc2330a2ca5a299484a61b"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第7讲-集成学习与随机森林-bd07.md",
       "slug": "大数据技术与应用-第7讲-集成学习与随机森林-bd07",
       "title": "大数据技术与应用：第 7 讲 集成学习与随机森林",
       "publishedAt": "2026-11-18",
-      "hash": "c5953e662a9abe88e9d56328b4b53c2ce88fcbffdba9d34785e44ed8fd995f39"
+      "hash": "394ba03c74dda537e3089154207b3efff0b8bd22ba6059f196b48dff82f05537"
     },
     {
       "sourcePath": "blog/大数据技术与应用/大数据技术与应用-第8讲-聚类降维与生成模型-bd08.md",
       "slug": "大数据技术与应用-第8讲-聚类降维与生成模型-bd08",
       "title": "大数据技术与应用：第 8 讲 聚类降维与生成模型",
       "publishedAt": "2026-11-18",
-      "hash": "0fdb56ba097f088f1451682a6fd0c04d5465599aa24b69ffd765521cf380b913"
+      "hash": "bbaf8548896824ce052310400954090116b13600deacf5a4c6bca119b2023bdd"
     }
   ]
 }

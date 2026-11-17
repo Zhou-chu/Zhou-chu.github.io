@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 142,
-  "assetCount": 492,
+  "noteCount": 144,
+  "assetCount": 509,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -997,6 +997,20 @@
       "title": "电力系统分析：第4章 第12讲 经济运行与经济调度",
       "publishedAt": "2026-11-16",
       "hash": "4332f9e5b2c468fd820e04a205fe1428b166730802746add573b627a013fb9e7"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第6讲-DC-AC逆变器与PWM-pe1l06.md",
+      "slug": "电力电子-第6讲-dc-ac逆变器与pwm-pe1l06",
+      "title": "电力电子：第 6 讲 DC-AC 逆变器与 PWM",
+      "publishedAt": "2026-11-18",
+      "hash": "a16dea3e4edb14e7b0012f1765f95056e82e92450004513d7e1c5b80ecfec97c"
+    },
+    {
+      "sourcePath": "blog/电力电子/电力电子-第7讲-缓冲电路与开关损耗-pe1l07.md",
+      "slug": "电力电子-第7讲-缓冲电路与开关损耗-pe1l07",
+      "title": "电力电子：第 7 讲 缓冲电路与开关损耗",
+      "publishedAt": "2026-11-18",
+      "hash": "cea724b1ffa81d5311c61f4d1e8827715048d351dff4b4a8bc1b862a65e2db2b"
     }
   ]
 }

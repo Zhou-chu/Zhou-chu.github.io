@@ -1,0 +1,48 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LSTM：旧记忆怎样变成新记忆</title><style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#20252a;--muted:#666f76;--line:#d9dee3;--blue:#237b92;--orange:#b9602e;--soft:#f5f7f8}
+@media(prefers-color-scheme:dark){:root{--bg:#181b20;--ink:#e9eef3;--muted:#a8b0ba;--line:#404751;--blue:#75c8df;--orange:#f0b181;--soft:#232830}}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--ink);font:14px/1.65 "Microsoft YaHei",system-ui,sans-serif}h1{font-size:18px;margin:0 0 4px}p{margin:6px 0}.muted{color:var(--muted);font-size:12px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:14px 0}label{display:block;min-width:0}input[type=range]{width:100%;accent-color:var(--blue);margin:7px 0;display:block}input[type=checkbox]{accent-color:var(--blue)}output,.number{font-variant-numeric:tabular-nums}
+button,select{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:5px 10px;min-height:36px}button{cursor:pointer}button:hover{border-color:var(--blue)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.formula{background:var(--soft);padding:12px;border-left:3px solid var(--blue);margin:10px 0;overflow-wrap:anywhere}canvas{display:block;width:100%;height:auto;aspect-ratio:800/280;background:var(--bg)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.metric{border:1px solid var(--line);padding:10px;min-width:0}.metric span{display:block;color:var(--muted);font-size:12px}.metric output{font-size:20px;font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}th{font-weight:500;color:var(--muted)}.bar{height:8px;background:var(--blue);min-width:0;border-radius:3px}.barbox{width:28%}
+@media(max-width:500px){body{padding:12px}.controls{grid-template-columns:1fr;gap:6px}.metrics{gap:6px}.metric{padding:7px}.metric output{font-size:17px}canvas{aspect-ratio:800/350}}
+</style><body>
+<h1>LSTM：旧记忆怎样变成新记忆</h1>
+<p class="muted">调节一个记忆坐标。先保留旧值，再写入新内容，最后决定对外输出多少。</p>
+<div class="controls">
+<label for="previous">上一步记忆 cₜ₋₁：<output id="previousLabel"></output><input id="previous" type="range" min="-3" max="3" value="2" step=".1"></label>
+<label for="forget">遗忘门 fₜ：<output id="forgetLabel"></output><input id="forget" type="range" min="0" max="1" value=".9" step=".01"></label>
+<label for="input">输入门 iₜ：<output id="inputLabel"></output><input id="input" type="range" min="0" max="1" value=".2" step=".01"></label>
+<label for="candidate">候选记忆 c̃ₜ：<output id="candidateLabel"></output><input id="candidate" type="range" min="-1" max="1" value="-.5" step=".01"></label>
+<label for="output">输出门 oₜ：<output id="outputLabel"></output><input id="output" type="range" min="0" max="1" value=".8" step=".01"></label>
+</div>
+<div class="formula" id="equation" aria-live="polite"></div>
+<canvas aria-label="保留项、写入项和新记忆的有符号条形图" role="img"></canvas>
+<div class="metrics"><div class="metric"><span>新记忆 cₜ</span><output id="cell"></output></div><div class="metric"><span>隐藏输出 hₜ</span><output id="hidden"></output></div><div class="metric"><span>旧记忆直接通道系数</span><output id="derivative"></output></div></div>
+<div class="actions"><button id="reset">恢复算例</button></div>
+<p class="muted">cₜ = fₜcₜ₋₁ + iₜc̃ₜ；hₜ = oₜ tanh(cₜ)。输出门不直接改写 cₜ。门值固定时，旧记忆直接通道的局部导数为 fₜ。</p>
+<script>
+const $=id=>document.getElementById(id),num=id=>Number($(id).value),fmt=x=>(Math.abs(x)<.00005?0:x).toFixed(4);
+const cv=document.querySelector('canvas'),ctx=cv.getContext('2d');
+function palette(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['ink','muted','line','blue','orange','bg'].map(x=>[x,c.getPropertyValue('--'+x).trim()]));}
+function setup(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;ctx.setTransform(d*r.width/800,0,0,d*r.height/280,0,0);ctx.clearRect(0,0,800,280);ctx.font=(r.width<500?25:15)+'px "Microsoft YaHei",sans-serif';return palette();}
+new ResizeObserver(()=>draw()).observe(cv);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>draw());
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>draw()));
+
+function draw(){
+ const previous=num('previous'),f=num('forget'),i=num('input'),g=num('candidate'),o=num('output'),old=f*previous,write=i*g,cell=old+write,hidden=o*Math.tanh(cell);
+ for(const id of ['previous','forget','input','candidate','output'])$(id+'Label').textContent=num(id).toFixed(2);
+ $('cell').textContent=fmt(cell);$('hidden').textContent=fmt(hidden);$('derivative').textContent=fmt(f);
+ $('equation').textContent='cₜ = '+f.toFixed(2)+' × '+previous.toFixed(2)+' + '+i.toFixed(2)+' × ('+g.toFixed(2)+') = '+fmt(cell);
+ const p=setup(),zero=440,scale=65;ctx.strokeStyle=p.line;ctx.beginPath();ctx.moveTo(zero,20);ctx.lineTo(zero,235);ctx.stroke();
+ const rows=[['保留旧记忆',old,p.blue],['写入新内容',write,p.orange],['新记忆',cell,p.blue]];
+ rows.forEach(([name,value,color],index)=>{const y=45+index*70;ctx.fillStyle=p.ink;ctx.fillText(name,10,y+20);ctx.fillStyle=color;ctx.fillRect(Math.min(zero,zero+value*scale),y,Math.max(Math.abs(value*scale),1),30);ctx.fillStyle=p.ink;ctx.fillText(fmt(value),Math.max(170,Math.min(700,zero+value*scale+10)),y+21);});
+ ctx.fillStyle=p.muted;ctx.fillText('负值 ←',zero-90,270);ctx.fillText('0',zero-4,270);ctx.fillText('→ 正值',zero+40,270);
+}
+$('reset').addEventListener('click',()=>{for(const [id,value] of Object.entries({previous:2,forget:.9,input:.2,candidate:-.5,output:.8}))$(id).value=value;draw();});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

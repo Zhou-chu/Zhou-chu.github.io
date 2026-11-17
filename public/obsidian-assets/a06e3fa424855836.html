@@ -1,0 +1,51 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Attention：一个 Query 读取三个位置</title><style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#20252a;--muted:#666f76;--line:#d9dee3;--blue:#237b92;--orange:#b9602e;--soft:#f5f7f8}
+@media(prefers-color-scheme:dark){:root{--bg:#181b20;--ink:#e9eef3;--muted:#a8b0ba;--line:#404751;--blue:#75c8df;--orange:#f0b181;--soft:#232830}}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--ink);font:14px/1.65 "Microsoft YaHei",system-ui,sans-serif}h1{font-size:18px;margin:0 0 4px}p{margin:6px 0}.muted{color:var(--muted);font-size:12px}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:14px 0}label{display:block;min-width:0}input[type=range]{width:100%;accent-color:var(--blue);margin:7px 0;display:block}input[type=checkbox]{accent-color:var(--blue)}output,.number{font-variant-numeric:tabular-nums}
+button,select{font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:5px 10px;min-height:36px}button{cursor:pointer}button:hover{border-color:var(--blue)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.formula{background:var(--soft);padding:12px;border-left:3px solid var(--blue);margin:10px 0;overflow-wrap:anywhere}canvas{display:block;width:100%;height:auto;aspect-ratio:800/280;background:var(--bg)}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.metric{border:1px solid var(--line);padding:10px;min-width:0}.metric span{display:block;color:var(--muted);font-size:12px}.metric output{font-size:20px;font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}th{font-weight:500;color:var(--muted)}.bar{height:8px;background:var(--blue);min-width:0;border-radius:3px}.barbox{width:28%}
+@media(max-width:500px){body{padding:12px}.controls{grid-template-columns:1fr;gap:6px}.metrics{gap:6px}.metric{padding:7px}.metric output{font-size:17px}canvas{aspect-ratio:800/350}}
+</style><body>
+<h1>Attention：一个 Query 读取三个位置</h1>
+<p class="muted">Q/K 决定读取权重，V 提供组合内容。固定 Key 和 Value，转动单位 Query。</p>
+<div class="controls">
+<label for="angle">Query 方向：<output id="angleLabel"></output><input id="angle" type="range" min="0" max="360" step="1" value="0"></label>
+<label for="position">当前位置<select id="position"><option value="1">位置 1</option><option value="2">位置 2</option><option value="3" selected>位置 3</option></select></label>
+</div>
+<div class="actions"><label><input id="causal" type="checkbox"> 使用因果遮罩</label><label><input id="scaled" type="checkbox" checked> 使用 √2 缩放</label><button id="reset">恢复算例</button></div>
+<canvas aria-label="左侧显示 Query 与 Key，右侧显示 Value 与读取结果" role="img"></canvas>
+<table><thead><tr><th>位置</th><th>缩放分数</th><th>权重</th><th>读取比例</th></tr></thead><tbody id="weights"></tbody></table>
+<div class="formula" id="result" aria-live="polite"></div>
+<p class="muted">K₁=(1,0)，K₂=(0,1)，K₃=(−1,0)；V₁=(1,0)，V₂=(0,1)，V₃=(1,1)。每行权重和为 1。遮罩禁止的位置不参与 Softmax。</p>
+<script>
+const $=id=>document.getElementById(id),num=id=>Number($(id).value),fmt=x=>(Math.abs(x)<.00005?0:x).toFixed(4);
+const cv=document.querySelector('canvas'),ctx=cv.getContext('2d');
+function palette(){const c=getComputedStyle(document.documentElement);return Object.fromEntries(['ink','muted','line','blue','orange','bg'].map(x=>[x,c.getPropertyValue('--'+x).trim()]));}
+function setup(){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;ctx.setTransform(d*r.width/800,0,0,d*r.height/280,0,0);ctx.clearRect(0,0,800,280);ctx.font=(r.width<500?25:15)+'px "Microsoft YaHei",sans-serif';return palette();}
+new ResizeObserver(()=>draw()).observe(cv);
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>draw());
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>draw()));
+
+function arrow(x,y,dx,dy,color,label){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const a=Math.atan2(dy,dx);ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-10*Math.cos(a-.4),y+dy-10*Math.sin(a-.4));ctx.lineTo(x+dx-10*Math.cos(a+.4),y+dy-10*Math.sin(a+.4));ctx.closePath();ctx.fill();ctx.fillText(label,x+dx+6,y+dy-8);}
+function draw(){
+ const a=num('angle')*Math.PI/180,q=[Math.cos(a),Math.sin(a)],keys=[[1,0],[0,1],[-1,0]],values=[[1,0],[0,1],[1,1]],div=$('scaled').checked?Math.sqrt(2):1;
+ const scores=keys.map((k,j)=>$('causal').checked&&j>=num('position')?-Infinity:(q[0]*k[0]+q[1]*k[1])/div);
+ const max=Math.max(...scores),exps=scores.map(s=>Math.exp(s-max)),den=exps.reduce((x,y)=>x+y,0),w=exps.map(x=>x/den);
+ const z=[0,1].map(k=>w.reduce((v,t,j)=>v+t*values[j][k],0));
+ $('angleLabel').textContent=num('angle')+'°';
+ $('weights').innerHTML=w.map((v,j)=>'<tr><td>'+(j+1)+'</td><td>'+(Number.isFinite(scores[j])?fmt(scores[j]):'禁止')+'</td><td data-weight>'+fmt(v)+'</td><td class="barbox"><div class="bar" style="width:'+(100*v)+'%"></div></td></tr>').join('');
+ $('result').textContent='z = '+w.map((v,j)=>fmt(v)+' V'+(j+1)).join(' + ')+' = ('+fmt(z[0])+', '+fmt(z[1])+')';
+ const p=setup();ctx.fillStyle=p.ink;ctx.fillText('Q/K 匹配空间',90,25);ctx.fillText('Value 内容空间',485,25);
+ for(const ox of [200,570]){ctx.strokeStyle=p.line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox-135,155);ctx.lineTo(ox+135,155);ctx.moveTo(ox,45);ctx.lineTo(ox,265);ctx.stroke();}
+ keys.forEach((k,j)=>arrow(200,155,k[0]*95,-k[1]*95,p.muted,'K'+(j+1)));
+ arrow(200,155,q[0]*78,-q[1]*78,p.orange,'Q');
+ values.forEach((v,j)=>arrow(570,210,v[0]*100,-v[1]*100,p.muted,'V'+(j+1)));
+ arrow(570,210,z[0]*100,-z[1]*100,p.blue,'z');
+}
+$('reset').addEventListener('click',()=>{$('angle').value=0;$('position').value=3;$('causal').checked=false;$('scaled').checked=true;draw();});draw();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

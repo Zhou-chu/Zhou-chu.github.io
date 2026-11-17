@@ -2,7 +2,7 @@
   "version": 1,
   "source": "Obsidian",
   "noteCount": 142,
-  "assetCount": 491,
+  "assetCount": 492,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -982,7 +982,7 @@
       "slug": "电力系统分析-第13讲-暂态分析概述与同步发电机模型-pwrtr01",
       "title": "电力系统分析：第13讲 暂态分析概述与同步发电机模型",
       "publishedAt": "2026-11-16",
-      "hash": "acef8aa42fe37f2cd4ee89ed0026666d40e6294f2fe145ea6679d4cd62e791d3"
+      "hash": "64287f5ac4206bb96ec8a4625539b9a6ed7a989bce8ed6cdf0096e6d1fe374ca"
     },
     {
       "sourcePath": "blog/电力系统分析/电力系统分析-第4章-第11讲-有功功率与频率调整-pwr4l11.md",

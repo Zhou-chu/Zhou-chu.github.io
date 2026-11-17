@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>磁轴、互感与磁链</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--ink:#171717;--muted:#686868;--line:#d8d8d8;--fill:#f5f5f5;--field:#216d80;--projection:#956023}
+@media(prefers-color-scheme:dark){:root{--bg:#121212;--ink:#e9e9e9;--muted:#aaa;--line:#353535;--fill:#1b1b1b;--field:#79c5d4;--projection:#edb76f}}
+*{box-sizing:border-box}body{margin:0;padding:16px 18px;background:var(--bg);color:var(--ink);font:13px/1.65 "Microsoft YaHei",system-ui,sans-serif}
+h2{font-size:16px;margin:0 0 6px}p{margin:6px 0}.sub,.small{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:12px}.card{min-width:0;border:1px solid var(--line);padding:12px}
+@media(min-width:740px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+canvas{display:block;width:100%;height:330px}.legend{display:flex;flex-wrap:wrap;gap:5px 16px;font-size:12px;color:var(--muted)}.legend span::before{content:"";display:inline-block;width:18px;margin-right:5px;border-top:2px solid var(--ink);vertical-align:middle}.legend .field::before{border-color:var(--field)}.legend .projection::before{border-color:var(--projection)}
+label{display:flex;justify-content:space-between;gap:8px}output{font-variant-numeric:tabular-nums;font-weight:600}input[type=range]{display:block;width:100%;margin:8px 0 12px;accent-color:var(--ink)}
+.buttons{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}button{font:inherit;font-size:12px;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:3px 9px;cursor:pointer}button[aria-pressed=true]{background:var(--ink);color:var(--bg)}button:focus-visible,input:focus-visible{outline:2px solid var(--field);outline-offset:3px}
+.equation{background:var(--fill);padding:8px 10px;font-size:13px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:6px 3px;border-bottom:1px solid var(--line);white-space:nowrap}th:first-child,td:first-child{text-align:left}th{font-weight:500;color:var(--muted)}.hint{border-left:2px solid var(--projection);padding-left:9px;margin-top:12px}sub,sup{line-height:0}
+</style></head><body>
+<h2>转动励磁绕组：a 相能交链多少磁通？</h2>
+<p class="sub">理想隐极机、均匀气隙、线性磁路；定子开路，只通励磁电流。示例互感幅值 M<sub>f</sub> = 0.10 H。图按一对极绘制，角度为电角度。</p>
+<div class="grid">
+ <div class="card"><canvas id="diagram" role="img" aria-label="固定的定子a轴与随转子转动的d、q轴，以及励磁磁场沿a轴的投影"></canvas>
+ <div class="legend"><span>a 轴：定子固定</span><span class="field">励磁基波磁场</span><span class="projection">沿 a 轴的投影</span></div>
+ <p class="small">外圈黑色短线表示 a 相线圈两侧，内圈蓝色短线表示 f 绕组两侧。d 是 f 绕组的磁轴，q 超前 d 轴 90°；蓝色绕组和两轴随转子一起转。</p></div>
+ <div class="card">
+ <label for="angle"><span>转子角 θ<sub>a</sub>（a → d）</span><output id="angleValue" for="angle">0°</output></label>
+ <input id="angle" type="range" min="0" max="360" step="1" value="0">
+ <div class="buttons" role="group" aria-label="典型转子位置"><button data-angle="0" aria-pressed="true">0° 正对</button><button data-angle="90" aria-pressed="false">90° 正交</button><button data-angle="180" aria-pressed="false">180° 反向</button><button data-angle="270" aria-pressed="false">270° 正交</button></div>
+ <label for="fieldCurrent"><span>励磁电流 i<sub>f</sub></span><output id="currentValue" for="fieldCurrent">2.0 A</output></label>
+ <input id="fieldCurrent" type="range" min="0" max="3" step="0.1" value="2">
+ <div class="equation" aria-live="polite"><div>L<sub>af</sub> = M<sub>f</sub> cos θ<sub>a</sub> = <strong id="mutualValue"></strong> H</div><div>ψ<sub>a←f</sub> = L<sub>af</sub> i<sub>f</sub> = <strong id="fluxValue"></strong> Wb·匝</div></div>
+ <table aria-label="励磁绕组对三相定子磁链的贡献"><thead><tr><th>相</th><th>θ<sub>k</sub></th><th>L<sub>kf</sub> / H</th><th>ψ<sub>k←f</sub> / Wb·匝</th></tr></thead><tbody id="phaseValues"></tbody></table>
+ <p class="hint" id="explanation" aria-live="polite"></p>
+ </div>
+</div>
+<script>
+const byId=id=>document.getElementById(id);
+const Mf=.1,rad=deg=>deg*Math.PI/180;
+const clean=value=>Math.abs(value)<1e-10?0:value;
+function arrow(ctx,x1,y1,x2,y2,color,width=2){
+ if(Math.hypot(x2-x1,y2-y1)<1)return;
+ const a=Math.atan2(y2-y1,x2-x1),s=7;
+ ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(a-.4),y2-s*Math.sin(a-.4));ctx.lineTo(x2-s*Math.cos(a+.4),y2-s*Math.sin(a+.4));ctx.closePath();ctx.fill();
+}
+function draw(theta,current){
+ const canvas=byId('diagram'),box=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);
+ const g=canvas.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
+ const css=getComputedStyle(document.documentElement),color=name=>css.getPropertyValue('--'+name).trim();
+ const ink=color('ink'),muted=color('muted'),line=color('line'),field=color('field'),projection=color('projection');
+ const cx=box.width/2,cy=157,R=Math.min(94,box.width*.30),rotor=R*.70,t=rad(theta),c=Math.cos(t),s=Math.sin(t);
+ g.clearRect(0,0,box.width,box.height);g.font='12px "Microsoft YaHei",system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';
+ g.strokeStyle=line;g.lineWidth=1;g.beginPath();g.arc(cx,cy,R+8,0,Math.PI*2);g.arc(cx,cy,R,0,Math.PI*2);g.stroke();
+ g.fillStyle=color('fill');g.beginPath();g.arc(cx,cy,rotor,0,Math.PI*2);g.fill();g.stroke();
+ g.fillStyle=ink;g.fillRect(cx-8,cy-R-3,16,6);g.fillRect(cx-8,cy+R-3,16,6);
+ g.fillStyle=muted;g.fillText('a 相绕组的两侧',cx,cy-R-24);g.fillText('均匀气隙',cx,cy+R+25);
+ g.setLineDash([3,4]);g.strokeStyle=line;g.beginPath();g.moveTo(cx-R-15,cy);g.lineTo(cx,cy);g.stroke();g.setLineDash([]);
+ arrow(g,cx,cy,cx+R+23,cy,ink,1.2);g.fillStyle=ink;g.fillText('a',cx+R+28,cy-12);
+ // d and q are geometric directions attached to the round rotor.
+ g.strokeStyle=field;g.lineWidth=1;g.setLineDash([5,4]);g.beginPath();g.moveTo(cx-rotor*c,cy+rotor*s);g.lineTo(cx+rotor*c,cy-rotor*s);g.stroke();
+ const q=t+Math.PI/2;g.strokeStyle=muted;g.setLineDash([2,4]);g.beginPath();g.moveTo(cx-rotor*Math.cos(q),cy+rotor*Math.sin(q));g.lineTo(cx+rotor*Math.cos(q),cy-rotor*Math.sin(q));g.stroke();g.setLineDash([]);
+ for(const side of [-1,1]){g.save();g.translate(cx+side*rotor*.78*Math.cos(q),cy-side*rotor*.78*Math.sin(q));g.rotate(Math.PI/2-q);g.fillStyle=field;g.fillRect(-6,-3,12,6);g.restore();}
+ g.fillStyle=field;g.fillText('d / f',(cx+(rotor+12)*c),(cy-(rotor+12)*s)-10);
+ g.fillStyle=muted;g.fillText('q',cx+(rotor+12)*Math.cos(q),cy-(rotor+12)*Math.sin(q));
+ const length=rotor*.95*current/3,fx=cx+length*c,fy=cy-length*s;
+ arrow(g,cx,cy,fx,fy,field,3);
+ if(current>0){g.strokeStyle=projection;g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(fx,fy);g.lineTo(fx,cy);g.stroke();g.setLineDash([]);arrow(g,cx,cy+11,fx,cy+11,projection,3);}
+ if(theta%360!==0){g.strokeStyle=muted;g.lineWidth=1;g.beginPath();g.arc(cx,cy,24,0,-t,true);g.stroke();g.fillStyle=muted;g.fillText('θ',cx+35*Math.cos(t/2),cy-35*Math.sin(t/2));}
+ g.fillStyle=ink;g.beginPath();g.arc(cx,cy,2,0,Math.PI*2);g.fill();
+ g.fillStyle=projection;g.fillText('a 方向投影 ∝ i_f cos θ_a',cx,302);
+}
+function update(){
+ const theta=+byId('angle').value,current=+byId('fieldCurrent').value,cos=clean(Math.cos(rad(theta))),mutual=Mf*cos,flux=mutual*current;
+ byId('angleValue').textContent=theta+'°';byId('currentValue').textContent=current.toFixed(1)+' A';byId('mutualValue').textContent=clean(mutual).toFixed(3);byId('fluxValue').textContent=clean(flux).toFixed(3);
+ byId('phaseValues').replaceChildren(...['a','b','c'].map((phase,index)=>{
+  const angle=theta+[0,-120,120][index],L=clean(Mf*Math.cos(rad(angle))),row=document.createElement('tr');
+  for(const value of [phase,angle+'°',L.toFixed(3),clean(L*current).toFixed(3)]){const cell=document.createElement('td');cell.textContent=value;row.appendChild(cell);}return row;
+ }));
+ let text;
+ if(current===0)text='励磁电流为零，励磁产生的三相磁链也为零。互感系数仍由角度决定，d/q 轴仍是转子上的确定方向。';
+ else if(Math.abs(cos)<1e-9)text='励磁磁场仍然存在，但它与 a 相正交，对 a 相的净磁链贡献为零。此时 b、c 相的磁链仍可不为零。';
+ else if(cos<0)text='励磁磁场在 a 轴上的投影为负。负号表示磁链相对于 a 相正方向反转；互感幅值 M_f 仍为 0.10 H。';
+ else text='励磁磁场沿 a 轴的投影为正。保持角度不变、改变 i_f：L_af 不变，磁链随励磁电流成比例改变。';
+ byId('explanation').textContent=text;
+ document.querySelectorAll('[data-angle]').forEach(button=>button.setAttribute('aria-pressed',String(+button.dataset.angle===theta)));
+ draw(theta,current);
+}
+document.querySelectorAll('[data-angle]').forEach(button=>button.addEventListener('click',()=>{byId('angle').value=button.dataset.angle;update();}));
+byId('angle').addEventListener('input',update);byId('fieldCurrent').addEventListener('input',update);addEventListener('resize',update);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',update);
+update();
+</script>
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body></html>

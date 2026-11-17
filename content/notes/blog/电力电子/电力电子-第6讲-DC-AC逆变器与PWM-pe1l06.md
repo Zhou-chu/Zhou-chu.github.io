@@ -67,11 +67,11 @@ $$
 把正弦参考信号与三角载波比较：
 
 $$
-v_{\mathrm{ref}}=\hat V_{\mathrm{ref}}\sin\omega_1t,
-\qquad
-m_a=\frac{\hat V_{\mathrm{ref}}}{\hat V_{\mathrm{tri}}},
-\qquad
-m_f=\frac{f_s}{f_1}.
+\begin{aligned}
+v_{\mathrm{ref}}&=\hat V_{\mathrm{ref}}\sin\omega_1t,\\
+m_a&=\frac{\hat V_{\mathrm{ref}}}{\hat V_{\mathrm{tri}}},\\
+m_f&=\frac{f_s}{f_1}.
+\end{aligned}
 $$
 
 $m_a$ 是幅值调制比，控制基波电压；$m_f$ 是频率调制比，表示一个基波周期里有多少个载波周期。改变 $f_1$ 就改变输出基波频率。
@@ -119,9 +119,10 @@ PWM 用高频脉冲排列来表达低频参考，频谱中除基波外，主要�
 参考幅值进一步增大，输出趋近幅值为 $\pm V_d$ 的方波。由方波的傅里叶展开，
 
 $$
-v_o=\frac{4V_d}{\pi}
-\left(\sin\omega_1t+\frac{\sin3\omega_1t}{3}
-+\frac{\sin5\omega_1t}{5}+\cdots\right),
+\begin{aligned}
+v_o=\frac{4V_d}{\pi}\Big(&\sin\omega_1t+\frac{\sin3\omega_1t}{3}\\
+&+\frac{\sin5\omega_1t}{5}+\cdots\Big),
+\end{aligned}
 $$
 
 所以单相全桥基波峰值的方波极限是
@@ -137,16 +138,19 @@ $$
 单极性调制给 A、B 两桥臂分别使用相反的参考：
 
 $$
-v_{\mathrm{ref},A}=\hat V_{\mathrm{ref}}\sin\omega_1t,
-\qquad
-v_{\mathrm{ref},B}=-\hat V_{\mathrm{ref}}\sin\omega_1t.
+\begin{aligned}
+v_{\mathrm{ref},A}&=\hat V_{\mathrm{ref}}\sin\omega_1t,\\
+v_{\mathrm{ref},B}&=-\hat V_{\mathrm{ref}}\sin\omega_1t.
+\end{aligned}
 $$
 
 每个桥臂独立与同一个三角载波比较，因此
 
 $$
-d_A=\frac{1+m_a\sin\omega_1t}{2},\qquad
-d_B=\frac{1-m_a\sin\omega_1t}{2}.
+\begin{aligned}
+d_A&=\frac{1+m_a\sin\omega_1t}{2},\\
+d_B&=\frac{1-m_a\sin\omega_1t}{2}.
+\end{aligned}
 $$
 
 两桥臂平均电压相减，得到
@@ -180,8 +184,10 @@ $$
 取交流侧的基波为
 
 $$
-v_{o1}=\hat V_{o1}\sin\omega_1t,\qquad
-i_{o1}=\hat I_{o1}\sin(\omega_1t-\varphi).
+\begin{aligned}
+v_{o1}&=\hat V_{o1}\sin\omega_1t,\\
+i_{o1}&=\hat I_{o1}\sin(\omega_1t-\varphi).
+\end{aligned}
 $$
 
 相乘并使用积化和差公式：
@@ -243,9 +249,11 @@ $$
 三个桥臂各有两种状态，总计 $2^3=8$ 种。定义 $S_A,S_B,S_C$ 为各上管的状态，则
 
 $$
-v_{AB}=(S_A-S_B)V_d,\quad
-v_{BC}=(S_B-S_C)V_d,\quad
-v_{CA}=(S_C-S_A)V_d.
+\begin{aligned}
+v_{AB}&=(S_A-S_B)V_d,\\
+v_{BC}&=(S_B-S_C)V_d,\\
+v_{CA}&=(S_C-S_A)V_d.
+\end{aligned}
 $$
 
 | $(S_A,S_B,S_C)$ | $v_{AB}/V_d$ | $v_{BC}/V_d$ | $v_{CA}/V_d$ |
@@ -299,9 +307,11 @@ V_{\mathrm{ph},1}=\frac{m_aV_d}{2\sqrt2},
 $$
 
 $$
-\boxed{V_{\mathrm{LL},1}=\sqrt3V_{\mathrm{ph},1}
-=\frac{\sqrt3}{2\sqrt2}m_aV_d
-\approx0.612m_aV_d}.
+\boxed{\begin{aligned}
+V_{\mathrm{LL},1}&=\sqrt3V_{\mathrm{ph},1}\\
+&=\frac{\sqrt3}{2\sqrt2}m_aV_d\\
+&\approx0.612m_aV_d.
+\end{aligned}}
 $$
 
 **0.612 对应三相线电压基波的有效值**；前面的单相公式 $m_aV_d$ 对应全桥输出基波的峰值，不能把这两个系数直接比较。

@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "Obsidian",
-  "noteCount": 151,
-  "assetCount": 519,
+  "noteCount": 154,
+  "assetCount": 536,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -1060,6 +1060,27 @@
       "title": "大数据技术与应用：第 8 讲 聚类降维与生成模型",
       "publishedAt": "2026-11-18",
       "hash": "bbaf8548896824ce052310400954090116b13600deacf5a4c6bca119b2023bdd"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第6讲-零极点校正与频率响应及Nyquist入门-acs06.md",
+      "slug": "自动控制原理-第6讲-零极点校正与频率响应及nyquist入门-acs06",
+      "title": "自动控制原理：第 6 讲 零极点校正与频率响应及 Nyquist 入门",
+      "publishedAt": "2026-11-18",
+      "hash": "10a55520707d2bd707f8eac905ce50df32581a13fe7d2c147f29fc1c7092b3e7"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第7讲-Nyquist判据Bode图与稳定裕度-acs07.md",
+      "slug": "自动控制原理-第7讲-nyquist判据bode图与稳定裕度-acs07",
+      "title": "自动控制原理：第 7 讲 Nyquist 判据、Bode 图与稳定裕度",
+      "publishedAt": "2026-11-18",
+      "hash": "0247d8d73916858c3a612d60071264e1f6407931ea5d95d5a61e74b09d2d515a"
+    },
+    {
+      "sourcePath": "blog/自动控制原理/自动控制原理-第8讲-频域性能与控制器设计-acs08.md",
+      "slug": "自动控制原理-第8讲-频域性能与控制器设计-acs08",
+      "title": "自动控制原理：第 8 讲 频域性能与控制器设计",
+      "publishedAt": "2026-11-18",
+      "hash": "0f439472e16253443b46ee4cc13c103d9e1e7499081717c48f1f10e636fae416"
     }
   ]
 }

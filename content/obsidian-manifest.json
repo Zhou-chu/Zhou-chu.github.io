@@ -2,7 +2,7 @@
   "version": 1,
   "source": "Obsidian",
   "noteCount": 154,
-  "assetCount": 536,
+  "assetCount": 487,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -513,35 +513,35 @@
       "slug": "自动控制原理-第1讲-绪论与系统的数学模型-acs01",
       "title": "自动控制原理：第 1 讲 绪论与系统的数学模型",
       "publishedAt": "2026-09-24",
-      "hash": "496a3528ee66df447708c285de2000edceb7b5a8eb52889afac3bd1a42d275f1"
+      "hash": "61e180c5052b67b8791f38a2576727acc154d7a90ab684c44054e8833af2fc9f"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第2讲-方框图信号流图与状态空间-acs02.md",
       "slug": "自动控制原理-第2讲-方框图信号流图与状态空间-acs02",
       "title": "自动控制原理：第 2 讲 系统的数学模型（方框图、信号流图与状态空间）",
       "publishedAt": "2026-09-24",
-      "hash": "ffacc459c437a52981e4750a3fb9aeabec0960e7e16524e561ca2c46ceded301"
+      "hash": "2a70cc036e1affd1e140f12df16a640cf8058853eab37771b94ddfa5388923f1"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03.md",
       "slug": "自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03",
       "title": "自动控制原理：第 3 讲 传递函数与状态空间转换及稳定性",
       "publishedAt": "2026-10-21",
-      "hash": "a9be7100fa93c8ff9329417ff1ae9dc99ca7cfc2ac1730ccbb896a31023b16e8"
+      "hash": "6b2c319ce93f48c689af0bdf99ea5c5ff57630a3db757a4d3ca7aba14deabf34"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04.md",
       "slug": "自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04",
       "title": "自动控制原理：第 4 讲 代数稳定性判据、稳态误差与瞬态响应",
       "publishedAt": "2026-10-21",
-      "hash": "1d13d188ac94ece9b771f52f1595575c1fe96c215399b5eb383cabcf3974d206"
+      "hash": "13c018f792172f698a16f7211562609484d4b40c8d8581306dfd6bb37a523440"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第5讲-根轨迹法与高阶系统时域近似-acs05.md",
       "slug": "自动控制原理-第5讲-根轨迹法与高阶系统时域近似-acs05",
       "title": "自动控制原理：第 5 讲 根轨迹法与高阶系统时域近似",
       "publishedAt": "2026-10-22",
-      "hash": "59d6e603f1f9e74e1999b6b9d6175665c703134ce392d4f485a39f14041950b0"
+      "hash": "44c08855c7961124089a7c9f40af5392125c4c8d97e34f68577f0c445acbc0b7"
     },
     {
       "sourcePath": "blog/Opencode手撕代码/00-项目总览-project-overview-mscuwj2z.md",
@@ -1066,21 +1066,21 @@
       "slug": "自动控制原理-第6讲-零极点校正与频率响应及nyquist入门-acs06",
       "title": "自动控制原理：第 6 讲 零极点校正与频率响应及 Nyquist 入门",
       "publishedAt": "2026-11-18",
-      "hash": "10a55520707d2bd707f8eac905ce50df32581a13fe7d2c147f29fc1c7092b3e7"
+      "hash": "bea6d305e992adae58c4a4b84aceaeb43e4755f5fb8008c1e9d8073d66a5ba17"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第7讲-Nyquist判据Bode图与稳定裕度-acs07.md",
       "slug": "自动控制原理-第7讲-nyquist判据bode图与稳定裕度-acs07",
       "title": "自动控制原理：第 7 讲 Nyquist 判据、Bode 图与稳定裕度",
       "publishedAt": "2026-11-18",
-      "hash": "0247d8d73916858c3a612d60071264e1f6407931ea5d95d5a61e74b09d2d515a"
+      "hash": "05bf124b515f21900a3e57ab98b3a625e8cd576f0c6b107b825d45caa4fb66a8"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第8讲-频域性能与控制器设计-acs08.md",
       "slug": "自动控制原理-第8讲-频域性能与控制器设计-acs08",
       "title": "自动控制原理：第 8 讲 频域性能与控制器设计",
       "publishedAt": "2026-11-18",
-      "hash": "0f439472e16253443b46ee4cc13c103d9e1e7499081717c48f1f10e636fae416"
+      "hash": "fe240a5a16a5c3d5523d3c4c5999ae4f926434d477fc6f7390212735f6fab208"
     }
   ]
 }

@@ -1,0 +1,365 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>根轨迹与闭环时域性能仿真</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 2px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus-visible,button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; min-height: 32px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ink); margin-right: 4px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-style: dashed; }
+.legend i.l { border-top-color: var(--light); border-top-style: dotted; }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+</style>
+</head>
+<body>
+<h2>三阶系统根轨迹与闭环阶跃响应动态仿真</h2>
+<p class="sub">单位负反馈，L(s) = K/[s(s+2)(s+4)]。每组三个圆点对应同一个 K。选一个增益，根据极点实部预测振幅怎样变化，再与右图比较。</p>
+
+<div class="btns">
+  <button id="b1" type="button">三实根 K=1</button>
+  <button id="b2" type="button">分离点 K≈3.079</button>
+  <button id="b3" type="button" class="on">衰减振荡 K=25</button>
+  <button id="b4" type="button">虚轴 K=48</button>
+  <button id="b5" type="button">增长振荡 K=65</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <label for="in_k"><span>根轨迹增益 K</span><b id="v_k"></b></label>
+    <input id="in_k" type="range" min="0.1" max="70" step="any" value="25">
+
+    <div class="kv"><span>系统稳定性</span><b id="stat_desc"></b></div>
+    <div class="kv"><span>从 0、−2 出发的两支</span><b id="poles_desc"></b></div>
+    <div class="kv"><span>从 −4 出发的实根</span><b id="p3_desc"></b></div>
+    <div class="kv"><span>虚轴交点 K=48</span><b>s=±j√8</b></div>
+
+    <div style="margin-top: 8px;">
+      <div style="font-size: 11.5px; color: var(--muted); margin-bottom: 2px;">S 平面极点轨迹（含渐近线与分离点）</div>
+      <canvas id="cv_s" role="img" aria-label="闭环极点与根轨迹" style="height: 220px; border: 1px solid var(--line);"></canvas>
+    </div>
+    <div class="hint" id="hint" role="status"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">闭环单位阶跃响应 y(t)</div>
+    <canvas id="cv_t" role="img" aria-label="闭环单位阶跃响应" style="height: 290px;"></canvas>
+    <div class="legend">
+      <span><i></i>阶跃响应 y(t)</span>
+      <span><i class="m"></i><span id="reference_label">参考值 y=1</span></span>
+      <span>左图 × 为开环极点，● 为当前闭环极点</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K_COLOR = {};
+function refreshColors() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K_COLOR[n] = C(n); }); }
+refreshColors();
+
+function fit(c) {
+  refreshColors();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+const BREAK_GAIN = 16 / (3 * Math.sqrt(3));
+const AXIS_GAIN = 48;
+let K_val = 25;
+
+// Solve cubic equation s^3 + 6s^2 + 8s + K = 0
+function solveCubic(K) {
+  if (Math.abs(K - BREAK_GAIN) < 1e-10) {
+    const repeated = -2 + 2 / Math.sqrt(3);
+    return [{ re: repeated, im: 0 }, { re: repeated, im: 0 }, { re: -6 - 2 * repeated, im: 0 }];
+  }
+  if (Math.abs(K - AXIS_GAIN) < 1e-10) {
+    return [{ re: 0, im: Math.sqrt(8) }, { re: 0, im: -Math.sqrt(8) }, { re: -6, im: 0 }];
+  }
+  const a = 6, b = 8, c = K;
+  const p = b - (a * a) / 3;
+  const q = (2 * a * a * a) / 27 - (a * b) / 3 + c;
+  const delta = (q * q) / 4 + (p * p * p) / 27;
+
+  if (delta > 0) {
+    const u = Math.cbrt(-q / 2 + Math.sqrt(delta));
+    const v = Math.cbrt(-q / 2 - Math.sqrt(delta));
+    const y1 = u + v;
+    const s1 = y1 - a / 3;
+    const realPart = -(u + v) / 2 - a / 3;
+    const imagPart = ((u - v) * Math.sqrt(3)) / 2;
+    return [{ re: realPart, im: Math.abs(imagPart) }, { re: realPart, im: -Math.abs(imagPart) }, { re: s1, im: 0 }];
+  } else {
+    const r = Math.sqrt(-(p * p * p) / 27);
+    const phi = Math.acos(Math.max(-1, Math.min(1, -q / (2 * r))));
+    const y1 = 2 * Math.cbrt(r) * Math.cos(phi / 3);
+    const y2 = 2 * Math.cbrt(r) * Math.cos((phi + 2 * Math.PI) / 3);
+    const y3 = 2 * Math.cbrt(r) * Math.cos((phi + 4 * Math.PI) / 3);
+    const roots = [y1 - a / 3, y2 - a / 3, y3 - a / 3].sort((x, y) => x - y);
+    return [{ re: roots[2], im: 0 }, { re: roots[1], im: 0 }, { re: roots[0], im: 0 }];
+  }
+}
+
+function update() {
+  K_val = Number($("in_k").value);
+  $("v_k").textContent = String(Number(K_val.toFixed(4)));
+  const roots = solveCubic(K_val);
+  const [p1, p2, p3] = roots;
+  const isBreak = Math.abs(K_val - BREAK_GAIN) < 1e-10;
+  const isAxis = Math.abs(K_val - AXIS_GAIN) < 1e-10;
+  const stable = K_val < AXIS_GAIN && !isAxis;
+  const pair = p1.im === 0
+    ? p1.re.toFixed(3) + "，" + p2.re.toFixed(3)
+    : p1.re.toFixed(3) + " ± j" + p1.im.toFixed(3);
+  $("poles_desc").textContent = isBreak ? p1.re.toFixed(3) + "（二重根）" : pair;
+  $("p3_desc").textContent = p3.re.toFixed(3);
+  $("reference_label").textContent = stable ? "最终值 y=1" : "参考值 y=1";
+
+  if (isBreak) {
+    $("stat_desc").textContent = "稳定，分离点";
+    $("hint").textContent = "两根合在 −0.845。二重根会产生 t·exp(−0.845t) 模态。继续增大 K，两根进入复平面。";
+  } else if (isAxis) {
+    $("stat_desc").textContent = "虚轴边界，无渐近稳定";
+    $("hint").textContent = "共轭根实部为零，频率为 √8 rad/s。从 −6 实根来的瞬态衰减后，仍有等幅振荡。";
+  } else if (!stable) {
+    $("stat_desc").textContent = "不稳定，振幅增长";
+    $("hint").textContent = "共轭根实部为正，振荡包络按 exp(" + p1.re.toFixed(3) + "t) 增长。";
+  } else if (p1.im > 0) {
+    $("stat_desc").textContent = "稳定，衰减振荡";
+    $("hint").textContent = "振荡频率约 " + p1.im.toFixed(3) + " rad/s，包络按 exp(" + p1.re.toFixed(3) + "t) 衰减。第三根还贡献一个更快的纯指数项。";
+  } else {
+    $("stat_desc").textContent = "稳定，三个实根";
+    $("hint").textContent = "三根均在负实轴。这个模型可写成三个稳定一阶低通相乘，因此阶跃单调上升。";
+  }
+  drawSPlane(roots);
+  drawStep();
+}
+
+function drawSPlane(currentRoots) {
+  const { g, w, h } = fit($("cv_s"));
+  g.clearRect(0, 0, w, h);
+
+  const cx = w * 0.76, cy = h * 0.5;
+  const scale = Math.min(w / 9.5, (h - 32) / 7.2);
+
+  // LHP background fill
+  g.fillStyle = K_COLOR.fill;
+  g.fillRect(0, 0, cx, h);
+
+  // Axes
+  g.strokeStyle = K_COLOR.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, cy); g.lineTo(w, cy); // sigma axis
+  g.moveTo(cx, 0); g.lineTo(cx, h); // jw axis
+  g.stroke();
+
+  // Axis Labels
+  g.fillStyle = K_COLOR.muted;
+  g.fillText("σ", w - 12, cy - 4);
+  g.fillText("jω", cx + 4, 12);
+  g.fillText("左半平面", 6, 12);
+  for (const real of [-6, -4, -2]) {
+    const x = cx + real * scale;
+    g.fillRect(x, cy - 2, 1, 4);
+    g.fillText(String(real), x - 5, cy + 15);
+  }
+  for (const imag of [-2, 2]) {
+    const y = cy - imag * scale;
+    g.fillRect(cx - 2, y, 4, 1);
+    g.fillText(String(imag), cx + 5, y + 4);
+  }
+
+  // Asymptotes: sigma_a = -2, angle = 60, 180, 300
+  const fx = cx - 2.0 * scale;
+  g.strokeStyle = K_COLOR.light;
+  g.setLineDash([3, 3]);
+  g.beginPath();
+  g.moveTo(fx, cy); g.lineTo(fx + 4.5 * scale * Math.cos(Math.PI / 3), cy - 4.5 * scale * Math.sin(Math.PI / 3));
+  g.moveTo(fx, cy); g.lineTo(fx + 4.5 * scale * Math.cos(Math.PI / 3), cy + 4.5 * scale * Math.sin(Math.PI / 3));
+  g.moveTo(fx, cy); g.lineTo(0, cy);
+  g.stroke();
+  g.setLineDash([]);
+
+  // Draw static root locus curves
+  g.strokeStyle = K_COLOR.mid;
+  g.lineWidth = 1.4;
+
+  // Real axis segments: [-2, 0] and [-inf, -4]
+  g.beginPath();
+  g.moveTo(cx, cy); g.lineTo(cx - 2.0 * scale, cy);
+  g.moveTo(cx - 4.0 * scale, cy); g.lineTo(0, cy);
+  g.stroke();
+
+  // Sample the complex branches from the double root.
+  g.beginPath();
+  let first = true;
+  for (let k = BREAK_GAIN; k <= 100; k += 0.5) {
+    const r = solveCubic(k)[0];
+    const px = cx + r.re * scale;
+    const py = cy - r.im * scale;
+    if (first) { g.moveTo(px, py); first = false; } else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  g.beginPath();
+  first = true;
+  for (let k = BREAK_GAIN; k <= 100; k += 0.5) {
+    const r = solveCubic(k)[1];
+    const px = cx + r.re * scale;
+    const py = cy - r.im * scale;
+    if (first) { g.moveTo(px, py); first = false; } else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  // Open loop poles crosses (0, -2, -4)
+  function drawOpenPole(x, y) {
+    const px = cx + x * scale, py = cy - y * scale;
+    g.strokeStyle = K_COLOR.ink;
+    g.lineWidth = 2;
+    const s = 4;
+    g.beginPath();
+    g.moveTo(px - s, py - s); g.lineTo(px + s, py + s);
+    g.moveTo(px - s, py + s); g.lineTo(px + s, py - s);
+    g.stroke();
+  }
+  drawOpenPole(0, 0);
+  drawOpenPole(-2, 0);
+  drawOpenPole(-4, 0);
+
+  // Current closed loop poles (black circles)
+  currentRoots.forEach((rt) => {
+    const px = cx + rt.re * scale, py = cy - rt.im * scale;
+    g.fillStyle = K_COLOR.ink;
+    g.beginPath();
+    g.arc(px, py, 3.5, 0, Math.PI * 2);
+    g.fill();
+  });
+}
+
+function stepResponse(K, tMax = 12, dt = 0.02) {
+  // y‴ + 6y″ + 8y′ + Ky = K for a unit step with zero initial state.
+  const rate = ([y, dy, ddy]) => [dy, ddy, K * (1 - y) - 8 * dy - 6 * ddy];
+  const offset = (state, slope, time) => state.map((value, i) => value + time * slope[i]);
+  const points = [];
+  let state = [0, 0, 0];
+  for (let i = 0; i <= Math.round(tMax / dt); i++) {
+    points.push({ t: i * dt, y: state[0] });
+    const a = rate(state);
+    const b = rate(offset(state, a, dt / 2));
+    const c = rate(offset(state, b, dt / 2));
+    const d = rate(offset(state, c, dt));
+    state = state.map((value, j) => value + dt * (a[j] + 2 * b[j] + 2 * c[j] + d[j]) / 6);
+  }
+  return points;
+}
+
+function drawStep() {
+  const { g, w, h } = fit($("cv_t"));
+  g.clearRect(0, 0, w, h);
+
+  const padL = 34, padR = 19, padT = 16, padB = 25;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const tMax = 12;
+  const points = stepResponse(K_val, tMax);
+  const min = Math.min(-0.08, ...points.map(point => point.y));
+  const max = Math.max(1.1, ...points.map(point => point.y));
+  const margin = (max - min) * 0.08;
+  const bottom = min - margin;
+  const top = max + margin;
+
+  const toX = (t) => padL + (t / tMax) * pw;
+  const toY = (y) => padT + (top - y) * ph / (top - bottom);
+
+  // Grid
+  g.strokeStyle = K_COLOR.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(padL, padT); g.lineTo(padL, padT + ph);
+  g.moveTo(padL, toY(0)); g.lineTo(padL + pw, toY(0));
+  g.stroke();
+
+  // 1.0 baseline
+  g.strokeStyle = K_COLOR.mid;
+  g.setLineDash([4, 4]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.0)); g.lineTo(padL + pw, toY(1.0));
+  g.stroke();
+  g.setLineDash([]);
+
+  // Labels
+  g.fillStyle = K_COLOR.muted;
+  g.fillText("1.0", padL - 22, toY(1.0) + 4);
+  g.fillText("0", padL - 14, toY(0) + 4);
+  for (const t of [0, 4, 8, 12]) g.fillText(t === tMax ? "12 s" : String(t), toX(t) - 7, h - 7);
+
+  // Draw curve
+  g.strokeStyle = K_COLOR.ink;
+  g.lineWidth = 1.8;
+  g.beginPath();
+  points.forEach((p, idx) => {
+    const x = toX(p.t);
+    const yPx = toY(p.y);
+    if (idx === 0) g.moveTo(x, yPx); else g.lineTo(x, yPx);
+  });
+  g.stroke();
+}
+
+const presets = { b1: 1, b2: BREAK_GAIN, b3: 25, b4: AXIS_GAIN, b5: 65 };
+function markPreset(activeId) {
+  for (const id of Object.keys(presets)) {
+    $(id).classList.toggle("on", id === activeId);
+    $(id).setAttribute("aria-pressed", String(id === activeId));
+  }
+}
+for (const [id, gain] of Object.entries(presets)) {
+  $(id).onclick = () => {
+    $("in_k").value = gain;
+    markPreset(id);
+    update();
+  };
+}
+
+$("in_k").oninput = () => {
+  markPreset(null);
+  update();
+};
+
+markPreset("b3");
+window.addEventListener("resize", () => update());
+update();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>二阶系统阶跃响应与阻尼比</title>
+<style>
+:root { color-scheme: light dark; --bg:#ffffff; --ink:#141414; --muted:#666666; --mid:#7a7a7a; --light:#bdbdbd; --line:#d9d9d9; --fill:#f8f8f8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121212; --ink:#e8e8e8; --muted:#9a9a9a; --mid:#9a9a9a; --light:#555555; --line:#333333; --fill:#1b1b1b; } }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 14px 16px; background: var(--bg); color: var(--ink); font: 13px/1.5 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+h2 { margin: 0 0 4px; font-size: 14.5px; font-weight: 600; }
+p.sub { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@media (min-width: 584px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { border: 1px solid var(--line); border-radius: 2px; padding: 10px 12px; min-width: 0; background: var(--bg); }
+label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+label b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; background: transparent; margin: 2px 0 8px; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--line); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 0; }
+input[type=range]:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+canvas { display: block; width: 100%; }
+.kv { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin: 3px 0; }
+.kv b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.btns { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+button { font: inherit; font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px; cursor: pointer; }
+button:hover { border-color: var(--ink); }
+button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--ink); margin-right: 4px; vertical-align: middle; }
+.legend i.m { border-top-color: var(--mid); border-top-style: dashed; }
+.legend i.l { border-top-color: var(--light); border-top-style: dotted; }
+.hint { margin-top: 6px; font-size: 11.5px; color: var(--muted); border-left: 2px solid var(--ink); padding-left: 6px; }
+</style>
+</head>
+<body>
+<h2>二阶系统的单位阶跃响应</h2>
+<p class="sub">T(s) = ωₙ²/(s² + 2ζωₙs + ωₙ²)。保持 ζ，改变 ωₙ，比较峰值高度和峰值时刻。选无阻尼，观察曲线如何反复离开 2% 容差带。</p>
+
+<div class="btns">
+  <button id="b0">无阻尼 (ζ=0)</button>
+  <button id="b1">强欠阻尼 (ζ=0.3)</button>
+  <button id="b2" class="on">阻尼比约 0.707</button>
+  <button id="b3">临界阻尼 (ζ=1.0)</button>
+  <button id="b4">过阻尼 (ζ=1.6)</button>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <label for="in_zeta"><span>阻尼比 ζ</span><b id="v_zeta"></b></label>
+    <input id="in_zeta" type="range" min="0" max="2" step="0.001" value="0.707">
+    <label for="in_wn"><span>自然角频率 ωₙ（rad/s）</span><b id="v_wn"></b></label>
+    <input id="in_wn" type="range" min="0.5" max="4.0" step="0.1" value="2.0">
+
+    <div class="kv"><span>阻尼状态</span><b id="state_desc"></b></div>
+    <div class="kv"><span>闭环极点</span><b id="pole_val"></b></div>
+    <div class="kv"><span>相对目标值的超调</span><b id="m_os"></b></div>
+    <div class="kv"><span>首峰时间</span><b id="m_tp"></b></div>
+    <div class="kv"><span>上升时间（10%–90%）</span><b id="m_tr"></b></div>
+    <div class="kv"><span>调节时间（2%）</span><b id="m_ts"></b></div>
+
+    <div style="margin-top: 8px;">
+      <canvas id="cv_s" style="height: 120px; border: 1px solid var(--line);"></canvas>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px;">阶跃响应 y(t) 与误差带</div>
+    <canvas id="cv_t" style="height: 290px;"></canvas>
+    <div class="hint" id="time-note"></div>
+    <div class="legend">
+      <span><i></i>阶跃响应 y(t)</span>
+      <span><i class="m"></i>目标值 y=1</span>
+      <span><i class="l"></i>±2% 容差带</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const C = (n) => getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim();
+const K = {};
+function refreshK() { ["bg", "ink", "muted", "mid", "light", "line", "fill"].forEach((n) => { K[n] = C(n); }); }
+refreshK();
+
+function fit(c) {
+  refreshK();
+  const r = c.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = Math.max(1, Math.round(r.width * d));
+  c.height = Math.max(1, Math.round(r.height * d));
+  const g = c.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.font = '11px system-ui, "Microsoft YaHei", sans-serif';
+  return { g, w: r.width, h: r.height };
+}
+
+let zeta = 0.707, wn = 2.0;
+
+function response(t) {
+  const r = wn * t;
+  if (zeta < 1) {
+    const d = Math.sqrt(1 - zeta * zeta);
+    return 1 - Math.exp(-zeta * r) * (Math.cos(d * r) + (zeta / d) * Math.sin(d * r));
+  }
+  if (zeta === 1) return 1 - (1 + r) * Math.exp(-r);
+  const q = Math.sqrt(zeta * zeta - 1);
+  const p1 = -(zeta - q);
+  const p2 = -(zeta + q);
+  return 1 - (p2 * Math.exp(p1 * r) - p1 * Math.exp(p2 * r)) / (p2 - p1);
+}
+
+// Find the first point where a monotone boolean condition is met.
+function findTransition(lo, hi, condition) {
+  for (let i = 0; i < 45; i++) {
+    const mid = (lo + hi) / 2;
+    if (condition(mid)) hi = mid;
+    else lo = mid;
+  }
+  return hi;
+}
+
+function metrics() {
+  const tolerance = 0.02;
+  if (zeta < 1) {
+    const wd = wn * Math.sqrt(1 - zeta * zeta);
+    const halfPeriod = Math.PI / wd;
+    const overshoot = Math.exp(-zeta * wn * halfPeriod);
+    const rise =
+      findTransition(0, halfPeriod, t => response(t) >= 0.9) -
+      findTransition(0, halfPeriod, t => response(t) >= 0.1);
+    if (zeta === 0) return { peak: halfPeriod, overshoot, rise, settling: Infinity };
+    // The error at the nth extremum has magnitude exp(-ζ ωₙ nπ/ωd).
+    const bound = Math.log(1 / tolerance) / (zeta * wn * halfPeriod);
+    const lastOutside = Math.max(0, Math.ceil(bound - 1e-12) - 1);
+    const settling = findTransition(lastOutside * halfPeriod, (lastOutside + 1) * halfPeriod,
+      t => Math.abs(1 - response(t)) <= tolerance);
+    return { peak: halfPeriod, overshoot, rise, settling };
+  }
+  let end = 1 / wn;
+  while (response(end) < 1 - tolerance) end *= 2;
+  const rise =
+    findTransition(0, end, t => response(t) >= 0.9) -
+    findTransition(0, end, t => response(t) >= 0.1);
+  const settling = findTransition(0, end, t => response(t) >= 1 - tolerance);
+  return { peak: Infinity, overshoot: 0, rise, settling };
+}
+
+function seconds(t) {
+  return t.toFixed(2) + " s";
+}
+
+function update() {
+  zeta = Number($("in_zeta").value);
+  wn = Number($("in_wn").value);
+  $("v_zeta").textContent = zeta.toFixed(3);
+  $("v_wn").textContent = wn.toFixed(1);
+  const { peak, overshoot, rise, settling } = metrics();
+  $("m_os").textContent = (100 * overshoot).toFixed(1) + " %";
+  $("m_tp").textContent = Number.isFinite(peak) ? seconds(peak) : "无有限首峰";
+  $("m_tr").textContent = seconds(rise);
+  $("m_ts").textContent = Number.isFinite(settling) ? seconds(settling) : "持续等幅振荡";
+
+  if (zeta === 0) {
+    $("state_desc").textContent = "无阻尼";
+    $("pole_val").textContent = "±j" + wn.toFixed(2);
+    $("hint").textContent = "两根在虚轴，响应反复越过误差带，首峰超过目标值 100%。";
+  } else if (zeta < 1) {
+    $("state_desc").textContent = "欠阻尼";
+    const wd = wn * Math.sqrt(1 - zeta * zeta);
+    const sigma = zeta * wn;
+    $("pole_val").textContent = "−" + sigma.toFixed(2) + " ± j" + wd.toFixed(2);
+    $("hint").textContent = "实部决定包络收缩，虚部决定峰值间隔。保持 ζ 后加倍 ωₙ，超调不变，峰值与调节时间减半。";
+  } else if (zeta === 1) {
+    $("state_desc").textContent = "临界阻尼";
+    $("pole_val").textContent = "−" + wn.toFixed(2) + "（二重实根）";
+    $("hint").textContent = "曲线单调趋近目标，调节时间是第一次进入误差带的时刻。";
+  } else {
+    $("state_desc").textContent = "过阻尼";
+    const sq = Math.sqrt(zeta * zeta - 1);
+    const s1 = -wn * (zeta - sq);
+    const s2 = -wn * (zeta + sq);
+    $("pole_val").textContent = s1.toFixed(2) + ", " + s2.toFixed(2);
+    $("hint").textContent = "两个极点都在负实轴。靠近原点的那个衰减较慢，决定曲线的尾部。";
+  }
+  drawPoles();
+  drawStep();
+}
+
+function drawPoles() {
+  const { g, w, h } = fit($("cv_s"));
+  if (w < 48 || h < 40) return;
+  g.clearRect(0, 0, w, h);
+
+  const cx = w * 0.75, cy = h * 0.5;
+  const widestPole = zeta > 1 ? wn * (zeta + Math.sqrt(zeta * zeta - 1)) : wn;
+  const scale = Math.min((cx - 10) / Math.max(5, widestPole), (cy - 10) / wn);
+
+  // LHP background
+  g.fillStyle = K.fill;
+  g.fillRect(0, 0, cx, h);
+
+  // Axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(0, cy); g.lineTo(w, cy);
+  g.moveTo(cx, 0); g.lineTo(cx, h);
+  g.stroke();
+
+  // wn circle arc in LHP
+  g.strokeStyle = K.light;
+  g.setLineDash([3, 3]);
+  g.beginPath();
+  g.arc(cx, cy, wn * scale, Math.PI * 0.5, Math.PI * 1.5);
+  g.stroke();
+  g.setLineDash([]);
+
+  // Label
+  g.fillStyle = K.muted;
+  g.fillText("σ", w - 14, cy - 5);
+  g.fillText("jω", cx + 5, 12);
+
+  function drawCross(x, y) {
+    const px = cx + x * scale;
+    const py = cy - y * scale;
+    g.strokeStyle = K.ink;
+    g.lineWidth = 2;
+    const s = 4.5;
+    g.beginPath();
+    g.moveTo(px - s, py - s); g.lineTo(px + s, py + s);
+    g.moveTo(px - s, py + s); g.lineTo(px + s, py - s);
+    g.stroke();
+  }
+
+  if (zeta < 1.0) {
+    const wd = wn * Math.sqrt(1 - zeta * zeta);
+    const sig = -zeta * wn;
+    drawCross(sig, wd);
+    if (wd > 0.05) drawCross(sig, -wd);
+  } else if (Math.abs(zeta - 1.0) < 1e-4) {
+    drawCross(-wn, 0);
+  } else {
+    const sq = Math.sqrt(zeta * zeta - 1);
+    drawCross(-wn * (zeta - sq), 0);
+    drawCross(-wn * (zeta + sq), 0);
+  }
+}
+
+function drawStep() {
+  const { g, w, h } = fit($("cv_t"));
+  if (w < 48 || h < 40) return;
+  g.clearRect(0, 0, w, h);
+
+  const padL = 34, padR = 14, padT = 16, padB = 24;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const { peak, overshoot, settling } = metrics();
+  const goal = 1.15 * settling;
+  const visibleHorizon = Number.isFinite(peak) ? Math.min(goal, 12 * peak) : goal;
+  const tMax = Math.max(6, visibleHorizon);
+  const yMax = 2.2;
+
+  const toX = (t) => padL + (t / tMax) * pw;
+  const toY = (y) => padT + ph - (y / yMax) * ph;
+
+  // Grid & axes
+  g.strokeStyle = K.line;
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(padL, padT); g.lineTo(padL, padT + ph);
+  g.moveTo(padL, padT + ph); g.lineTo(padL + pw, padT + ph);
+  g.stroke();
+
+  // Steady state 1.0 line (dashed)
+  g.strokeStyle = K.mid;
+  g.setLineDash([5, 4]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.0)); g.lineTo(padL + pw, toY(1.0));
+  g.stroke();
+
+  // +/- 2% band
+  g.strokeStyle = K.light;
+  g.setLineDash([2, 3]);
+  g.beginPath();
+  g.moveTo(padL, toY(1.02)); g.lineTo(padL + pw, toY(1.02));
+  g.moveTo(padL, toY(0.98)); g.lineTo(padL + pw, toY(0.98));
+  g.stroke();
+  g.setLineDash([]);
+
+  // Labels
+  g.fillStyle = K.muted;
+  g.fillText("1.0", padL - 24, toY(1.0) + 4);
+  g.fillText("0", padL - 14, padT + ph + 4);
+  g.fillText(yMax.toFixed(1), padL - 24, padT + 10);
+
+  // Time grid marks
+  const stepT = Math.max(1, Math.ceil(tMax / 6));
+  for (let t = stepT; t < tMax; t += stepT) {
+    const x = toX(t);
+    g.beginPath();
+    g.moveTo(x, padT + ph - 3); g.lineTo(x, padT + ph + 3);
+    g.stroke();
+    g.fillText(t + "s", x - 6, padT + ph + 14);
+  }
+
+  const pts = Array.from({ length: 401 }, (_, i) => {
+    const t = i / 400 * tMax;
+    return { t, y: response(t) };
+  });
+
+  // Draw response line
+  g.strokeStyle = K.ink;
+  g.lineWidth = 2;
+  g.beginPath();
+  pts.forEach((p, idx) => {
+    const x = toX(p.t);
+    const y = toY(p.y);
+    if (idx === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  });
+  g.stroke();
+
+  if (peak <= tMax && overshoot > 0.01) {
+    const px = toX(peak);
+    const py = toY(1 + overshoot);
+    g.fillStyle = K.ink;
+    g.beginPath();
+    g.arc(px, py, 3.5, 0, Math.PI * 2);
+    g.fill();
+  }
+  if (settling <= tMax) {
+    const x = toX(settling);
+    g.strokeStyle = K.mid;
+    g.setLineDash([3, 3]);
+    g.beginPath();
+    g.moveTo(x, toY(response(settling)));
+    g.lineTo(x, toY(0));
+    g.stroke();
+    g.setLineDash([]);
+  }
+  $("time-note").textContent = settling > tMax && Number.isFinite(settling)
+    ? "横轴显示前 " + tMax.toFixed(1) + " 秒。最后入带在图示时间之外，见调节时间。"
+    : Number.isFinite(settling) ? "竖虚线标出最后进入 2% 容差带的时刻。" : "曲线持续越界，无有限调节时间。";
+}
+
+function setP(z, w, id) {
+  $("in_zeta").value = z;
+  $("in_wn").value = w;
+  document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on"));
+  if ($(id)) $(id).classList.add("on");
+  update();
+}
+
+$("b0").onclick = () => setP(0.0, 2.0, "b0");
+$("b1").onclick = () => setP(0.3, 2.0, "b1");
+$("b2").onclick = () => setP(0.707, 2.0, "b2");
+$("b3").onclick = () => setP(1.0, 2.0, "b3");
+$("b4").onclick = () => setP(1.6, 2.0, "b4");
+
+$("in_zeta").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); update(); };
+$("in_wn").oninput = () => { document.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); update(); };
+
+const redraw = () => { drawPoles(); drawStep(); };
+if (typeof ResizeObserver === "function") {
+  new ResizeObserver(redraw).observe(document.querySelector(".grid"));
+} else {
+  window.addEventListener("resize", redraw);
+}
+update();
+</script>
+
+<script data-komorebi-widget>(function(){function r(){var b=document.body,d=document.documentElement;var h=Math.ceil(Math.max(b?b.scrollHeight:0,b?b.getBoundingClientRect().height:0,d.getBoundingClientRect().height));parent.postMessage({type:"komorebi-widget-height",height:h},"*")}addEventListener("load",r);addEventListener("resize",r);if(window.ResizeObserver){var o=new ResizeObserver(r);o.observe(document.documentElement);if(document.body)o.observe(document.body)}setTimeout(r,300);setTimeout(r,1500)})();</script>
+</body>
+</html>

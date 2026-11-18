@@ -2,7 +2,7 @@
   "version": 1,
   "source": "Obsidian",
   "noteCount": 154,
-  "assetCount": 487,
+  "assetCount": 494,
   "notes": [
     {
       "sourcePath": "blog/电机设计/电机设计-Ansys-RMxprt参数调整速查.md",
@@ -527,7 +527,7 @@
       "slug": "自动控制原理-第3讲-传递函数与状态空间转换及稳定性-acs03",
       "title": "自动控制原理：第 3 讲 传递函数与状态空间转换及稳定性",
       "publishedAt": "2026-10-21",
-      "hash": "6b2c319ce93f48c689af0bdf99ea5c5ff57630a3db757a4d3ca7aba14deabf34"
+      "hash": "0f62f6132a90929cc1edc8a37fc1526dd8b64f68ef177d0f56c42f19aee1b652"
     },
     {
       "sourcePath": "blog/自动控制原理/自动控制原理-第4讲-代数稳定性判据稳态误差与瞬态响应-acs04.md",

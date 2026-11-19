@@ -67,3 +67,7 @@ next-env.d.ts
 # 一次性整理脚本（任务已完成，仅留档不入库）
 /.copy-assets.mjs
 /.organize-chapters.mjs
+
+# 课件缓存与 PDF 渲染产物（本地临时）
+.cache/
+.dsh-pdf-cache/
